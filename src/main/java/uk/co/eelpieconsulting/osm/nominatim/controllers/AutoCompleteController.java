@@ -25,9 +25,11 @@ public class AutoCompleteController {
 	}
 	
 	@RequestMapping("/suggest")
-	public ModelAndView suggestions(@RequestParam("term") String term) throws MalformedURLException, SolrServerException {
-		ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
+	public ModelAndView suggestions(@RequestParam(value="term",required=false) String term,
+			@RequestParam(value="callback", required=false) String callback) throws MalformedURLException, SolrServerException {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		mv.addObject("data", solrDAO.getSuggestionsFor(term));
+		mv.addObject("callback", callback);
 		return mv;
 	}
 	
