@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link type="text/css" href="jquery-ui-1.8.23.custom.css" rel="stylesheet" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$( "#tags" ).autocomplete({
+				source: function( request, response ) {
+					$.ajax({
+						url: "http://nominatim-ac.eelpieconsulting.co.uk/suggest",
+						dataType: "jsonp",
+						data: {
+							term: request.term
+						},
+						success: function( data ) {
+							response( $.map( data, function( item ) {
+								return {
+									label: (item.address + " (" + item.classification + "/" + item.type + ")"),
+									value: item.address,
+									osmId: item.osmId,
+									osmType: item.osmType
+								}
+							}));
+						}
+					});
+				},
+
+				select: function( event, ui ) {
+					$("#selected").text( ui.item ? "Selected: " + ui.item.osmId + "/" + ui.item.osmType : "Nothing selected");
+				}
+
+			});
+		});
+	</script>
+</head>
+<body>
+	<h4>Geocode autocomplete preserving OSM ids</h4>
+	<div><input id="tags" /></div>
+	<p><span id="selected"></span></p>
+</body>
+</html>
