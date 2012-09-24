@@ -11,18 +11,23 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 @Component
 public class SolrDAO {
-	
+
+	@Value("#{autoComplete['solr.url']}")
+	private String solrUrl;
+
 	public List<Place> getSuggestionsFor(String q) throws SolrServerException, MalformedURLException {
-		SolrServer solrServer = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-3.6.1/osm");
-		
+		final SolrServer solrServer = new CommonsHttpSolrServer(solrUrl);
+
+		final String term = new String(q.toLowerCase());
 		SolrQuery query = new SolrQuery("*:*");
-		query.setQuery("name_string:" + q.replace(" ", "\\ ") + "*");
+		query.setQuery("name_string:" + term.replace(" ", "\\ ") + "*");
 		query.addFilterQuery("-type:bus_stop");		
 		query.addFilterQuery("-type:house");
 		query.addFilterQuery("-type:post_box");
