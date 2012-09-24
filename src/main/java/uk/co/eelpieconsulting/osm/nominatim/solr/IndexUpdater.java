@@ -20,10 +20,10 @@ public class IndexUpdater {
 	private static final int COMMIT_SIZE = 10000;
 	final Splitter onCommaSeperator = Splitter.on(",");
 	
-	public void buildIndex() throws SolrServerException, IOException {
+	public void buildIndex(String dumpFileName) throws SolrServerException, IOException {
 		SolrServer solrServer = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-3.6.1/osm");
-
-		final URL resource = this.getClass().getClassLoader().getResource("uk-all.txt");
+		
+		final URL resource = this.getClass().getClassLoader().getResource(dumpFileName);
 		final PlacesDumpParser parser = new PlacesDumpParser(FileUtils.toFile(resource));
 		
 		int count = 0;
@@ -39,7 +39,7 @@ public class IndexUpdater {
 			
 			final String name = onCommaSeperator.split(place.getAddress()).iterator().next();			
 			inputDocument.addField("name", name);
-			inputDocument.addField("name_string", name.replaceFirst("^The ", ""));
+			inputDocument.addField("name_string", place.getAddress().replaceFirst("^The ", ""));
 			inputDocument.addField("address_line", place.getAddress());
 			inputDocument.addField("class", place.getClassification());
 			inputDocument.addField("type", place.getType());
