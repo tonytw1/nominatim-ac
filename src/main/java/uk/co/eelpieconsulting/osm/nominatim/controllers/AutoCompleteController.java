@@ -11,16 +11,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.AutoCompleteService;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
 
 @Controller
 public class AutoCompleteController {
 	
-	private final AutoCompleteService solrDAO;
+	private final AutoCompleteService autoCompleteService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public AutoCompleteController(AutoCompleteService solrDAO, ViewFactory viewFactory) {
-		this.solrDAO = solrDAO;
+	public AutoCompleteController(ElasticSearchAutoCompleteService autoCompleteService, ViewFactory viewFactory) {
+		this.autoCompleteService = autoCompleteService;
 		this.viewFactory = viewFactory;
 	}
 	
@@ -29,7 +30,7 @@ public class AutoCompleteController {
 			@RequestParam(value="callback", required=false) String callback) throws MalformedURLException, SolrServerException {
 
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", solrDAO.getSuggestionsFor(term));
+		mv.addObject("data", autoCompleteService.getSuggestionsFor(term));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}

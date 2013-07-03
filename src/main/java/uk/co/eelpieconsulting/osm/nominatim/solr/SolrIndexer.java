@@ -8,6 +8,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +27,8 @@ public class SolrIndexer implements LineIndexer {
 	
 	private final SolrServer solrServer;
 	
-	@Value("#{autoComplete['solr.url']}") String solrUrl;
-	
-	public SolrIndexer() throws MalformedURLException {
+	@Autowired
+	public SolrIndexer(@Value("#{autoComplete['solr.url']}") String solrUrl) throws MalformedURLException {
 		this.solrServer = new CommonsHttpSolrServer(solrUrl);
 	}
 	

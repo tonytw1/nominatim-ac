@@ -25,8 +25,7 @@ public class ImportController {
 	
 	@RequestMapping("/import")
 	public ModelAndView inputIndex() throws SolrServerException, IOException {
-		indexUpdater.buildIndex("uk-all.txt");
-		indexUpdater.buildIndex("nz.txt");
+		indexUpdater.buildIndex("uk.txt");
 		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		mv.addObject("data", "ok");

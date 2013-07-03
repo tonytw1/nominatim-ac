@@ -8,23 +8,24 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.parsing.PlacesDumpParser;
 
 @Component
 public class IndexUpdater {
 	
-	private final LineIndexer solrIndexer;
+	private final LineIndexer indexer;
 	
 	@Autowired
-	public IndexUpdater(LineIndexer solrIndexer) {
-		this.solrIndexer = solrIndexer;
+	public IndexUpdater(ElasticSearchIndexer indexer) {
+		this.indexer = indexer;
 	}
 		
 	public void buildIndex(String dumpFileName) throws SolrServerException, IOException {		
 		final URL resource = this.getClass().getClassLoader().getResource(dumpFileName);
 		final PlacesDumpParser parser = new PlacesDumpParser(FileUtils.toFile(resource));
 		
-		solrIndexer.indexLines(parser);
+		indexer.indexLines(parser);
 	}
 	
 }

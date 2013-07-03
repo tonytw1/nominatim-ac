@@ -10,6 +10,7 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +21,11 @@ import com.google.common.collect.Lists;
 
 @Component
 public class SolrDAO implements AutoCompleteService {
-
-	@Value("#{autoComplete['solr.url']}") String solrUrl;
 	
 	private SolrServer solrServer;
 	
-	public SolrDAO() throws MalformedURLException {
+	@Autowired
+	public SolrDAO(@Value("#{autoComplete['solr.url']}") String solrUrl) throws MalformedURLException {
 		this.solrServer = new CommonsHttpSolrServer(solrUrl);
 	}
 	

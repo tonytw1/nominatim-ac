@@ -2,12 +2,15 @@ package uk.co.eelpieconsulting.osm.nominatim.model;
 
 public class Place {
 
-	private final long osmId;
-	private final String osmType;
-	private final String housenumber;
-	private final String address;
-	private final String classification;
-	private final String type;
+	private long osmId;
+	private String osmType;
+	private String housenumber;
+	private String address;
+	private String classification;
+	private String type;
+	
+	public Place() {
+	}
 	
 	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type) {
 		this.osmId = osmId;
