@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
-import uk.co.eelpieconsulting.osm.nominatim.solr.SolrDAO;
+import uk.co.eelpieconsulting.osm.nominatim.AutoCompleteService;
 
 @Controller
 public class AutoCompleteController {
 	
-	private final SolrDAO solrDAO;
+	private final AutoCompleteService solrDAO;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public AutoCompleteController(SolrDAO solrDAO, ViewFactory viewFactory) {
+	public AutoCompleteController(AutoCompleteService solrDAO, ViewFactory viewFactory) {
 		this.solrDAO = solrDAO;
 		this.viewFactory = viewFactory;
 	}
