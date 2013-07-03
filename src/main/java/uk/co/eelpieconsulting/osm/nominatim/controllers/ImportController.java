@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
-import uk.co.eelpieconsulting.osm.nominatim.solr.IndexUpdater;
+import uk.co.eelpieconsulting.osm.nominatim.indexing.IndexUpdater;
 
 @Controller
 public class ImportController {
