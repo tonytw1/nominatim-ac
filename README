@@ -1,0 +1,36 @@
+An experimental Open Street Map (OSM) / Nominatim auto complete service.
+
+Motivation:
+I have an interest in geotagging content.
+Tagging content with latitude/longitude point loses alot of the context.
+Was the user referring to a country, a city or a specific building when they applied the tag?
+Can OSM data be used to provide an auto complete service which preserves this context by assigning a repeatable location id to each result?
+
+Background:
+Many existing location lookup services resolve to a point location only.
+The Google Maps geocoding service does provide some context information, but lacks ids which can be advertised and referred back to at a later date.
+
+Some services such as Twitter and Instagram expose their own in-house ids for locations.
+Unfortunately, the data sets which these ids refer to aren't available to 3rd party developers.
+
+OSM does provide publicly accessible ids for locations.
+OSM locations are also arranged into a loose hierarchy. This means we can infer things like 'if this content is tagged with that street, then it must also be relevant to this city and this country'.
+AOSM ids are public sowe can advertise them in our own applications and be confident that everyone agrees which location we are talking about.
+
+Resolving the fairly basic OSM schema into a hierarchy is a fairly complicated task.
+The Nominatim project does a nice job of this. Nominatims' terms and conditions state that it shouldn't be used
+as an auto complete service. This is fair; it would result in alot of wasteful queries.
+
+This code dumps out the contents of a populated local Nominatim postgres instance into a text file.
+This text file is then imported into Elastic Search and exposed as a JSON web service.
+This service is able to quickly respond to key stokes as Nominatim has already done 
+the hard work of traversing the OSM data and assembling the human readable place names for each node.
+
+The Nominatim place name and OSM id is made available in the JSON returned to clients.
+The calling application can now persist the OSM id of the selected result for future reference.
+
+Implementation:
+Written in Java running in a local Tomcat instance via a Maven build.
+Postgres dump script written in Perl.
+
+An example install containing NZ and UK data is available at http://nominatim-ac.eelpieconsulting.co.uk
