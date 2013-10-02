@@ -1,8 +1,8 @@
 package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +24,8 @@ public class ImportController {
 	}
 	
 	@RequestMapping("/import")
-	public ModelAndView inputIndex() throws SolrServerException, IOException {
-		indexUpdater.buildIndex("uk.txt");
+	public ModelAndView inputIndex() throws FileNotFoundException, IOException {
+		indexUpdater.buildIndex("nominatim-ac-data.txt");
 		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		mv.addObject("data", "ok");

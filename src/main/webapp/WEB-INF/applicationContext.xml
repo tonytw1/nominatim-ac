@@ -14,9 +14,5 @@
 
 	<context:annotation-config />
 	<util:properties id="autoComplete" location="classpath:autocomplete.properties" />
-
-	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-		<constructor-arg value="#{autoComplete['solr.url']}" />
-	</bean>
 	
 </beans>

@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.commons.lang.NotImplementedException;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
@@ -16,7 +15,7 @@ public class PlacesDumpParser implements Iterator<Place> {
 
 	private PlacesDumpLineParser placesDumpLineParser;
 
-	final private LineIterator lines;
+	private final LineIterator lines;
 	
 	public PlacesDumpParser(File file) throws FileNotFoundException, IOException {
 		placesDumpLineParser = new PlacesDumpLineParser();
@@ -35,7 +34,7 @@ public class PlacesDumpParser implements Iterator<Place> {
 
 	@Override
 	public void remove() {
-		throw new NotImplementedException();		
+		throw new UnsupportedOperationException();	
 	}
 
 }

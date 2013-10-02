@@ -32,6 +32,9 @@ public class ElasticSearchIndexer implements LineIndexer {
 	@Override
 	public void indexLines(PlacesDumpParser parser) {
 		final Client client = elasticSearchClientFactory.getClient();
+		
+		// TODO delete all existing
+		
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		
 		int count = 0;

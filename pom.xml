@@ -4,9 +4,9 @@
 	<groupId>uk.co.eelpieconsulting.osm</groupId>
 	<artifactId>nominatim-ac</artifactId>
 	<packaging>war</packaging>
-	<name>Nominatum auto-complete</name>
+	<name>Nominatim auto complete</name>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>Auto complete endpoint for Open Steet Map, Nominatum data</description>
+	<description>Auto complete endpoint for Open Steet Map Nominatum data</description>
 
 	<properties>
 		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
@@ -75,13 +75,7 @@
 			<artifactId>elasticsearch</artifactId>
 			<version>0.90.2</version>
 		</dependency>
-                
-			<dependency>
-				<groupId>org.apache.solr</groupId>
-				<artifactId>solr-core</artifactId>
-				<version>3.6.0</version>
-			</dependency>
-			
+					
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -109,7 +103,7 @@
 		<dependency>
 			<groupId>uk.co.eelpieconsulting.common</groupId>
 			<artifactId>common-views</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.8</version>
 		</dependency>
 				
 		<dependency>
@@ -131,7 +125,20 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 			<type>jar</type>
-		</dependency>	
+		</dependency>
+	
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
 	</dependencies>
 
 </project>

@@ -1,8 +1,5 @@
 package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
-import java.net.MalformedURLException;
-
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +24,7 @@ public class AutoCompleteController {
 	
 	@RequestMapping("/suggest")
 	public ModelAndView suggestions(@RequestParam(value="term",required=true) String term,
-			@RequestParam(value="callback", required=false) String callback) throws MalformedURLException, SolrServerException {
+			@RequestParam(value="callback", required=false) String callback) {
 
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		mv.addObject("data", autoCompleteService.getSuggestionsFor(term));

@@ -1,10 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +21,9 @@ public class IndexUpdater {
 		this.indexer = indexer;
 	}
 		
-	public void buildIndex(String dumpFileName) throws SolrServerException, IOException {		
+	public void buildIndex(String dumpFileName) throws FileNotFoundException, IOException {		
 		final URL resource = this.getClass().getClassLoader().getResource(dumpFileName);
-		final PlacesDumpParser parser = new PlacesDumpParser(FileUtils.toFile(resource));
-		
+		final PlacesDumpParser parser = new PlacesDumpParser(FileUtils.toFile(resource));		
 		indexer.indexLines(parser);
 	}
 	
