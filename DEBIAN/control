@@ -1,0 +1,11 @@
+Package: nominatimac
+Version: %VERSION%
+Depends: tomcat7, apache2
+Section: nominatimac
+Priority: optional
+Architecture: all
+Essential: no
+Installed-Size: 1024
+Maintainer: Tony McCrae [tony@eelpieconsulting.co.uk]
+Provides: nominatimac
+Description: nominatimac
