@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>0.90.2</version>
+			<version>0.90.7</version>
 		</dependency>
 					
 		<dependency>
