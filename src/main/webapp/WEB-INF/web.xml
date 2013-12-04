@@ -1,5 +1,5 @@
 <web-app>
-  <display-name>nominatim-autocomplete</display-name>  
+  <display-name>nominatim-ac</display-name>  
 	<filter>
 		<filter-name>charsetFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter

@@ -13,6 +13,6 @@
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<context:annotation-config />
-	<util:properties id="autoComplete" location="classpath:autocomplete.properties" />
+	<util:properties id="config" location="classpath:nominatim-ac.properties" />
 	
 </beans>
