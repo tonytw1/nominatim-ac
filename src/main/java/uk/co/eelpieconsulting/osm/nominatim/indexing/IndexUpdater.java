@@ -14,7 +14,7 @@ import uk.co.eelpieconsulting.osm.nominatim.parsing.PlacesDumpParser;
 @Component
 public class IndexUpdater {
 	
-	private final LineIndexer indexer;
+	private final ElasticSearchIndexer indexer;
 	
 	@Autowired
 	public IndexUpdater(ElasticSearchIndexer indexer) {

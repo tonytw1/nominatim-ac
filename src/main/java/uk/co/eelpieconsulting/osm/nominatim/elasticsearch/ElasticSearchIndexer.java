@@ -4,22 +4,24 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.joda.time.DateTime;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
-import uk.co.eelpieconsulting.osm.nominatim.indexing.LineIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.parsing.PlacesDumpParser;
 
 @Component
-public class ElasticSearchIndexer implements LineIndexer {
+public class ElasticSearchIndexer {
+	
+	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 	
 	private static final int COMMIT_SIZE = 10000;
-
-	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
-
+	private static final String INDEX = "osm";
+	private static final String TYPE = "places";
+	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final JsonSerializer jsonSerializer;
 	
@@ -29,14 +31,20 @@ public class ElasticSearchIndexer implements LineIndexer {
 		this.jsonSerializer = new JsonSerializer();
 	}
 	
-	@Override
 	public void indexLines(PlacesDumpParser parser) {
 		final Client client = elasticSearchClientFactory.getClient();
 		
-		// TODO delete all existing
+		log.info("Deleting existing records");
+		client.prepareDeleteByQuery(INDEX).
+			setQuery(QueryBuilders.matchAllQuery()).
+			setTypes(TYPE).
+			execute().
+			actionGet();
 		
-		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		
+		log.info("Importing records");
+		BulkRequestBuilder bulkRequest = client.prepareBulk();		
+
 		int count = 0;
 		DateTime countStart = DateTime.now();
 		while (parser.hasNext()) {
@@ -44,7 +52,7 @@ public class ElasticSearchIndexer implements LineIndexer {
 			count++;
 			
 			final String placeJson = jsonSerializer.serialize(place);
-			bulkRequest.add(client.prepareIndex("osm", "places", place.getOsmId() + place.getType()).setSource(placeJson));
+			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getType()).setSource(placeJson));
 			
 			if (count == COMMIT_SIZE) {
 				bulkRequest.execute().actionGet();
@@ -60,6 +68,8 @@ public class ElasticSearchIndexer implements LineIndexer {
 		if (count > 0) {
 			bulkRequest.execute().actionGet();
 		}
+		
+		log.info("Import completed");
 	}
 
 }

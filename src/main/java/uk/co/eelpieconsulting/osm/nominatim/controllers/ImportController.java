@@ -19,7 +19,7 @@ public class ImportController {
 	
 	@Autowired
 	public ImportController(IndexUpdater indexUpdater, ViewFactory viewFactory) {
-		this.indexUpdater = indexUpdater;
+		this.indexUpdater = indexUpdater;	
 		this.viewFactory = viewFactory;
 	}
 	
