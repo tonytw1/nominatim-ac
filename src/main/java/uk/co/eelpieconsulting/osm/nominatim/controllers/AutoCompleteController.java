@@ -23,11 +23,11 @@ public class AutoCompleteController {
 	}
 	
 	@RequestMapping("/suggest")
-	public ModelAndView suggestions(@RequestParam(value="term",required=true) String term,
+	public ModelAndView suggestions(@RequestParam(value="q",required=true) String q,
 			@RequestParam(value="callback", required=false) String callback) {
 
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", autoCompleteService.getSuggestionsFor(term));
+		mv.addObject("data", autoCompleteService.getSuggestionsFor(q));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}
