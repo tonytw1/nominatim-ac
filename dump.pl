@@ -18,7 +18,9 @@ my $sth = $dbh->prepare("select osm_id, osm_type, class, type, housenumber,
 	case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,
         case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude
 	FROM placex
-	WHERE place_id >= ? AND place_id < ?");
+	WHERE place_id >= ? AND place_id < ?
+	ORDER by place_id
+	");
 
 for ($i = $start; $i < $end; $i = $i + 1000) {
 	warn "$i/$end\n";
