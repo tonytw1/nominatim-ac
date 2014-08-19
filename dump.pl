@@ -15,10 +15,11 @@ $limits_sth->finish();
 my $sth = $dbh->prepare("select osm_id, osm_type, class, type, housenumber, 
 	get_address_by_language(place_id,  ARRAY['name']) AS label, 
 	calculated_country_code AS country,
-	ST_Y(geometry) as latitude, 
-	ST_X(geometry) as longitude 
-	FROM placex 
+	case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,
+        case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude
+	FROM placex
 	WHERE place_id >= ? AND place_id < ?");
+
 for ($i = $start; $i < $end; $i = $i + 1000) {
 	warn "$i/$end\n";
 	$sth->execute($i, $i + 1000);      
