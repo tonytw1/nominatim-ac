@@ -13,7 +13,12 @@ my $end = $limits_ref->{'end'};
 $limits_sth->finish();
 
 my $sth = $dbh->prepare("select osm_id, osm_type, class, type, housenumber, 
-	get_address_by_language(place_id,  ARRAY['name']) AS label, calculated_country_code AS country, ST_Y(geometry) as latitude, ST_X(geometry) as longitude from placex WHERE place_id >= ? AND place_id < ?");
+	get_address_by_language(place_id,  ARRAY['name']) AS label, 
+	calculated_country_code AS country,
+	ST_Y(geometry) as latitude, 
+	ST_X(geometry) as longitude 
+	FROM placex 
+	WHERE place_id >= ? AND place_id < ?");
 for ($i = $start; $i < $end; $i = $i + 1000) {
 	warn "$i/$end\n";
 	$sth->execute($i, $i + 1000);      
