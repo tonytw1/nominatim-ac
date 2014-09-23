@@ -52,7 +52,7 @@ public class ElasticSearchIndexer {
 			count++;
 			
 			final String placeJson = jsonSerializer.serialize(place);
-			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getType()).setSource(placeJson));
+			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
 			
 			if (count == COMMIT_SIZE) {
 				bulkRequest.execute().actionGet();
