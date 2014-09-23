@@ -46,8 +46,13 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	public List<Place> getSuggestionsFor(String q) {
 		Client client = elasticSearchClientFactory.getClient();
 		
-		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);		
-		BoolQueryBuilder query = boolQuery().must(startsWith).mustNot(unwantedTypes());
+		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);
+		
+		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));
+		BoolQueryBuilder query = boolQuery().
+				must(startsWith).
+				mustNot(unwantedTypes()).
+				should(isCity).boost(10);
 		
 		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
 		List<Place> places = Lists.newArrayList();
