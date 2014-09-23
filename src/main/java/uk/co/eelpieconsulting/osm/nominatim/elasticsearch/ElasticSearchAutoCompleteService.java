@@ -48,11 +48,16 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		
 		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);
 		
-		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));
+		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
+		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
+		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));
+		
 		BoolQueryBuilder query = boolQuery().
 				must(startsWith).
 				mustNot(unwantedTypes()).
-				should(isCity).boost(10);
+				should(isCountry).boost(10).
+				should(isCity).boost(5).
+				should(isTown).boost(3);
 		
 		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
 		List<Place> places = Lists.newArrayList();
@@ -77,15 +82,18 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	private BoolQueryBuilder unwantedTypes() {		
 		BoolQueryBuilder isUnwantedType = boolQuery().minimumNumberShouldMatch(1).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "motorway_junction"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "speed_camera"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "post_box"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bench"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "recycling"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bicycle_parking"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bicycle_rental"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "parking"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "leisure")).must(termQuery(TYPE, "picnic_table"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "waste_basket"))).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "railway")).must(termQuery(TYPE, "crossing"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "bus_stop")));
+				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "bus_stop"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "house")));
 		return isUnwantedType;
 	}
 	
