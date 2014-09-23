@@ -1,6 +1,8 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,10 @@ import com.google.common.collect.Lists;
 @Component
 public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 
+	private static final String ADDRESS = "address";
+	private static final String TYPE = "type";
+	private static final String CLASSIFICATION = "classification";
+	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper mapper;
 	
@@ -38,8 +45,14 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	public List<Place> getSuggestionsFor(String q) {
 		Client client = elasticSearchClientFactory.getClient();
 		
-		PrefixQueryBuilder query = prefixQuery("address", q);
-
+		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);		
+		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
+		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
+		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));		
+		BoolQueryBuilder isSuburb = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "suburb"));		
+		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry).should(isCity).should(isTown).should(isSuburb);		
+		BoolQueryBuilder query = boolQuery().must(startsWith).must(isRequiredType);
+		
 		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
 		List<Place> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
