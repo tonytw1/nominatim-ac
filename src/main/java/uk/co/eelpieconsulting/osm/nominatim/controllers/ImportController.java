@@ -20,7 +20,7 @@ public class ImportController {
 	private String importFile;
 	
 	@Autowired
-	public ImportController(IndexUpdater indexUpdater, ViewFactory viewFactory, @Value("#{config['import.file']}") String importFile) {
+	public ImportController(IndexUpdater indexUpdater, ViewFactory viewFactory, @Value("${import.file}") String importFile) {
 		this.indexUpdater = indexUpdater;
 		this.viewFactory = viewFactory;
 		this.importFile = importFile;

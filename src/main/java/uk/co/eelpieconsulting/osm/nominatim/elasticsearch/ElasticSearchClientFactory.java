@@ -22,8 +22,8 @@ public class ElasticSearchClientFactory {
 	private Client client;
 	
 	@Autowired
-	public ElasticSearchClientFactory(@Value("#{config['elasticsearch.cluster']}") String clusterName,
-			@Value("#{config['elasticsearch.unicasthosts']}") String unicastHosts) {		
+	public ElasticSearchClientFactory(@Value("${elasticsearch.cluster}") String clusterName,
+			@Value("${elasticsearch.unicasthosts}") String unicastHosts) {		
 		this.clusterName = clusterName;
 		this.unicastHosts = unicastHosts;
 	}
