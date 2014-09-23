@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import static org.elasticsearch.index.query.QueryBuilders.boostingQuery;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -46,12 +47,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		Client client = elasticSearchClientFactory.getClient();
 		
 		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);		
-		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
-		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
-		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));		
-		BoolQueryBuilder isSuburb = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "suburb"));		
-		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry).should(isCity).should(isTown).should(isSuburb);		
-		BoolQueryBuilder query = boolQuery().must(startsWith).must(isRequiredType);
+		BoolQueryBuilder query = boolQuery().must(startsWith).mustNot(unwantedTypes());
 		
 		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
 		List<Place> places = Lists.newArrayList();
@@ -71,6 +67,30 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 			}	                
 		}
 		return places;
+	}
+
+	private BoolQueryBuilder unwantedTypes() {		
+		BoolQueryBuilder isUnwantedType = boolQuery().minimumNumberShouldMatch(1).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "motorway_junction"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "post_box"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bench"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "recycling"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bicycle_parking"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "parking"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "leisure")).must(termQuery(TYPE, "picnic_table"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "waste_basket"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "railway")).must(termQuery(TYPE, "crossing"))).
+				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "bus_stop")));
+		return isUnwantedType;
+	}
+	
+	private BoolQueryBuilder requiredTypes() {
+		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
+		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
+		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));		
+		BoolQueryBuilder isSuburb = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "suburb"));		
+		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry).should(isCity).should(isTown).should(isSuburb);
+		return isRequiredType;
 	}
 
 }
