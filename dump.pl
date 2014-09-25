@@ -13,7 +13,7 @@ my $end = $limits_ref->{'end'};
 $limits_sth->finish();
 
 my $sth = $dbh->prepare("select osm_id, osm_type, class, type, housenumber, 
-	get_address_by_language(place_id,  ARRAY['name']) AS label, 
+	get_address_by_language(place_id,  ARRAY['name:en']) AS label, 
 	calculated_country_code AS country,
 	case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,
         case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude
@@ -23,7 +23,7 @@ my $sth = $dbh->prepare("select osm_id, osm_type, class, type, housenumber,
 	");
 
 for ($i = $start; $i < $end; $i = $i + 1000) {
-	warn "$i/$end\n";
+	#warn "$i/$end\n";
 	$sth->execute($i, $i + 1000);      
 	while(my $ref = $sth->fetchrow_hashref()) {
 	    my $line = "$ref->{'osm_id'}|$ref->{'osm_type'}|$ref->{'housenumber'}|$ref->{'label'}|$ref->{'class'}|$ref->{'type'}|$ref->{'country'}|$ref->{'latitude'}|$ref->{'longitude'}";
