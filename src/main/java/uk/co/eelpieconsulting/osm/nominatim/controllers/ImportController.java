@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class ImportController {
 	}
 	
 	@RequestMapping("/import")
-	public ModelAndView inputIndex() throws FileNotFoundException, IOException {
+	public ModelAndView inputIndex() throws FileNotFoundException, IOException, SQLException {
 		indexUpdater.buildIndex(importFile);
 		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());

@@ -26,7 +26,7 @@ public class PlacesDumpLineParser {
 	public Place parse(String line) {
 		Iterable<String> split = onColumnSeperator.split(line);
 		Iterator<String> fields = split.iterator();
-		return new Place(Long.parseLong(fields.next()), osmTypeLabels.get(fields.next()), fields.next(), fields.next(), fields.next(), fields.next());
+		return new Place(Long.parseLong(fields.next()), osmTypeLabels.get(fields.next()), fields.next(), fields.next(), fields.next(), fields.next(), Integer.parseInt(fields.next()), null);
 	}
 	
 }

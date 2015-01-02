@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-import uk.co.eelpieconsulting.osm.nominatim.parsing.PlacesDumpParser;
+import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 
 @Component
 public class ElasticSearchIndexer {
 	
 	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 	
-	private static final int COMMIT_SIZE = 10000;
+	private static final int COMMIT_SIZE = 1000;
 	private static final String INDEX = "osm";
 	private static final String TYPE = "places";
 	
@@ -31,17 +31,9 @@ public class ElasticSearchIndexer {
 		this.jsonSerializer = new JsonSerializer();
 	}
 	
-	public void indexLines(PlacesDumpParser parser) {
+	public void indexLines(OsmPlacesSource parser) {
 		final Client client = elasticSearchClientFactory.getClient();
-		
-		log.info("Deleting existing records");
-		client.prepareDeleteByQuery(INDEX).
-			setQuery(QueryBuilders.matchAllQuery()).
-			setTypes(TYPE).
-			execute().
-			actionGet();
-		
-		
+				
 		log.info("Importing records");
 		BulkRequestBuilder bulkRequest = client.prepareBulk();		
 
@@ -70,6 +62,16 @@ public class ElasticSearchIndexer {
 		}
 		
 		log.info("Import completed");
+	}
+
+	public void deleteAll() {
+		final Client client = elasticSearchClientFactory.getClient();
+		log.info("Deleting existing records");
+		client.prepareDeleteByQuery(INDEX).
+			setQuery(QueryBuilders.matchAllQuery()).
+			setTypes(TYPE).
+			execute().
+			actionGet();
 	}
 
 }
