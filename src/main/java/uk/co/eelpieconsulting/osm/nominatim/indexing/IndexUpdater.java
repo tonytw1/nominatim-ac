@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
@@ -18,10 +19,16 @@ public class IndexUpdater {
 	private static Logger log = Logger.getLogger(IndexUpdater.class);
 	
 	private final ElasticSearchIndexer indexer;
+	private final String username;
+	private final String password;
 	
 	@Autowired
-	public IndexUpdater(ElasticSearchIndexer indexer) {
+	public IndexUpdater(ElasticSearchIndexer indexer, 
+			@Value("${database.username}") String username,
+			@Value("${database.password}") String password) {
 		this.indexer = indexer;
+		this.username = username;
+		this.password = password;
 	}
 		
 	public void buildIndex(String filePath) throws FileNotFoundException, IOException, SQLException {
@@ -30,9 +37,9 @@ public class IndexUpdater {
 		
 		for (int i = 0; i <=30; i++) {
 			log.info("Starting rank: " + i);
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(), "N", i));
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(), "W", i));
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(), "R", i));			
+			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "N", i));
+			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W", i));
+			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "R", i));			
 		}
 		
 	}

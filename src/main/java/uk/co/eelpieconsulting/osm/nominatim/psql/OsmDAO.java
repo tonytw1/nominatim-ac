@@ -12,8 +12,14 @@ public class OsmDAO {
 
 	private final Connection conn;
 	private final PreparedStatement places;
+
+	private final String username;
+	private final String password;
 	
-	public OsmDAO() throws SQLException {
+	public OsmDAO(String username, String password) throws SQLException {
+		this.username = username;
+		this.password = password;
+		
 		conn = getConnection();
 		places = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
 						+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
@@ -69,8 +75,8 @@ public class OsmDAO {
 	private Connection getConnection() throws SQLException {
 		String url = "jdbc:postgresql://localhost/nominatim";
 		Properties props = new Properties();
-		props.setProperty("user", "");
-		props.setProperty("password", "");
+		props.setProperty("user", username);
+		props.setProperty("password", password);
 
 		Connection conn = DriverManager.getConnection(url, props);
 		return conn;

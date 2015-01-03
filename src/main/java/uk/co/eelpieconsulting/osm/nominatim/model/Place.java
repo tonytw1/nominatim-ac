@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.model;
 
+import java.util.Map;
+
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 
 public class Place {
@@ -11,12 +13,12 @@ public class Place {
 	private String classification;
 	private String type;
 	private int rank;
-	private LatLong latlong;
+	private Map<String, Double> latlong;
 	
 	public Place() {
 	}
 	
-	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, LatLong latlong) {
+	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong) {
 		this.osmId = osmId;
 		this.osmType = osmType;
 		this.housenumber = houseNumber;
@@ -55,7 +57,7 @@ public class Place {
 		return rank;
 	}
 	
-	public LatLong getLatlong() {
+	public Map<String, Double> getLatlong() {
 		return latlong;
 	}
 

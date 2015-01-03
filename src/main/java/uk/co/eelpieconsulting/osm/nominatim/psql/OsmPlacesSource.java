@@ -3,9 +3,11 @@ package uk.co.eelpieconsulting.osm.nominatim.psql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Map;
 
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
+
+import com.google.common.collect.Maps;
 
 public class OsmPlacesSource implements Iterator<Place> {
 
@@ -70,8 +72,11 @@ public class OsmPlacesSource implements Iterator<Place> {
 			double longitude = places.getDouble("longitude");
 
 			next = places.next();
-			
-			return new Place(osmId, osmType, null, name, classification, type, rank, new LatLong(latitude, longitude));
+						
+			Map<String, Double> latlong = Maps.newHashMap();
+			latlong.put("lat", latitude);
+			latlong.put("lon", longitude);
+			return new Place(osmId, osmType, null, name, classification, type, rank, latlong);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
