@@ -30,10 +30,7 @@ public class ImportController {
 	@RequestMapping("/import")
 	public ModelAndView inputIndex() throws FileNotFoundException, IOException, SQLException {
 		indexUpdater.buildIndex(importFile);
-		
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", "ok");
-		return mv;
+		return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
 	}
 	
 }
