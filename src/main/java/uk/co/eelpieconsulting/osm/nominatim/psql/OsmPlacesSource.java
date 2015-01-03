@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.osm.nominatim.psql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
@@ -70,13 +71,14 @@ public class OsmPlacesSource implements Iterator<Place> {
 			int rank = places.getInt("rank");
 			double latitude = places.getDouble("latitude");
 			double longitude = places.getDouble("longitude");
+			List<String> tags = osmDAO.getTags(osmId, osmType);
 
 			next = places.next();
 						
 			Map<String, Double> latlong = Maps.newHashMap();
 			latlong.put("lat", latitude);
 			latlong.put("lon", longitude);
-			return new Place(osmId, osmType, null, name, classification, type, rank, latlong);
+			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

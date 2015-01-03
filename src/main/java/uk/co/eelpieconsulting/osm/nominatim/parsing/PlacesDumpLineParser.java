@@ -1,7 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.parsing;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import org.elasticsearch.common.collect.Lists;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
@@ -26,7 +29,11 @@ public class PlacesDumpLineParser {
 	public Place parse(String line) {
 		Iterable<String> split = onColumnSeperator.split(line);
 		Iterator<String> fields = split.iterator();
-		return new Place(Long.parseLong(fields.next()), osmTypeLabels.get(fields.next()), fields.next(), fields.next(), fields.next(), fields.next(), Integer.parseInt(fields.next()), null);
+		List<String> tags = Lists.newArrayList();
+		return new Place(Long.parseLong(fields.next()), osmTypeLabels
+				.get(fields.next()), fields.next(), fields.next(), fields
+				.next(), fields.next(), Integer.parseInt(fields.next()), null,
+				tags);
 	}
 	
 }

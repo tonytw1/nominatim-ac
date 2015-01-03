@@ -1,8 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.model;
 
+import java.util.List;
 import java.util.Map;
-
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
 
 public class Place {
 
@@ -14,11 +13,12 @@ public class Place {
 	private String type;
 	private int rank;
 	private Map<String, Double> latlong;
+	private List<String> tags;
 	
 	public Place() {
 	}
 	
-	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong) {
+	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags) {
 		this.osmId = osmId;
 		this.osmType = osmType;
 		this.housenumber = houseNumber;
@@ -27,6 +27,7 @@ public class Place {
 		this.type = type;
 		this.rank = rank;
 		this.latlong = latlong;
+		this.tags = tags;
 	}
 
 	public long getOsmId() {
@@ -61,12 +62,17 @@ public class Place {
 		return latlong;
 	}
 
+	public List<String> getTags() {
+		return tags;
+	}
+
 	@Override
 	public String toString() {
 		return "Place [address=" + address + ", classification="
 				+ classification + ", housenumber=" + housenumber
 				+ ", latlong=" + latlong + ", osmId=" + osmId + ", osmType="
-				+ osmType + ", rank=" + rank + ", type=" + type + "]";
+				+ osmType + ", rank=" + rank + ", tags=" + tags + ", type="
+				+ type + "]";
 	}
 	
 }
