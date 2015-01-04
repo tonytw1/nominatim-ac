@@ -1,15 +1,18 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.base.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,9 +45,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	
 	@Override
 	public List<Place> getSuggestionsFor(String q) {
-		Client client = elasticSearchClientFactory.getClient();
-		
-		PrefixQueryBuilder startsWith = prefixQuery(ADDRESS, q);
+		PrefixQueryBuilder startsWith = startsWith(q);
 		
 		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
 		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
@@ -57,6 +58,24 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 				should(isCity).boost(5).
 				should(isTown).boost(3);
 		
+		return executeAndParse(query);
+	}
+	
+	@Override
+	public List<Place> search(String q, String tag) {
+		BoolQueryBuilder query = boolQuery();
+		if (!Strings.isNullOrEmpty(q)) {
+			query = query.must(startsWith(q));
+		}
+		if (!Strings.isNullOrEmpty(tag)) {
+			query = query.must(boolQuery().must(termQuery("tags", tag)));
+		}
+		return executeAndParse(query);
+	}
+	
+	private List<Place> executeAndParse(QueryBuilder query) {
+		Client client = elasticSearchClientFactory.getClient();
+
 		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
 		List<Place> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
@@ -76,7 +95,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		}
 		return places;
 	}
-
+	
 	private BoolQueryBuilder unwantedTypes() {		
 		BoolQueryBuilder isUnwantedType = boolQuery().minimumNumberShouldMatch(1).
 				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "motorway_junction"))).
@@ -102,6 +121,10 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		BoolQueryBuilder isSuburb = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "suburb"));		
 		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry).should(isCity).should(isTown).should(isSuburb);
 		return isRequiredType;
+	}
+
+	private PrefixQueryBuilder startsWith(String q) {
+		return prefixQuery(ADDRESS, q);
 	}
 
 }
