@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.elasticsearch.common.collect.Lists;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
@@ -29,7 +32,6 @@ public class OsmPlacesSource implements Iterator<Place> {
 		this.rank = rank;
 		start = 0;
 		this.max = osmDAO.getMax(type, rank);
-		System.out.println("Max: " + max);
 		prepare(osmDAO);
 	}
 
@@ -62,7 +64,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 
 	@Override
 	public Place next() {
-		try {		
+		try {
 			long osmId = places.getLong("osm_id");
 			String osmType = places.getString("osm_type");
 			String name = places.getString("en_label");
@@ -71,13 +73,23 @@ public class OsmPlacesSource implements Iterator<Place> {
 			int rank = places.getInt("rank");
 			double latitude = places.getDouble("latitude");
 			double longitude = places.getDouble("longitude");
-			List<String> tags = osmDAO.getTags(osmId, osmType);
-
+			Map<String, String> extratags = (Map<String, String>) places.getObject("extratags");
+						
 			next = places.next();
 						
 			Map<String, Double> latlong = Maps.newHashMap();
 			latlong.put("lat", latitude);
 			latlong.put("lon", longitude);
+			
+			List<String> tags = Lists.newArrayList();
+			tags.add(classification + "|" + type);
+			if (extratags != null) {
+				for (String key : extratags.keySet()) {
+					tags.add(key + "|" + extratags.get(key));					
+				}
+				System.err.println(tags);
+			}
+						
 			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags);
 			
 		} catch (SQLException e) {

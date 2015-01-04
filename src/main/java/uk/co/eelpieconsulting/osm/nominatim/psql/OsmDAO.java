@@ -5,18 +5,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Properties;
-
-import org.elasticsearch.common.collect.Lists;
 
 public class OsmDAO {
 
 	private final Connection conn;
 	private final PreparedStatement places;
-	private final PreparedStatement nodeTags;
-	private final PreparedStatement relationTags;
-	private final PreparedStatement wayTags;
 	
 	private final String username;
 	private final String password;
@@ -32,13 +26,10 @@ public class OsmDAO {
 						+ "calculated_country_code AS country,"
 						+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
 						+ "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
-						+ "rank_address AS rank " 
+						+ "rank_address AS rank, " 
+						+ "extratags "
 						+ "FROM placex "
 						+ "WHERE osm_id >= ? AND osm_id < ? AND osm_type=? AND rank_address = ?");
-		
-		nodeTags = conn.prepareStatement("select tags from planet_osm_nodes where id = ?");
-		relationTags = conn.prepareStatement("select tags from planet_osm_rels where id = ?");
-		wayTags = conn.prepareStatement("select tags from planet_osm_ways where id = ?");
 	}
 	
 	public long getMax(String type, int rank) throws SQLException {
@@ -60,38 +51,6 @@ public class OsmDAO {
 		places.setString(3, type);
 		places.setInt(4, rank);
 		return places.executeQuery();
-	}
-	
-	public List<String> getTags(long osmId, String osmType) throws SQLException {
-		List<String> tags = Lists.newArrayList();
-		if (osmType.equals("N")) {			
-			nodeTags.setLong(1, osmId);
-			ResultSet rs = nodeTags.executeQuery();
-			readTags(tags, rs);
-			return tags;		
-		}
-		if (osmType.equals("R")) {			
-			relationTags.setLong(1, osmId);
-			ResultSet rs = relationTags.executeQuery();
-			readTags(tags, rs);
-			return tags;		
-		}
-		if (osmType.equals("W")) {			
-			wayTags.setLong(1, osmId);
-			ResultSet rs = wayTags.executeQuery();
-			readTags(tags, rs);
-			return tags;		
-		}
-		return Lists.newArrayList();		
-	}
-
-	private void readTags(List<String> tags, ResultSet rs) throws SQLException {
-		while (rs.next()) {
-			String[] tagsField = (String[]) rs.getArray("tags").getArray();			
-			for (int i = 0; i < tagsField.length; i = i + 2) {
-				tags.add(tagsField[i] + "|" + tagsField[i + 1]);	
-			}
-		}
 	}
 	
 	private Connection getConnection() throws SQLException {

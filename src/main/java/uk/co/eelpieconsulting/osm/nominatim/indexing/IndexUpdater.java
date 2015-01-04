@@ -31,11 +31,10 @@ public class IndexUpdater {
 		this.password = password;
 	}
 		
-	public void buildIndex(String filePath) throws FileNotFoundException, IOException, SQLException {
-		
+	public void buildIndex(String filePath) throws FileNotFoundException, IOException, SQLException {	
 		indexer.deleteAll();
 		
-		for (int i = 0; i <=30; i++) {
+		for (int i = 30; i >= 0; i--) {
 			log.info("Starting rank: " + i);
 			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "N", i));
 			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W", i));
