@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.elasticsearch.common.collect.Lists;
 
@@ -87,9 +86,8 @@ public class OsmPlacesSource implements Iterator<Place> {
 				for (String key : extratags.keySet()) {
 					tags.add(key + "|" + extratags.get(key));					
 				}
-				System.err.println(tags);
 			}
-						
+			
 			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags);
 			
 		} catch (SQLException e) {
