@@ -44,7 +44,7 @@ public class AutoCompleteController {
 			@RequestParam(value="callback", required=false) String callback) {
 
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", autoCompleteService.search(q, tag));
+		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}

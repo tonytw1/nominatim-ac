@@ -11,6 +11,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.base.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -30,8 +32,11 @@ import com.google.common.collect.Lists;
 public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 
 	private static final String ADDRESS = "address";
-	private static final String TYPE = "type";
 	private static final String CLASSIFICATION = "classification";
+	private static final String DEFAULT_RADIUS = "100km";
+	private static final String LATLONG = "latlong";
+	private static final String TAGS = "tags";
+	private static final String TYPE = "type";
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper mapper;
@@ -58,25 +63,38 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 				should(isCity).boost(5).
 				should(isTown).boost(3);
 		
-		return executeAndParse(query);
+		return executeAndParse(query, null);
 	}
 	
 	@Override
-	public List<Place> search(String q, String tag) {
+	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius) {
 		BoolQueryBuilder query = boolQuery();
 		if (!Strings.isNullOrEmpty(q)) {
 			query = query.must(startsWith(q));
 		}
 		if (!Strings.isNullOrEmpty(tag)) {
-			query = query.must(boolQuery().must(termQuery("tags", tag)));
+			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
 		}
-		return executeAndParse(query);
+		
+		FilterBuilder filter = null;
+		if (lat != null && lon != null) {
+			String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
+			filter = FilterBuilders.geoDistanceFilter(LATLONG).
+				lat(lat).lon(lon).
+				distance(distance);
+		}
+		
+		return executeAndParse(query, filter);
 	}
 	
-	private List<Place> executeAndParse(QueryBuilder query) {
+	private List<Place> executeAndParse(QueryBuilder query, FilterBuilder filter) {
 		Client client = elasticSearchClientFactory.getClient();
 
-		SearchResponse response = client.prepareSearch().setQuery(query).execute().actionGet();
+		SearchResponse response = client.prepareSearch().
+			setQuery(query).
+			setPostFilter(filter).		
+			execute().actionGet();
+		
 		List<Place> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
 			SearchHit searchHit = response.getHits().getHits()[i];
