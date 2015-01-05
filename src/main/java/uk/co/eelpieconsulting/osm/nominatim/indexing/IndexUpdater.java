@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
@@ -31,7 +29,7 @@ public class IndexUpdater {
 		this.password = password;
 	}
 		
-	public void buildIndex(String filePath) throws FileNotFoundException, IOException, SQLException {	
+	public void buildIndex() throws SQLException {	
 		indexer.deleteAll();
 		
 		for (int i = 30; i >= 0; i--) {

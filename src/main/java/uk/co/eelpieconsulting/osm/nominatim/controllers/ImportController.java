@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,18 +17,16 @@ public class ImportController {
 	
 	private final IndexUpdater indexUpdater;
 	private final ViewFactory viewFactory;
-	private String importFile;
 	
 	@Autowired
-	public ImportController(IndexUpdater indexUpdater, ViewFactory viewFactory, @Value("${import.file}") String importFile) {
+	public ImportController(IndexUpdater indexUpdater, ViewFactory viewFactory) {
 		this.indexUpdater = indexUpdater;
 		this.viewFactory = viewFactory;
-		this.importFile = importFile;
 	}
 	
 	@RequestMapping("/import")
 	public ModelAndView inputIndex() throws FileNotFoundException, IOException, SQLException {
-		indexUpdater.buildIndex(importFile);
+		indexUpdater.buildIndex();
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
 	}
 	
