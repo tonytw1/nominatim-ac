@@ -50,7 +50,7 @@ public class ElasticSearchIndexer {
 				bulkRequest.execute().actionGet();
 				
 				Duration duration = new Duration(countStart.getMillis(), DateTime.now().getMillis());
-				log.info("Imported " + COMMIT_SIZE + " in " + duration + " at a rate of " + COMMIT_SIZE / duration.getMillis() + " per milli second");
+				log.info("Imported " + COMMIT_SIZE + " in " + duration.getMillis());
 				count = 0;
 				countStart = DateTime.now();
 				bulkRequest = client.prepareBulk();
