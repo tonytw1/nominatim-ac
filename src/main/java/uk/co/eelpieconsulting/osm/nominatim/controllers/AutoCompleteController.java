@@ -41,10 +41,11 @@ public class AutoCompleteController {
 			@RequestParam(value = "lat", required = false) Double lat,
 			@RequestParam(value = "lon", required = false) Double lon,
 			@RequestParam(value = "radius", required = false) Double radius,
+			@RequestParam(value = "rank", required = false) Integer rank,
 			@RequestParam(value="callback", required=false) String callback) {
-
+		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius));
+		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}

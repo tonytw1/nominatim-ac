@@ -67,13 +67,16 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	}
 	
 	@Override
-	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius) {
+	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank) {
 		BoolQueryBuilder query = boolQuery();
 		if (!Strings.isNullOrEmpty(q)) {
 			query = query.must(startsWith(q));
 		}
 		if (!Strings.isNullOrEmpty(tag)) {
 			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
+		}
+		if (rank != null) {
+			query = query.must(boolQuery().must(termQuery("rank", rank)));
 		}
 		
 		FilterBuilder filter = null;
