@@ -2,7 +2,6 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,9 +12,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 
 @Component
 public class IndexUpdater {
-	
-	private static Logger log = Logger.getLogger(IndexUpdater.class);
-	
+		
 	private final ElasticSearchIndexer indexer;
 	private final String username;
 	private final String password;
@@ -30,15 +27,10 @@ public class IndexUpdater {
 	}
 		
 	public void buildIndex() throws SQLException {	
-		indexer.deleteAll();
-		
-		for (int i = 30; i >= 0; i--) {
-			log.info("Starting rank: " + i);
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "N", i));
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W", i));
-			indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "R", i));			
-		}
-		
+		indexer.deleteAll();		
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "R"));
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W"));			
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "N"));					
 	}
 	
 }

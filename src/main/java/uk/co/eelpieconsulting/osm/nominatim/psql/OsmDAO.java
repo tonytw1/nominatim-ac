@@ -29,27 +29,24 @@ public class OsmDAO {
 						+ "rank_address AS rank, " 
 						+ "extratags "
 						+ "FROM placex "
-						+ "WHERE osm_id >= ? AND osm_id < ? AND osm_type=? AND rank_address = ?");
+						+ "WHERE osm_id >= ? AND osm_id < ? AND osm_type=?");
 	}
 	
-	public long getMax(String type, int rank) throws SQLException {
-		PreparedStatement prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=? AND rank_address = ?");
+	public long getMax(String type) throws SQLException {
+		PreparedStatement prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=?");
 		prepareStatement.setString(1, type);
-		prepareStatement.setInt(2, rank);
 		ResultSet rs = prepareStatement.executeQuery();
 		rs.next();
 		long max = rs.getLong(1);
-
 		rs.close();
 		prepareStatement.close();
 		return max;
 	}
 	
-	public ResultSet getPlaces(long start, long stepSize, String type, int rank) throws SQLException {
+	public ResultSet getPlaces(long start, long stepSize, String type) throws SQLException {
 		places.setLong(1, start);
 		places.setLong(2, start + stepSize);
 		places.setString(3, type);
-		places.setInt(4, rank);
 		return places.executeQuery();
 	}
 	
