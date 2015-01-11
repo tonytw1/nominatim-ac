@@ -36,7 +36,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	}
 
 	private void prepare(OsmDAO osmDAO) {
-		log.info("Preparing type: " + type);
+		log.info("Preparing type: " + type + " " + start + "/" + max);
 		try {
 			places = osmDAO.getPlaces(start, STEP_SIZE, type);
 			next = places.isBeforeFirst();
@@ -74,6 +74,8 @@ public class OsmPlacesSource implements Iterator<Place> {
 			int rank = places.getInt("rank");
 			double latitude = places.getDouble("latitude");
 			double longitude = places.getDouble("longitude");
+			String country = places.getString("country");
+			
 			Map<String, String> extratags = (Map<String, String>) places.getObject("extratags");
 						
 			next = places.next();
@@ -90,9 +92,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 				}
 			}
 			
-			Place place = new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags);
-			log.info(place);
-			return place;
+			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags, country);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

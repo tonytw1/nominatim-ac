@@ -14,11 +14,12 @@ public class Place {
 	private int rank;
 	private Map<String, Double> latlong;
 	private List<String> tags;
+	private String country;
 	
 	public Place() {
 	}
 	
-	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags) {
+	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags, String country) {
 		this.osmId = osmId;
 		this.osmType = osmType;
 		this.housenumber = houseNumber;
@@ -28,6 +29,7 @@ public class Place {
 		this.rank = rank;
 		this.latlong = latlong;
 		this.tags = tags;
+		this.country = country;
 	}
 
 	public long getOsmId() {
@@ -65,14 +67,18 @@ public class Place {
 	public List<String> getTags() {
 		return tags;
 	}
+	
+	public String getCountry() {
+		return country;
+	}
 
 	@Override
 	public String toString() {
 		return "Place [address=" + address + ", classification="
-				+ classification + ", housenumber=" + housenumber
-				+ ", latlong=" + latlong + ", osmId=" + osmId + ", osmType="
-				+ osmType + ", rank=" + rank + ", tags=" + tags + ", type="
-				+ type + "]";
+				+ classification + ", country=" + country + ", housenumber="
+				+ housenumber + ", latlong=" + latlong + ", osmId=" + osmId
+				+ ", osmType=" + osmType + ", rank=" + rank + ", tags=" + tags
+				+ ", type=" + type + "]";
 	}
 	
 }
