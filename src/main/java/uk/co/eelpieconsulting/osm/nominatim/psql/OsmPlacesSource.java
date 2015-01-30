@@ -17,6 +17,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	
 	private static Logger log = Logger.getLogger(OsmPlacesSource.class);
 
+	private static final List<String> IGNORED_TAG_CLASSIFICATIONS = Lists.newArrayList("wikipedia", "description", "attribution", "population", "name:prefix", "website");
 	private static final long STEP_SIZE = 1000;
 	
 	private ResultSet places;
@@ -100,7 +101,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	}
 
 	private void appendTag(String classification, String type, List<String> tags) {
-		if (classification.equals("wikipedia") || classification.equals("description")) {
+		if (IGNORED_TAG_CLASSIFICATIONS.contains(classification)) {
 			return;
 		}
 		tags.add(classification + "|" + type);
