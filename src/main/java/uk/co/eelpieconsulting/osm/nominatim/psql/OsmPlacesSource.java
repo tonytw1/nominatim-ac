@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.common.collect.Lists;
@@ -12,6 +13,7 @@ import org.elasticsearch.common.collect.Lists;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class OsmPlacesSource implements Iterator<Place> {
 	
@@ -85,7 +87,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 			latlong.put("lat", latitude);
 			latlong.put("lon", longitude);
 			
-			List<String> tags = Lists.newArrayList();
+			Set<String> tags = Sets.newHashSet();
 			appendTag(classification, type, tags);
 			if (extratags != null) {
 				for (String key : extratags.keySet()) {
@@ -93,14 +95,14 @@ public class OsmPlacesSource implements Iterator<Place> {
 				}
 			}
 			
-			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, tags, country);
+			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, Lists.newArrayList(tags), country);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void appendTag(String classification, String type, List<String> tags) {
+	private void appendTag(String classification, String type, Set<String> tags) {
 		if (IGNORED_TAG_CLASSIFICATIONS.contains(classification)) {
 			return;
 		}
