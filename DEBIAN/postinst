@@ -1,2 +1,3 @@
 #!/bin/sh
-/etc/init.d/tomcat7 restart
+initctl reload-configuration
+service nominatim-ac restart
