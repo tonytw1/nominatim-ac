@@ -6,6 +6,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -16,6 +17,12 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.facet.Facet;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.terms.TermsFacet;
+import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
+import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
+import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +34,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Component
 public class ElasticSearchAutoCompleteService implements AutoCompleteService {
@@ -92,10 +100,13 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	
 	private List<Place> executeAndParse(QueryBuilder query, FilterBuilder filter) {
 		Client client = elasticSearchClientFactory.getClient();
-
+		
+        TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet("tags").fields("tags").order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
+		
 		SearchResponse response = client.prepareSearch().
 			setQuery(query).
-			setPostFilter(filter).		
+			setPostFilter(filter).
+			addFacet(tagsFacet).
 			execute().actionGet();
 		
 		List<Place> places = Lists.newArrayList();
@@ -114,6 +125,18 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 				throw new RuntimeException(e);
 			}	                
 		}
+		
+		Map<String, Facet> facets = response.getFacets().facetsAsMap();
+		if (facets.containsKey("tags")) {
+			TermsFacet facet = (TermsFacet) facets.get("tags");
+			 final Map<String, Long> facetMap = Maps.newHashMap();
+             for (Entry entry : (List<? extends Entry>) facet.getEntries()) {
+                     facetMap.put(entry.getTerm().string(), new Long(entry.getCount()));
+             }
+             
+             List<String> keySet = Lists.newArrayList(facetMap.keySet());
+             java.util.Collections.sort(keySet);            
+		}		
 		return places;
 	}
 	
