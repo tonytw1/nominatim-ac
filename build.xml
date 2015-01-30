@@ -9,29 +9,28 @@
         </delete>
     </target>
 	
-    <target name="package">
-        <echo message="Packaging as version: ${version}" />
+    <target name="package" depends="package-app" />
     	
+    <target name="package-app">
+        <echo message="Packaging moderation as version: ${version}" />
+		
         <mkdir dir="target/package/${package.name}"/>
-    	
         <copy todir="target/package/${package.name}/DEBIAN">
             <fileset dir="DEBIAN"/>
             <filterset  begintoken="%" endtoken="%">
                 <filter token="VERSION" value="${version}"/>
             </filterset>
         </copy>
-        <chmod file="target/package/${package.name}/DEBIAN/*" perm="755"/>
-    	
-        <echo message="Packaging war file for placement in tomcat webapps" />
-        <mkdir dir="target/package/${package.name}/var/lib/tomcat7/webapps"/>
-        <copy todir="target/package/${package.name}/var/lib/tomcat7/webapps">
-        	<fileset file="target/nominatim-ac-0.0.1-SNAPSHOT.war" />
-      	</copy>
+        <chmod file="target/package/${package.name}/DEBIAN/postinst" perm="755"/>
 
-     	<exec executable="dpkg" dir="target/package">
-	     	<arg value="-b"/>
-	       	<arg value="${package.name}"/>
-	  	</exec>
+    	<copy file="target/${package.name}-0.0.1-SNAPSHOT.jar" tofile="target/package/${package.name}/opt/${package.name}/${package.name}.jar" />
+
+    	<copy file="nominatim-ac.conf" tofile="target/package/${package.name}/etc/init/nominatim-ac.conf" />
+    		
+        <exec executable="dpkg" dir="target/package">
+            <arg value="-b"/>
+            <arg value="${package.name}"/>
+        </exec>
     	
         <move file="target/package/${package.name}.deb" tofile="target/${package.name}_${version}.deb" />
     </target>
