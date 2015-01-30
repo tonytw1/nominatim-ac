@@ -1,6 +1,0 @@
-#!/bin/sh
-/etc/init.d/tomcat7 stop
-if [ -e /var/lib/tomcat7/webapps/nominatim-ac-0.0.1-SNAPSHOT ]
-then
-        rm -r /var/lib/tomcat7/webapps/nominatim-ac-0.0.1-SNAPSHOT
-fi
