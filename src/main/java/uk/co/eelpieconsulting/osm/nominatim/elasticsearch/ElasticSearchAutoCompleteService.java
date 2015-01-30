@@ -66,7 +66,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		
 		BoolQueryBuilder query = boolQuery().
 				must(startsWith).
-				mustNot(unwantedTypes()).
+				must(requiredTypes()).
 				should(isCountry).boost(10).
 				should(isCity).boost(5).
 				should(isTown).boost(3);
