@@ -1,6 +1,6 @@
 Package: nominatimac
 Version: %VERSION%
-Depends: tomcat7, apache2
+Depends: openjdk-7-jre, elasticsearch
 Section: nominatimac
 Priority: optional
 Architecture: all
