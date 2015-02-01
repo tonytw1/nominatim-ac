@@ -168,7 +168,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	}
 	
 	private PrefixQueryBuilder startsWith(String q) {
-		return prefixQuery(ADDRESS, q);
+		return prefixQuery(ADDRESS, q.toLowerCase());
 	}
 
 }
