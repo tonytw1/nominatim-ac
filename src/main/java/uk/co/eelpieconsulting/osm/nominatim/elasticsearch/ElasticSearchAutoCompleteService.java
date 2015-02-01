@@ -94,7 +94,6 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	}
 	
 	private List<Place> executeAndParse(QueryBuilder query, FilterBuilder filter) {
-		log.info(query.toString());
 		Client client = elasticSearchClientFactory.getClient();
 		
         TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
