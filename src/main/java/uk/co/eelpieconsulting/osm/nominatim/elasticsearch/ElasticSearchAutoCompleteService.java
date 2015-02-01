@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.base.Strings;
@@ -38,6 +39,8 @@ import com.google.common.collect.Maps;
 
 @Component
 public class ElasticSearchAutoCompleteService implements AutoCompleteService {
+	
+	private static Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 
 	private static final String ADDRESS = "address";
 	private static final String CLASSIFICATION = "classification";
@@ -58,18 +61,10 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	
 	@Override
 	public List<Place> getSuggestionsFor(String q) {
-		PrefixQueryBuilder startsWith = startsWith(q);
-		
-		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
-		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
-		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));
-		
+		log.info("Finding sugestions for: " + q);
 		BoolQueryBuilder query = boolQuery().
-				must(startsWith).
-				must(requiredTypes()).
-				should(isCountry).boost(10).
-				should(isCity).boost(5).
-				should(isTown).boost(3);
+				must(startsWith(q)).
+				must(taggedAsCountryCityTownSuburb());
 		
 		return executeAndParse(query, null);
 	}
@@ -99,9 +94,10 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	}
 	
 	private List<Place> executeAndParse(QueryBuilder query, FilterBuilder filter) {
+		log.info(query.toString());
 		Client client = elasticSearchClientFactory.getClient();
 		
-        TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet("tags").fields("tags").order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
+        TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
 		
 		SearchResponse response = client.prepareSearch().
 			setQuery(query).
@@ -127,8 +123,8 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		}
 		
 		Map<String, Facet> facets = response.getFacets().facetsAsMap();
-		if (facets.containsKey("tags")) {
-			TermsFacet facet = (TermsFacet) facets.get("tags");
+		if (facets.containsKey(TAGS)) {
+			TermsFacet facet = (TermsFacet) facets.get(TAGS);
 			 final Map<String, Long> facetMap = Maps.newHashMap();
              for (Entry entry : (List<? extends Entry>) facet.getEntries()) {
                      facetMap.put(entry.getTerm().string(), new Long(entry.getCount()));
@@ -158,15 +154,20 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		return isUnwantedType;
 	}
 	
-	private BoolQueryBuilder requiredTypes() {
-		BoolQueryBuilder isCountry = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "country"));
-		BoolQueryBuilder isCity = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "city"));		
-		BoolQueryBuilder isTown = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "town"));		
-		BoolQueryBuilder isSuburb = boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "suburb"));		
-		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry).should(isCity).should(isTown).should(isSuburb);
+	private BoolQueryBuilder taggedAsCountryCityTownSuburb() {
+		QueryBuilder isCountry = termQuery(TAGS, "place|country");
+		QueryBuilder isCity = termQuery(TAGS, "place|city");	
+		QueryBuilder isTown = termQuery(TAGS, "place|town");
+		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
+				
+		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).
+				should(isCountry).boost(10).
+				should(isCity).boost(5).
+				should(isTown).boost(3).
+				should(isSuburb);
 		return isRequiredType;
 	}
-
+	
 	private PrefixQueryBuilder startsWith(String q) {
 		return prefixQuery(ADDRESS, q);
 	}
