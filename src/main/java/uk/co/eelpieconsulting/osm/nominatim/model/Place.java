@@ -15,11 +15,12 @@ public class Place {
 	private Map<String, Double> latlong;
 	private List<String> tags;
 	private String country;
+	private int adminLevel;
 	
 	public Place() {
 	}
 	
-	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags, String country) {
+	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags, String country, int adminLevel) {
 		this.osmId = osmId;
 		this.osmType = osmType;
 		this.housenumber = houseNumber;
@@ -30,6 +31,7 @@ public class Place {
 		this.latlong = latlong;
 		this.tags = tags;
 		this.country = country;
+		this.adminLevel = adminLevel;
 	}
 
 	public long getOsmId() {
@@ -71,10 +73,17 @@ public class Place {
 	public String getCountry() {
 		return country;
 	}
+	
+	public Integer getAdminLevel() {
+		return adminLevel;
+	}
 
 	public String getDisplayType() {
 		if (tags.contains("place|country")) {
 			return "country";
+		}
+		if (tags.contains("place|county")) {
+			return "county";
 		}
 		if (tags.contains("place|city")) {
 			return "city";
@@ -90,11 +99,11 @@ public class Place {
 
 	@Override
 	public String toString() {
-		return "Place [address=" + address + ", classification="
-				+ classification + ", country=" + country + ", housenumber="
-				+ housenumber + ", latlong=" + latlong + ", osmId=" + osmId
-				+ ", osmType=" + osmType + ", rank=" + rank + ", tags=" + tags
-				+ ", type=" + type + "]";
+		return "Place [address=" + address + ", adminLevel=" + adminLevel
+				+ ", classification=" + classification + ", country=" + country
+				+ ", housenumber=" + housenumber + ", latlong=" + latlong
+				+ ", osmId=" + osmId + ", osmType=" + osmType + ", rank="
+				+ rank + ", tags=" + tags + ", type=" + type + "]";
 	}
 	
 }

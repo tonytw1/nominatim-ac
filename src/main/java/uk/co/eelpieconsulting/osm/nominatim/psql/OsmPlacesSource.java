@@ -78,6 +78,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 			double latitude = places.getDouble("latitude");
 			double longitude = places.getDouble("longitude");
 			String country = places.getString("country");
+			int adminLevel = places.getInt("admin_level");
 			
 			Map<String, String> extratags = (Map<String, String>) places.getObject("extratags");
 						
@@ -95,7 +96,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 				}
 			}
 			
-			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, Lists.newArrayList(tags), country);
+			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, Lists.newArrayList(tags), country, adminLevel);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

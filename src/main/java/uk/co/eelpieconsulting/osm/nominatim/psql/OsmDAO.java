@@ -27,6 +27,7 @@ public class OsmDAO {
 						+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
 						+ "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
 						+ "rank_address AS rank, " 
+						+ "admin_level AS admin_level, " 
 						+ "extratags "
 						+ "FROM placex "
 						+ "WHERE osm_id >= ? AND osm_id < ? AND osm_type=?");
