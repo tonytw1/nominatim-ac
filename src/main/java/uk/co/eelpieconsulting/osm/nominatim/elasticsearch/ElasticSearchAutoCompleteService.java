@@ -111,8 +111,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 			SearchHit searchHit = response.getHits().getHits()[i];
 
 			try {
-				Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
-				places.add(place);
+				places.add(mapper.readValue(searchHit.getSourceAsString(), Place.class));
 
 			} catch (JsonParseException e) {
 				throw new RuntimeException(e);
@@ -128,7 +127,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 			TermsFacet facet = (TermsFacet) facets.get(TAGS);
 			 final Map<String, Long> facetMap = Maps.newHashMap();
              for (Entry entry : (List<? extends Entry>) facet.getEntries()) {
-                     facetMap.put(entry.getTerm().string(), new Long(entry.getCount()));
+            	 facetMap.put(entry.getTerm().string(), new Long(entry.getCount()));
              }
              
              List<String> keySet = Lists.newArrayList(facetMap.keySet());
