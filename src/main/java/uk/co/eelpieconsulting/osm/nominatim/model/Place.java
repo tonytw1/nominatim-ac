@@ -72,6 +72,22 @@ public class Place {
 		return country;
 	}
 
+	public String getDisplayType() {
+		if (tags.contains("place|country")) {
+			return "country";
+		}
+		if (tags.contains("place|city")) {
+			return "city";
+		}
+		if (tags.contains("place|town")) {
+			return "town";
+		}
+		if (tags.contains("place|suburb")) {
+			return "suburb";
+		}
+		return classification.toUpperCase() + "/" + type.toUpperCase();
+	}
+
 	@Override
 	public String toString() {
 		return "Place [address=" + address + ", classification="
