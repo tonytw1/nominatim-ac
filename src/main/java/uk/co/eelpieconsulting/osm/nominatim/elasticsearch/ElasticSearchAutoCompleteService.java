@@ -102,7 +102,9 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 			setQuery(query).
 			setPostFilter(filter).
 			addFacet(tagsFacet).
-			execute().actionGet();
+			setSize(20).
+			execute().
+			actionGet();
 		
 		List<Place> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
@@ -158,10 +160,12 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		QueryBuilder isCity = termQuery(TAGS, "place|city");	
 		QueryBuilder isTown = termQuery(TAGS, "place|town");
 		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
+		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
 				
 		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).
 				should(isCountry).boost(10).
 				should(isCity).boost(5).
+				should(isBoundary).boost(5).
 				should(isTown).boost(3).
 				should(isSuburb);
 		return isRequiredType;
