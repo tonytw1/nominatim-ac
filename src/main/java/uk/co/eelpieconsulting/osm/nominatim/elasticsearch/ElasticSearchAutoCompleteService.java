@@ -157,16 +157,20 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	private BoolQueryBuilder taggedAsCountryCityTownSuburb() {
 		QueryBuilder isCountry = termQuery(TAGS, "place|country");
 		QueryBuilder isCity = termQuery(TAGS, "place|city");	
+		QueryBuilder isCounty = termQuery(TAGS, "place|county");
 		QueryBuilder isTown = termQuery(TAGS, "place|town");
 		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
+		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
+		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
 				
 		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).
-				should(isCountry).boost(10).
-				should(isCity).boost(5).
-				should(isBoundary).boost(5).
-				should(isTown).boost(3).
-				should(isSuburb);
+			should(isCountry).boost(10).
+			should(isCity).boost(5).
+			should(isAdminLevelSixBoundary).boost(5).
+			should(isCounty).boost(4).
+			should(isTown).boost(3).
+			should(isSuburb);
 		return isRequiredType;
 	}
 	
