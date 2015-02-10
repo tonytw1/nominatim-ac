@@ -42,6 +42,8 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 	
 	private static Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 
+	private static final String SEARCH_INDEX = "osm";
+
 	private static final String ADDRESS = "address";
 	private static final String CLASSIFICATION = "classification";
 	private static final String DEFAULT_RADIUS = "100km";
@@ -98,7 +100,8 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		
         TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
 		
-		SearchResponse response = client.prepareSearch().
+		SearchResponse response = client.prepareSearch(SEARCH_INDEX).
+			setTypes(ElasticSearchIndexer.TYPE).
 			setQuery(query).
 			setPostFilter(filter).
 			addFacet(tagsFacet).
