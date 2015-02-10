@@ -114,7 +114,7 @@ public class ElasticSearchAutoCompleteService {
 			addFacet(tagsFacet).
 			setSize(20);
 		
-		if (filter.hasClauses()) {
+		if (filter != null && filter.hasClauses()) {
 			request = request.setPostFilter(filter);
 		}
 		
