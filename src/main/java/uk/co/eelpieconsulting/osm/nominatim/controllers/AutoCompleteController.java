@@ -7,13 +7,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
-import uk.co.eelpieconsulting.osm.nominatim.AutoCompleteService;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
 
 @Controller
 public class AutoCompleteController {
 	
-	private final AutoCompleteService autoCompleteService;
+	private final ElasticSearchAutoCompleteService autoCompleteService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
@@ -42,15 +41,15 @@ public class AutoCompleteController {
 			@RequestParam(value = "lon", required = false) Double lon,
 			@RequestParam(value = "radius", required = false) Double radius,
 			@RequestParam(value = "rank", required = false) Integer rank,
-			@RequestParam(value="callback", required=false) String callback) {
+			@RequestParam(value = "country", required = false) String country,
+			@RequestParam(value = "callback", required=false) String callback) {
 		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank));
+		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank, country));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}
 		return mv;
 	}
-	
 	
 }

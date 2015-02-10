@@ -21,13 +21,12 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
-import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
+import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.co.eelpieconsulting.osm.nominatim.AutoCompleteService;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -38,7 +37,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Component
-public class ElasticSearchAutoCompleteService implements AutoCompleteService {
+public class ElasticSearchAutoCompleteService {
 	
 	private static Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 
@@ -61,7 +60,6 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 	
-	@Override
 	public List<Place> getSuggestionsFor(String q) {
 		log.info("Finding sugestions for: " + q);
 		BoolQueryBuilder query = boolQuery().
@@ -71,8 +69,7 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		return executeAndParse(query, null);
 	}
 	
-	@Override
-	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank) {
+	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country) {
 		BoolQueryBuilder query = boolQuery();
 		if (!Strings.isNullOrEmpty(q)) {
 			query = query.must(startsWith(q));
@@ -83,7 +80,9 @@ public class ElasticSearchAutoCompleteService implements AutoCompleteService {
 		if (rank != null) {
 			query = query.must(boolQuery().must(termQuery("rank", rank)));
 		}
-		
+		if (!Strings.isNullOrEmpty(country)) {
+			query = query.must(termQuery("country", country));
+		}
 		FilterBuilder filter = null;
 		if (lat != null && lon != null) {
 			String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
