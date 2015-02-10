@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -9,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.base.Strings;
+import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -70,41 +73,52 @@ public class ElasticSearchAutoCompleteService {
 	}
 	
 	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country) {
-		BoolQueryBuilder query = boolQuery();
-		if (!Strings.isNullOrEmpty(q)) {
-			query = query.must(startsWith(q));
+		if (Strings.isNullOrEmpty(q)) {
+			return Lists.newArrayList();
 		}
+				
+		BoolQueryBuilder query = boolQuery();
+		query = query.must(startsWith(q));
+		
 		if (!Strings.isNullOrEmpty(tag)) {
 			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
 		}
 		if (rank != null) {
 			query = query.must(boolQuery().must(termQuery("rank", rank)));
 		}
+		
+		BoolFilterBuilder filter = FilterBuilders.boolFilter();
 		if (!Strings.isNullOrEmpty(country)) {
-			query = query.must(termQuery("country", country));
+			filter = filter.must(termFilter("country", country));
 		}
-		FilterBuilder filter = null;
+		
 		if (lat != null && lon != null) {
 			String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
-			filter = FilterBuilders.geoDistanceFilter(LATLONG).
+			FilterBuilder geoCircle = FilterBuilders.geoDistanceFilter(LATLONG).
 				lat(lat).lon(lon).
 				distance(distance);
+			filter = filter.must(geoCircle);
 		}
 		
 		return executeAndParse(query, filter);
 	}
 	
-	private List<Place> executeAndParse(QueryBuilder query, FilterBuilder filter) {
+	private List<Place> executeAndParse(QueryBuilder query, BoolFilterBuilder filter) {
 		Client client = elasticSearchClientFactory.getClient();
 		
         TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
 		
-		SearchResponse response = client.prepareSearch(SEARCH_INDEX).
+		SearchRequestBuilder request = client.prepareSearch(SEARCH_INDEX).
 			setTypes(ElasticSearchIndexer.TYPE).
 			setQuery(query).
-			setPostFilter(filter).
 			addFacet(tagsFacet).
-			setSize(20).
+			setSize(20);
+		
+		if (filter.hasClauses()) {
+			request = request.setPostFilter(filter);
+		}
+		
+		SearchResponse response = request.
 			execute().
 			actionGet();
 		
@@ -121,7 +135,7 @@ public class ElasticSearchAutoCompleteService {
 				throw new RuntimeException(e);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
-			}	                
+			}
 		}
 		
 		Map<String, Facet> facets = response.getFacets().facetsAsMap();
