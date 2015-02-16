@@ -25,7 +25,7 @@ public class AutoCompleteController {
 	public ModelAndView suggestions(@RequestParam(value = "q", required = true) String q,
 			@RequestParam(value="callback", required=false) String callback) {
 
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(600));
 		mv.addObject("data", autoCompleteService.getSuggestionsFor(q));
 		if (callback != null) {
 			mv.addObject("callback", callback);
@@ -44,7 +44,7 @@ public class AutoCompleteController {
 			@RequestParam(value = "country", required = false) String country,
 			@RequestParam(value = "callback", required=false) String callback) {
 		
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(600));
 		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank, country));
 		if (callback != null) {
 			mv.addObject("callback", callback);
