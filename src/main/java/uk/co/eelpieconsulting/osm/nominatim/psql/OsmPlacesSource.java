@@ -19,19 +19,22 @@ public class OsmPlacesSource implements Iterator<Place> {
 	
 	private static Logger log = Logger.getLogger(OsmPlacesSource.class);
 
-	private static final List<String> IGNORED_TAG_CLASSIFICATIONS = Lists.newArrayList("wikipedia", "description", "attribution", "population", "name:prefix", "website");
 	private static final long STEP_SIZE = 1000;
+	
+	private final OsmDAO osmDAO;
+	private PlaceRowParser placeRowParser;
 	
 	private ResultSet places;
 	private boolean next;
 	private long start;
-	private final OsmDAO osmDAO;
-
+	
 	private long max;
 	private final String type;
+
 	
-	public OsmPlacesSource(OsmDAO osmDAO, String type) throws SQLException {
+	public OsmPlacesSource(OsmDAO osmDAO, PlaceRowParser placeRowParser, String type) throws SQLException {
 		this.osmDAO = osmDAO;
+		this.placeRowParser = placeRowParser;
 		this.type = type;
 		start = 0;
 		this.max = osmDAO.getMax(type);
@@ -69,47 +72,13 @@ public class OsmPlacesSource implements Iterator<Place> {
 	@Override
 	public Place next() {
 		try {
-			long osmId = places.getLong("osm_id");
-			String osmType = places.getString("osm_type");
-			String name = places.getString("en_label");
-			String classification = places.getString(3);
-			String type = places.getString(4);
-			int rank = places.getInt("rank");
-			double latitude = places.getDouble("latitude");
-			double longitude = places.getDouble("longitude");
-			String country = places.getString("country");
-			int adminLevel = places.getInt("admin_level");
-			
-			Map<String, String> extratags = (Map<String, String>) places.getObject("extratags");
-						
-			next = places.next();
-						
-			Map<String, Double> latlong = Maps.newHashMap();
-			latlong.put("lat", latitude);
-			latlong.put("lon", longitude);
-			
-			Set<String> tags = Sets.newHashSet();
-			appendTag(classification, type, tags);
-			if (extratags != null) {
-				for (String key : extratags.keySet()) {
-					appendTag(key, extratags.get(key), tags);
-				}
-			}
-			
-			return new Place(osmId, osmType, null, name, classification, type, rank, latlong, Lists.newArrayList(tags), country, adminLevel);
+			return placeRowParser.buildPlaceFromRow(places);
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	private void appendTag(String classification, String type, Set<String> tags) {
-		if (IGNORED_TAG_CLASSIFICATIONS.contains(classification)) {
-			return;
-		}
-		tags.add(classification + "|" + type);
-	}
-
+	
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();

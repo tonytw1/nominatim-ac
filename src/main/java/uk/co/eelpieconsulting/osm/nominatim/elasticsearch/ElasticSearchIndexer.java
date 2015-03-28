@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -73,6 +75,18 @@ public class ElasticSearchIndexer {
 			setTypes(TYPE).
 			execute().
 			actionGet();
+	}
+
+	public void index(List<Place> places) {
+		log.info("Importing updates");
+
+		final Client client = elasticSearchClientFactory.getClient();		
+		BulkRequestBuilder bulkRequest = client.prepareBulk();
+		for (Place place : places) {
+			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+		}
+		bulkRequest.execute().actionGet();
+		log.info("Update submitted");
 	}
 
 }
