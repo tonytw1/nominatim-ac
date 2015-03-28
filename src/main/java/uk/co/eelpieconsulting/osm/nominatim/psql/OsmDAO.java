@@ -14,10 +14,12 @@ public class OsmDAO {
 	
 	private final String username;
 	private final String password;
+	private final String host;
 	
-	public OsmDAO(String username, String password) throws SQLException {
+	public OsmDAO(String username, String password, String host) throws SQLException {
 		this.username = username;
 		this.password = password;
+		this.host = host;
 		
 		conn = getConnection();
 		places = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
@@ -52,7 +54,7 @@ public class OsmDAO {
 	}
 	
 	private Connection getConnection() throws SQLException {
-		String url = "jdbc:postgresql://localhost/nominatim";
+		String url = "jdbc:postgresql://" + host + "/nominatim";
 		Properties props = new Properties();
 		props.setProperty("user", username);
 		props.setProperty("password", password);

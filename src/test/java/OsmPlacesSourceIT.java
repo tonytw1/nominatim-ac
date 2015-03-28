@@ -7,7 +7,7 @@ public class OsmPlacesSourceIT {
 	
 	@Test
 	public void testname() throws Exception {
-		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(new OsmDAO("", ""), "R");
+		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(new OsmDAO("", "", "localhost"), "R");
 		while(osmPlacesSource.hasNext()) {
 			System.out.println(osmPlacesSource.next());
 		}

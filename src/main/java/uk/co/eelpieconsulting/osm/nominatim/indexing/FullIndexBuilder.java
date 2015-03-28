@@ -16,21 +16,24 @@ public class FullIndexBuilder {
 	private final ElasticSearchIndexer indexer;
 	private final String username;
 	private final String password;
+	private final String host;
 	
 	@Autowired
 	public FullIndexBuilder(ElasticSearchIndexer indexer, 
 			@Value("${database.username}") String username,
-			@Value("${database.password}") String password) {
+			@Value("${database.password}") String password,
+			@Value("${database.host}") String host) {
 		this.indexer = indexer;
 		this.username = username;
 		this.password = password;
+		this.host = host;
 	}
 		
 	public void buildFullIndex() throws SQLException {	
 		indexer.deleteAll();		
-		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "R"));
-		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W"));			
-		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "N"));					
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password, host), "R"));
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password, host), "W"));			
+		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password, host), "N"));					
 	}
 	
 }
