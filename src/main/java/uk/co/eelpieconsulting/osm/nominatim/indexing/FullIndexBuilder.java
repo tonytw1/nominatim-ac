@@ -11,14 +11,14 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 
 @Component
-public class IndexUpdater {
+public class FullIndexBuilder {
 		
 	private final ElasticSearchIndexer indexer;
 	private final String username;
 	private final String password;
 	
 	@Autowired
-	public IndexUpdater(ElasticSearchIndexer indexer, 
+	public FullIndexBuilder(ElasticSearchIndexer indexer, 
 			@Value("${database.username}") String username,
 			@Value("${database.password}") String password) {
 		this.indexer = indexer;
@@ -26,7 +26,7 @@ public class IndexUpdater {
 		this.password = password;
 	}
 		
-	public void buildIndex() throws SQLException {	
+	public void buildFullIndex() throws SQLException {	
 		indexer.deleteAll();		
 		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "R"));
 		indexer.indexLines(new OsmPlacesSource(new OsmDAO(username, password), "W"));			
