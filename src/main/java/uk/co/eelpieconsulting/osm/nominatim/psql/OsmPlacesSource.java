@@ -3,17 +3,10 @@ package uk.co.eelpieconsulting.osm.nominatim.psql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.common.collect.Lists;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class OsmPlacesSource implements Iterator<Place> {
 	
