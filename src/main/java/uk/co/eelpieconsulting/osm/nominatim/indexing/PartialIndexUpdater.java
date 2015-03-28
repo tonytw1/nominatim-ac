@@ -35,7 +35,7 @@ public class PartialIndexUpdater {
 		this.placeRowParser = placeRowParser;
 		this.elasticSearchIndexer = elasticSearchIndexer;
 		this.osmDAO = osmDaoFactory.build();	
-		this.start = new DateTime(2015, 2, 1, 0, 0, 0);	// TODO persist
+		this.start = new DateTime(2015, 3, 1, 0, 0, 0);	// TODO persist
 	}
 	
 	@Scheduled(fixedRate=5000)
