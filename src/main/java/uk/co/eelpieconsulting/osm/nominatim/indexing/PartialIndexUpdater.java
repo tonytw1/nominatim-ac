@@ -35,10 +35,10 @@ public class PartialIndexUpdater {
 		this.placeRowParser = placeRowParser;
 		this.elasticSearchIndexer = elasticSearchIndexer;
 		this.osmDAO = osmDaoFactory.build();	
-		this.start = new DateTime(2015, 2, 1, 0, 0, 0);	// TODO persist
+		this.start = new DateTime(2015, 3, 29, 0, 0, 0);	// TODO persist
 	}
 	
-	@Scheduled(fixedRate=5000)
+	@Scheduled(fixedRate=300000)
 	public void update() throws SQLException {
 		log.info("Updating indexed after: " + start);
 		final ResultSet places = osmDAO.getPlacesIndexedAfter(start, 10000);
