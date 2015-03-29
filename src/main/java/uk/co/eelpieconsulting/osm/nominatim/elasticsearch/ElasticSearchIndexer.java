@@ -19,7 +19,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 public class ElasticSearchIndexer {
 	
 	public static final String TYPE = "places";
-	private static final String INDEX = "osm2015021001";
+	public static final String INDEX = "osm2015021001";
 
 	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 		

@@ -24,9 +24,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
+import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
-import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,9 +42,10 @@ import com.google.common.collect.Maps;
 @Component
 public class ElasticSearchAutoCompleteService {
 	
-	private static Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
+	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 
-	private static final String SEARCH_INDEX = "osm";
+	private static final String SEARCH_INDEX = ElasticSearchIndexer.INDEX;
+	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";
 	private static final String CLASSIFICATION = "classification";
@@ -109,7 +110,7 @@ public class ElasticSearchAutoCompleteService {
         TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
 		
 		SearchRequestBuilder request = client.prepareSearch(SEARCH_INDEX).
-			setTypes(ElasticSearchIndexer.TYPE).
+			setTypes(SEARCH_TYPE).
 			setQuery(query).
 			addFacet(tagsFacet).
 			setSize(20);
