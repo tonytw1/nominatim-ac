@@ -21,18 +21,6 @@ public class AutoCompleteController {
 		this.viewFactory = viewFactory;
 	}
 	
-	@RequestMapping("/suggest")
-	public ModelAndView suggestions(@RequestParam(value = "q", required = true) String q,
-			@RequestParam(value="callback", required=false) String callback) {
-
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(600));
-		mv.addObject("data", autoCompleteService.getSuggestionsFor(q));
-		if (callback != null) {
-			mv.addObject("callback", callback);
-		}
-		return mv;
-	}
-	
 	@RequestMapping("/search")
 	public ModelAndView search(
 			@RequestParam(value = "q", required = false) String q,
@@ -42,14 +30,22 @@ public class AutoCompleteController {
 			@RequestParam(value = "radius", required = false) Double radius,
 			@RequestParam(value = "rank", required = false) Integer rank,
 			@RequestParam(value = "country", required = false) String country,
-			@RequestParam(value = "callback", required=false) String callback) {
+			@RequestParam(value = "callback", required=false) String callback,
+			@RequestParam(required=false) String profile) {
 		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(600));
-		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank, country));
+		mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile));
 		if (callback != null) {
 			mv.addObject("callback", callback);
 		}
 		return mv;
+	}
+	
+	@Deprecated
+	@RequestMapping("/suggest")
+	public ModelAndView suggestions(@RequestParam(value = "q", required = true) String q, 
+			@RequestParam(value = "callback", required=false) String callback) {
+		return search(q, null, null, null, null, null, null, callback, ElasticSearchAutoCompleteService.COUNTRY_CITY_TOWN_SUBURB);
 	}
 	
 }

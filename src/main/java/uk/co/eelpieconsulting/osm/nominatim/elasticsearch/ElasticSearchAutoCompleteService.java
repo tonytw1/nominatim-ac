@@ -24,9 +24,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
-import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
+import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,18 +41,19 @@ import com.google.common.collect.Maps;
 
 @Component
 public class ElasticSearchAutoCompleteService {
+
+	public static final String COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb";
 	
 	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
-
+	
+	private static final String COUNTRY = "country";
 	private static final String SEARCH_INDEX = ElasticSearchIndexer.INDEX;
 	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";
-	private static final String CLASSIFICATION = "classification";
 	private static final String DEFAULT_RADIUS = "100km";
 	private static final String LATLONG = "latlong";
 	private static final String TAGS = "tags";
-	private static final String TYPE = "type";
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper mapper;
@@ -63,23 +64,21 @@ public class ElasticSearchAutoCompleteService {
 		this.mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
-	
-	public List<Place> getSuggestionsFor(String q) {
-		log.info("Finding sugestions for: " + q);
-		BoolQueryBuilder query = boolQuery().
-				must(startsWith(q)).
-				must(taggedAsCountryCityTownSuburb());
 		
-		return executeAndParse(query, null);
-	}
-	
-	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country) {
+	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profile) {
 		if (Strings.isNullOrEmpty(q)) {
 			return Lists.newArrayList();
 		}
-				
+		
 		BoolQueryBuilder query = boolQuery();
 		query = query.must(startsWith(q));
+		
+		if (COUNTRY_CITY_TOWN_SUBURB.equals(profile)) {			
+			query.must(taggedAsCountryCityTownSuburb());
+		}
+		if (COUNTRY.equals(profile)) {			
+			query.must(taggedAsCountry());
+		}
 		
 		if (!Strings.isNullOrEmpty(tag)) {
 			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
@@ -100,8 +99,14 @@ public class ElasticSearchAutoCompleteService {
 				distance(distance);
 			filter = filter.must(geoCircle);
 		}
-		
+				
 		return executeAndParse(query, filter);
+	}
+	
+	@Deprecated
+	public List<Place> getSuggestionsFor(String q) {
+		log.info("Finding sugestions for: " + q);
+		return search(q, null, null, null, null, null, null, COUNTRY_CITY_TOWN_SUBURB);
 	}
 	
 	private List<Place> executeAndParse(QueryBuilder query, BoolFilterBuilder filter) {
@@ -119,9 +124,7 @@ public class ElasticSearchAutoCompleteService {
 			request = request.setPostFilter(filter);
 		}
 		
-		SearchResponse response = request.
-			execute().
-			actionGet();
+		SearchResponse response = request.execute().actionGet();
 		
 		List<Place> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
@@ -153,22 +156,14 @@ public class ElasticSearchAutoCompleteService {
 		return places;
 	}
 	
-	private BoolQueryBuilder unwantedTypes() {		
-		BoolQueryBuilder isUnwantedType = boolQuery().minimumNumberShouldMatch(1).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "motorway_junction"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "speed_camera"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "post_box"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bench"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "recycling"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bicycle_parking"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "bicycle_rental"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "parking"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "leisure")).must(termQuery(TYPE, "picnic_table"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "amenity")).must(termQuery(TYPE, "waste_basket"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "railway")).must(termQuery(TYPE, "crossing"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "highway")).must(termQuery(TYPE, "bus_stop"))).
-				should(boolQuery().must(termQuery(CLASSIFICATION, "place")).must(termQuery(TYPE, "house")));
-		return isUnwantedType;
+	private PrefixQueryBuilder startsWith(String q) {
+		return prefixQuery(ADDRESS, q.toLowerCase());
+	}
+	
+	private BoolQueryBuilder taggedAsCountry() {
+		QueryBuilder isCountry = termQuery(TAGS, "place|country");
+		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry);
+		return isRequiredType;
 	}
 	
 	private BoolQueryBuilder taggedAsCountryCityTownSuburb() {
@@ -191,8 +186,4 @@ public class ElasticSearchAutoCompleteService {
 		return isRequiredType;
 	}
 	
-	private PrefixQueryBuilder startsWith(String q) {
-		return prefixQuery(ADDRESS, q.toLowerCase());
-	}
-
 }
