@@ -24,7 +24,7 @@ public class ImportController {
 		this.viewFactory = viewFactory;
 	}
 	
-	@RequestMapping("/import")
+	//@RequestMapping("/import")
 	public ModelAndView inputIndex() throws FileNotFoundException, IOException, SQLException {
 		fullIndexBuilder.buildFullIndex();
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
