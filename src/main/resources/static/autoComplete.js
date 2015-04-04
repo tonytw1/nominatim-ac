@@ -24,10 +24,18 @@ $( "#location" ).autocomplete({
 	},
 
 	select: function( event, ui ) {
-		$("#selected").text( ui.item ? ui.item.osmId + "/" + ui.item.osmType : "Nothing selected");
+		var osmUrl = osmUrlFor(ui.item.osmId, ui.item.osmType);
+		$("#selected").html( ui.item ? '<a href="' + osmUrl + '" target="_blank">' + ui.item.osmId + "/" + ui.item.osmType + '</a>' : "Nothing selected");
 		$("#latitude").text( ui.item ? ui.item.latitude : "");
 		$("#longitude").text( ui.item ? ui.item.longitude : "");
 	}
 
 });
-		
+
+function osmUrlFor(osmId, osmType) {
+	var osmTypes = {'N': 'node',
+		'W': 'way',
+		'R': 'relationship'};
+
+	return 'http://www.openstreetmap.org/' + osmTypes[osmType] + '/' + osmId;
+}		
