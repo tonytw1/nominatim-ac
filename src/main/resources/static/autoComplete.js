@@ -1,11 +1,12 @@
 $( "#location" ).autocomplete({
-	source: function( request, response ) {
+	source: function( request, response ) {	
 		$.ajax({
-			url: "/suggest",
+			url: "http://nominatim-ac.eelpieconsulting.co.uk/search",
 			cache: true,
-			dataType: "json",
+			dataType: "jsonp",
 			data: {
-				q: request.term							
+				q: request.term,
+				profile: $("#profile").val()					
 			},
 			success: function( data ) {
 				response( $.map( data, function( item ) {				

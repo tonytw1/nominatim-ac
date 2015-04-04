@@ -7,11 +7,19 @@
 </head>
 <body>
 	
-	<h2>Nominatim AC</h2>	
+	<h2>Nominatim AC</h2>
+	<p>A placename autocomplete service based on OpenStreetMap Nominatim data.</p>
 	<hr/>
 	<p>Usage example (using jQuery autocomplete):
 	
-	<div>Location name: <input id="location" size="40" /></div>
+	<div>Location name: <input id="location" size="40" />
+	
+	Profile: <select id="profile">
+		<option value="countryCityTownSuburb">Country, City, Town and Suburb</option>
+		<option value="">Everything</option>	
+	</select>
+	
+	</div>
 	<script src="autoComplete.js"></script>
 	<p>
 		<span id="selected"></span><br/>
