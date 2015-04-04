@@ -35,7 +35,7 @@ $( "#location" ).autocomplete({
 function osmUrlFor(osmId, osmType) {
 	var osmTypes = {'N': 'node',
 		'W': 'way',
-		'R': 'relationship'};
+		'R': 'relation'};
 
 	return 'http://www.openstreetmap.org/' + osmTypes[osmType] + '/' + osmId;
 }		

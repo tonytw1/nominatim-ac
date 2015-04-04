@@ -8,7 +8,8 @@
 <body>
 	
 	<h2>Nominatim AC</h2>
-	<p>A placename autocomplete service based on OpenStreetMap Nominatim data.</p>
+	<p>A placename autocomplete service based on OpenStreetMap Nominatim data (<a href="https://github.com/tonytw1/nominatim-ac">source code</a>).</p>
+	
 	<hr/>
 	<p>Usage example (using jQuery autocomplete):
 	
@@ -25,7 +26,38 @@
 		<span id="selected"></span><br/>
 		<span id="latitude"></span><br/>
 		<span id="longitude"></span><br/>
-	</p>	
+	</p>
+	
+	<hr/>
+	<h4>Endpoints</h4>
+	
+	<h5>Search</h5>
+	<code>http://nominatim-ac.eelpieconsulting.co.uk/search</code>
+	
+	<h6>Parameters</h6>
+	<table border="1">
+		<tr>
+			<td>q</td><td>(required). The partial place name to match.</td>
+		</tr>
+		<tr>
+			<td>profile</td><td><p>Limit results to a particular filtered subset of results.<p><p>ie. countryCityTownSuburb</p></td>
+		</tr>
+		
+		<tr>
+			<td>tag</td><td><p>Limit results to a particular OSM tag.<p><p>ie. railway|station</p></td>
+		</tr>
+		<tr>
+			<td>lat, lon, radius</td><td>Limit results to a given geocircle</td>
+		</tr>
+		<tr>
+			<td>country</td><td><p>Limit results to a particular country code</td>
+		</tr>
+		
+		</tr>
+	</table>
+	
+	<p>Results trail OpenStreetMap by approximately 10 minutes.</p>
+	
 	<hr/>
 </body>
 </html>
