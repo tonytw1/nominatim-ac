@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,6 +63,16 @@ public class OsmDAO {
 		rs.close();
 		prepareStatement.close();
 		return max;
+	}
+	
+	public Date getLatestIndexedDate() throws SQLException {
+		PreparedStatement prepareStatement = conn.prepareStatement("SELECT MAX(indexed_date) as latest AS from placex");	// TODO indexed?
+		ResultSet rs = prepareStatement.executeQuery();
+		rs.next();
+		Date latest = rs.getDate(1);
+		rs.close();
+		prepareStatement.close();
+		return latest;
 	}
 	
 	public ResultSet getPlaces(long start, long stepSize, String type) throws SQLException {
