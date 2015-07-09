@@ -1,7 +1,9 @@
 package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
 import java.sql.SQLException;
+import java.util.Map;
 
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,8 @@ import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
+
+import com.google.common.collect.Maps;
 
 @Controller
 public class AutoCompleteController {
@@ -28,10 +32,10 @@ public class AutoCompleteController {
 	}
 	
 	@RequestMapping("/status")
-	public ModelAndView status() throws SQLException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		mv.addObject("nominatimLatestIndexedDate", osmDAO.getLatestIndexedDate());
-		return mv;
+	public ModelAndView status() throws SQLException {		
+		Map<String, String> data = Maps.newHashMap();
+		data.put("lastImportDate", ISODateTimeFormat.basicDateTime().print(osmDAO.getLastImportDate()));		
+		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
 	
 	@RequestMapping("/search")
