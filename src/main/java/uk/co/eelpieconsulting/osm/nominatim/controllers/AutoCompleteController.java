@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.osm.nominatim.controllers;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
+import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexUpdater;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 
@@ -20,21 +22,25 @@ import com.google.common.collect.Maps;
 @Controller
 public class AutoCompleteController {
 	
+	private static final DateTimeFormatter BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime();
 	private final ElasticSearchAutoCompleteService autoCompleteService;
 	private final ViewFactory viewFactory;
 	private final OsmDAO osmDAO;
+	private final PartialIndexUpdater partialIndexUpdater;
 	
 	@Autowired
-	public AutoCompleteController(ElasticSearchAutoCompleteService autoCompleteService, ViewFactory viewFactory, OSMDAOFactory osmDAOFactory) throws SQLException {
+	public AutoCompleteController(ElasticSearchAutoCompleteService autoCompleteService, ViewFactory viewFactory, OSMDAOFactory osmDAOFactory, PartialIndexUpdater partialIndexUpdater) throws SQLException {
 		this.autoCompleteService = autoCompleteService;
 		this.viewFactory = viewFactory;
+		this.partialIndexUpdater = partialIndexUpdater;
 		this.osmDAO = osmDAOFactory.build();
 	}
 	
 	@RequestMapping("/status")
 	public ModelAndView status() throws SQLException {		
 		Map<String, String> data = Maps.newHashMap();
-		data.put("lastImportDate", ISODateTimeFormat.basicDateTime().print(osmDAO.getLastImportDate()));		
+		data.put("lastImportDate", BASIC_DATE_TIME.print(osmDAO.getLastImportDate()));		
+		data.put("indexedTo", BASIC_DATE_TIME.print(partialIndexUpdater.getStart()));		
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
 	

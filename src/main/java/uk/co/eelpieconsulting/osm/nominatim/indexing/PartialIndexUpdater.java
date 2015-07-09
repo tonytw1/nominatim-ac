@@ -55,6 +55,10 @@ public class PartialIndexUpdater {
 		log.info("Submitted updates: " + updates.size());
 	}
 	
+	public DateTime getStart() {
+		return start;
+	}
+	
 	private Place indexRow(final ResultSet places) throws SQLException {
 		Timestamp time = places.getTimestamp("indexed_date");
 		DateTime indexedDate = new DateTime(time);
