@@ -34,7 +34,7 @@ public class ElasticSearchIndexer {
 		this.jsonSerializer = new JsonSerializer();
 	}
 	
-	public void indexLines(OsmPlacesSource parser) {
+	public void indexLines(OsmPlacesSource osmPlacesSource) {
 		final Client client = elasticSearchClientFactory.getClient();
 				
 		log.info("Importing records");
@@ -42,8 +42,8 @@ public class ElasticSearchIndexer {
 
 		int count = 0;
 		DateTime countStart = DateTime.now();
-		while (parser.hasNext()) {
-			Place place = parser.next();
+		while (osmPlacesSource.hasNext()) {
+			Place place = osmPlacesSource.next();
 			count++;
 			
 			final String placeJson = jsonSerializer.serialize(place);

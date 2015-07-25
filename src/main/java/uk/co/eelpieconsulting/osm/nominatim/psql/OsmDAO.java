@@ -8,9 +8,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 public class OsmDAO {
+
+	private static Logger log = Logger.getLogger(OsmDAO.class);
 
 	private final Connection conn;
 	private final PreparedStatement places;
@@ -76,6 +79,7 @@ public class OsmDAO {
 	}
 	
 	public ResultSet getPlaces(long start, long stepSize, String type) throws SQLException {
+		log.info("Get places: " + start + ", " + stepSize + ", " + type);
 		places.setLong(1, start);
 		places.setLong(2, start + stepSize);
 		places.setString(3, type);
