@@ -12,13 +12,12 @@ public class OsmPlacesSource implements Iterator<Place> {
 	
 	private static Logger log = Logger.getLogger(OsmPlacesSource.class);
 
-	private static final long STEP_SIZE = 1000;
+	private static final long STEP_SIZE = 100;
 	
 	private final OsmDAO osmDAO;
 	private PlaceRowParser placeRowParser;
 	
 	private ResultSet places;
-	private boolean next;
 	private long start;
 	
 	private long max;
@@ -43,7 +42,6 @@ public class OsmPlacesSource implements Iterator<Place> {
 			log.info("Before first: " + beforeFirst);
 			if (beforeFirst) {
 				log.info("Stepping onto first row");
-				places.next();
 			}
 			
 		} catch (SQLException e) {
@@ -52,29 +50,25 @@ public class OsmPlacesSource implements Iterator<Place> {
 	}
 
 	@Override
-	public boolean hasNext() {		
-		try {
-			final boolean hasNext = !places.isBeforeFirst() && !places.isLast();
-			if (hasNext) {
-				return true;
-			}
-			
-			while (!next && start < max) {
-				start = start + STEP_SIZE;
-				prepare(osmDAO);
-				return true;
-			}
-			return false;
-		
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	public boolean hasNext() {
+		return start < max;		
 	}
 
 	@Override
 	public Place next() {
 		try {
-			places.next();	// TODO fails if select window does not contain a record!
+			if (places.isLast()) {
+				log.info("After last; preparing again");
+				start = start + STEP_SIZE;
+				prepare(osmDAO);
+			}			
+			places.next();
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+			
+		try {
 			return placeRowParser.buildPlaceFromRow(places);
 			
 		} catch (SQLException e) {

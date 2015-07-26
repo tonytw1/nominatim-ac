@@ -39,7 +39,7 @@ public class OsmDAO {
 						+ "admin_level AS admin_level, " 
 						+ "extratags "
 						+ "FROM placex "
-						+ "WHERE osm_id >= ? AND osm_id < ? AND osm_type=?");
+						+ "WHERE osm_id >= ? AND osm_type=? order by osm_id, osm_type OFFSET ? LIMIT ?");
 		
 		placesIndexedFrom = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
 				//+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
@@ -81,8 +81,9 @@ public class OsmDAO {
 	public ResultSet getPlaces(long start, long stepSize, String type) throws SQLException {
 		log.info("Get places: " + start + ", " + stepSize + ", " + type);
 		places.setLong(1, start);
-		places.setLong(2, start + stepSize);
-		places.setString(3, type);
+		places.setString(2, type);
+		places.setLong(3, start);
+		places.setLong(4, stepSize);
 		return places.executeQuery();
 	}
 	
