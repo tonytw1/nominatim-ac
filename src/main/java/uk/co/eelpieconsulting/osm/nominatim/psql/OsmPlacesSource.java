@@ -12,7 +12,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	
 	private static Logger log = Logger.getLogger(OsmPlacesSource.class);
 
-	private static final long STEP_SIZE = 100;
+	private static final long STEP_SIZE = 1000;
 	
 	private final OsmDAO osmDAO;
 	private PlaceRowParser placeRowParser;
@@ -59,7 +59,6 @@ public class OsmPlacesSource implements Iterator<Place> {
 		try {
 			if (places.isLast()) {
 				log.info("After last; preparing again");
-				start = start + STEP_SIZE;
 				prepare(osmDAO);
 			}			
 			places.next();
@@ -69,7 +68,9 @@ public class OsmPlacesSource implements Iterator<Place> {
 		}
 			
 		try {
-			return placeRowParser.buildPlaceFromRow(places);
+			Place place = placeRowParser.buildPlaceFromRow(places);
+			start = place.getOsmId();
+			return place;
 			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

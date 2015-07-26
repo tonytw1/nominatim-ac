@@ -38,7 +38,7 @@ public class PartialIndexUpdater {
 		this.start = new DateTime(2015, 3, 29, 0, 0, 0);	// TODO persist
 	}
 	
-	@Scheduled(fixedRate=300000)
+	//@Scheduled(fixedRate=300000)
 	public void update() throws SQLException {
 		log.info("Updating indexed after: " + start);
 		final ResultSet places = osmDAO.getPlacesIndexedAfter(start, 10000);

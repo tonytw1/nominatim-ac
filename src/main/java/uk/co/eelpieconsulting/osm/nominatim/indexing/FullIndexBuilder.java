@@ -25,7 +25,7 @@ public class FullIndexBuilder {
 	}
 		
 	public void buildFullIndex() throws SQLException {	
-		indexer.deleteAll();		
+		//indexer.deleteAll();		
 		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "R"));
 		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "W"));
 		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "N"));				
