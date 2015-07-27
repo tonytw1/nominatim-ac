@@ -36,14 +36,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	private void prepare(OsmDAO osmDAO) {
 		log.info("Preparing type: " + type + " " + start + "/" + max);
 		try {
-			places = osmDAO.getPlaces(start, STEP_SIZE, type);
-			log.info("Prepared: " + places);
-			boolean beforeFirst = places.isBeforeFirst();
-			log.info("Before first: " + beforeFirst);
-			if (beforeFirst) {
-				log.info("Stepping onto first row");
-			}
-			
+			places = osmDAO.getPlaces(start, STEP_SIZE, type);						
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -58,7 +51,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 	public Place next() {
 		try {
 			if (places.isLast()) {
-				log.info("After last; preparing again");
+				log.debug("After last; preparing again");
 				prepare(osmDAO);
 			}			
 			places.next();
