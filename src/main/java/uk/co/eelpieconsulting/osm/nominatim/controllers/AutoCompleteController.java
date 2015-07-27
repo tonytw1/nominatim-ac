@@ -41,6 +41,7 @@ public class AutoCompleteController {
 		Map<String, String> data = Maps.newHashMap();
 		data.put("lastImportDate", BASIC_DATE_TIME.print(osmDAO.getLastImportDate()));		
 		data.put("indexedTo", BASIC_DATE_TIME.print(partialIndexUpdater.getStart()));		
+		data.put("indexedItems", Long.toString(autoCompleteService.indexedItemsCount()));
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
 	

@@ -64,7 +64,7 @@ public class ElasticSearchAutoCompleteService {
 		this.mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
-		
+	
 	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profile) {
 		if (Strings.isNullOrEmpty(q)) {
 			return Lists.newArrayList();
@@ -107,6 +107,16 @@ public class ElasticSearchAutoCompleteService {
 	public List<Place> getSuggestionsFor(String q) {
 		log.info("Finding sugestions for: " + q);
 		return search(q, null, null, null, null, null, null, COUNTRY_CITY_TOWN_SUBURB);
+	}
+	
+	public long indexedItemsCount() {
+		final BoolQueryBuilder all = boolQuery();
+		final SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(SEARCH_INDEX).
+			setTypes(SEARCH_TYPE).
+			setQuery(all).
+			setSize(0);
+	
+		return request.get().getHits().getTotalHits();		
 	}
 	
 	private List<Place> executeAndParse(QueryBuilder query, BoolFilterBuilder filter) {
