@@ -49,7 +49,7 @@ Java / Spring Boot and Elasticsearch.
 
 An example install containing the whole planet data set is available at https://nominatim-ac.eelpieconsulting.co.uk
 
-####Also see
+###Also see
 
 photon (http://photon.komoot.de/) takes a similar approach and is production ready.
 
@@ -67,6 +67,6 @@ eventually successful using a HP DL360 server with 32Gb of RAM (single Xeon proc
 
 The initial Nominatim import of planet.osm took approximately 6 weeks to complete and consumed around 1TB of disk.
 The indexing the Nominatim postgres database into Elasticsearch takes around 48 hours.
-The Elasticsearch index is then topped up every 5 minutes to capture updates feed into Nominatim via Osmosis (as per Nominatims' install instructions).
+The Elasticsearch index is topped up every 5 minutes to capture updates feed into Nominatim via Osmosis (as per Nominatims' install instructions).
 
 TODO local compile instructions
