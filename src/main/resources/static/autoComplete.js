@@ -1,7 +1,7 @@
 $( "#location" ).autocomplete({
 	source: function( request, response ) {	
 		$.ajax({
-			url: "http://nominatim-ac.eelpieconsulting.co.uk/search",
+			url: "https://nominatim-ac.eelpieconsulting.co.uk/search",
 			cache: true,
 			dataType: "jsonp",
 			data: {
