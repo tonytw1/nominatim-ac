@@ -19,7 +19,7 @@ public class PlaceRowParser {
 	
 	private static final List<String> IGNORED_TAG_CLASSIFICATIONS = Lists.newArrayList("wikipedia", "description", "attribution", "population", "name:prefix", "website");
 
-	public Place buildPlaceFromRow(ResultSet places) throws SQLException {
+	public Place buildPlaceFromCurrentRow(ResultSet places) throws SQLException {
 		long osmId = places.getLong("osm_id");
 		String osmType = places.getString("osm_type");
 		String name = places.getString("en_label");

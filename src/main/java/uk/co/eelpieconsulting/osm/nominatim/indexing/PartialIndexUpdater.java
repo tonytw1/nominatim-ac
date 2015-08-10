@@ -2,7 +2,6 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -27,44 +26,39 @@ public class PartialIndexUpdater {
 	private final OsmDAO osmDAO;
 	private final PlaceRowParser placeRowParser;
 	private final ElasticSearchIndexer elasticSearchIndexer;
+	private final PartialIndexWatermarkService partialIndexWatermarkService;
 	
-	private DateTime start;
-
 	@Autowired
-	public PartialIndexUpdater(OSMDAOFactory osmDaoFactory, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer) throws SQLException {
+	public PartialIndexUpdater(OSMDAOFactory osmDaoFactory, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer, PartialIndexWatermarkService partialIndexWatermarkService) throws SQLException {
 		this.placeRowParser = placeRowParser;
 		this.elasticSearchIndexer = elasticSearchIndexer;
+		this.partialIndexWatermarkService = partialIndexWatermarkService;
 		this.osmDAO = osmDaoFactory.build();	
-		this.start = new DateTime(2015, 3, 29, 0, 0, 0);	// TODO persist
 	}
 	
-	//@Scheduled(fixedRate=300000)
+	@Scheduled(fixedRate=300000)
 	public void update() throws SQLException {
-		log.info("Updating indexed after: " + start);
-		final ResultSet places = osmDAO.getPlacesIndexedAfter(start, 10000);
+		final DateTime watermark = partialIndexWatermarkService.getWatermark();
+		log.info("Updating indexed after: " + watermark);
+		final ResultSet places = osmDAO.getPlacesIndexedAfter(watermark, 10000);
 		
 		List<Place> updates = Lists.newArrayList();
 		while (!places.isAfterLast()) {
 			boolean next = places.next();
 			if (next) {
-				updates.add(indexRow(places));
+				Place indexRow = indexRow(places);
+				updates.add(indexRow);	
 			}
 		}
 		
 		elasticSearchIndexer.index(updates);
 		log.info("Submitted updates: " + updates.size());
-	}
-	
-	public DateTime getStart() {
-		return start;
+				
+		partialIndexWatermarkService.setWatermark(new DateTime(places.getTimestamp("indexed_date")));
 	}
 	
 	private Place indexRow(final ResultSet places) throws SQLException {
-		Timestamp time = places.getTimestamp("indexed_date");
-		DateTime indexedDate = new DateTime(time);
-		
-		Place place = placeRowParser.buildPlaceFromRow(places);
-		start = indexedDate;	// TODO should be set after elasticsearch submit
+		Place place = placeRowParser.buildPlaceFromCurrentRow(places);
 		return place;
 	}
 	

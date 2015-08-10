@@ -61,7 +61,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 		}
 			
 		try {
-			Place place = placeRowParser.buildPlaceFromRow(places);
+			Place place = placeRowParser.buildPlaceFromCurrentRow(places);
 			start = place.getOsmId();
 			return place;
 			

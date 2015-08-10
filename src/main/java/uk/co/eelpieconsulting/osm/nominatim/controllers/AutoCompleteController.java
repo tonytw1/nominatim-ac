@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
-import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexUpdater;
+import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 
@@ -26,13 +26,15 @@ public class AutoCompleteController {
 	private final ElasticSearchAutoCompleteService autoCompleteService;
 	private final ViewFactory viewFactory;
 	private final OsmDAO osmDAO;
-	private final PartialIndexUpdater partialIndexUpdater;
+	private final PartialIndexWatermarkService partialIndexWatermarkService;
 	
 	@Autowired
-	public AutoCompleteController(ElasticSearchAutoCompleteService autoCompleteService, ViewFactory viewFactory, OSMDAOFactory osmDAOFactory, PartialIndexUpdater partialIndexUpdater) throws SQLException {
+	public AutoCompleteController(ElasticSearchAutoCompleteService autoCompleteService,
+			ViewFactory viewFactory, OSMDAOFactory osmDAOFactory,
+			PartialIndexWatermarkService partialIndexWatermarkService) throws SQLException {
 		this.autoCompleteService = autoCompleteService;
 		this.viewFactory = viewFactory;
-		this.partialIndexUpdater = partialIndexUpdater;
+		this.partialIndexWatermarkService = partialIndexWatermarkService;
 		this.osmDAO = osmDAOFactory.build();
 	}
 	
@@ -40,7 +42,7 @@ public class AutoCompleteController {
 	public ModelAndView status() throws SQLException {		
 		Map<String, String> data = Maps.newHashMap();
 		data.put("lastImportDate", BASIC_DATE_TIME.print(osmDAO.getLastImportDate()));		
-		data.put("indexedTo", BASIC_DATE_TIME.print(partialIndexUpdater.getStart()));		
+		data.put("indexedTo", BASIC_DATE_TIME.print(partialIndexWatermarkService.getWatermark()));		
 		data.put("indexedItems", Long.toString(autoCompleteService.indexedItemsCount()));
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
