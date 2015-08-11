@@ -24,9 +24,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
+import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
-import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

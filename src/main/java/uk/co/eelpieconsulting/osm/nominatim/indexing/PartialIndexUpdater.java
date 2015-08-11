@@ -36,30 +36,31 @@ public class PartialIndexUpdater {
 		this.osmDAO = osmDaoFactory.build();	
 	}
 	
-	@Scheduled(fixedRate=300000)
+	@Scheduled(fixedRate=60000)
 	public void update() throws SQLException {
-		final DateTime watermark = partialIndexWatermarkService.getWatermark();
+		final DateTime persistedWaterMark = partialIndexWatermarkService.getWatermark();
+		final DateTime watermark = persistedWaterMark != null ? persistedWaterMark : new DateTime(0L);
+		
 		log.info("Updating indexed after: " + watermark);
 		final ResultSet places = osmDAO.getPlacesIndexedAfter(watermark, 10000);
 		
+		
+		DateTime highWater = watermark;		
 		List<Place> updates = Lists.newArrayList();
 		while (!places.isAfterLast()) {
 			boolean next = places.next();
 			if (next) {
-				Place indexRow = indexRow(places);
-				updates.add(indexRow);	
+				Place place = placeRowParser.buildPlaceFromCurrentRow(places);
+				updates.add(place);	
+				highWater = new DateTime(places.getTimestamp("indexed_date"));
 			}
 		}
 		
 		elasticSearchIndexer.index(updates);
-		log.info("Submitted updates: " + updates.size());
-				
-		partialIndexWatermarkService.setWatermark(new DateTime(places.getTimestamp("indexed_date")));
-	}
+		log.info("Submitted updates: " + updates.size());				
 	
-	private Place indexRow(final ResultSet places) throws SQLException {
-		Place place = placeRowParser.buildPlaceFromCurrentRow(places);
-		return place;
+		log.info("Setting watermark to: " + highWater);
+		partialIndexWatermarkService.setWatermark(highWater);
 	}
 	
 }

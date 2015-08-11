@@ -16,6 +16,8 @@ import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 
 @Component
@@ -23,7 +25,9 @@ public class PartialIndexWatermarkService {
 
 	private static final String WATERMARK = "watermark";
 
-	private ElasticSearchClientFactory elasticSearchClientFactory;
+	private final ElasticSearchClientFactory elasticSearchClientFactory;
+	private final JsonSerializer jsonSerializer = new JsonSerializer();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	public PartialIndexWatermarkService(ElasticSearchClientFactory elasticSearchClientFactory) {
@@ -37,7 +41,13 @@ public class PartialIndexWatermarkService {
 			return null;
 		}
 
-		return null;	// TODO
+		try {
+			JsonNode asJson = objectMapper.readTree(searchResponse.getHits().getAt(0).sourceAsString());
+			return new DateTime(asJson.get(WATERMARK).asLong());
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e);	
+		}
 	}
 
 	public void setWatermark(DateTime watermark) {
@@ -45,7 +55,7 @@ public class PartialIndexWatermarkService {
 
 		Map<String, Object> map = Maps.newHashMap();
 		map.put("watermark", Long.toString(watermark.getMillis()));
-		String json = new JsonSerializer().serialize(map);
+		String json = jsonSerializer.serialize(map);
 
 		try {
 			IndexRequest indexRequest = new IndexRequest().index(ElasticSearchIndexer.INDEX).type(WATERMARK).id("1").source(json);
