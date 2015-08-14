@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,9 @@ import com.google.common.collect.Lists;
 @Component
 public class PartialIndexUpdater {
 	
-	private static Logger log = Logger.getLogger(PartialIndexUpdater.class);
+	private static final Logger log = Logger.getLogger(PartialIndexUpdater.class);
+	
+	private static final int COMMIT_SIZE = 1000;
 	
 	private final OsmDAO osmDAO;
 	private final PlaceRowParser placeRowParser;
@@ -38,29 +41,42 @@ public class PartialIndexUpdater {
 	
 	@Scheduled(fixedRate=60000)
 	public void update() throws SQLException {
-		final DateTime persistedWaterMark = partialIndexWatermarkService.getWatermark();
-		final DateTime watermark = persistedWaterMark != null ? persistedWaterMark : new DateTime(0L);
+		DateTime watermark = readPersistedWatermark();
 		
-		log.info("Updating indexed after: " + watermark);
-		final ResultSet places = osmDAO.getPlacesIndexedAfter(watermark, 10000);
-		
-		
-		DateTime highWater = watermark;		
-		List<Place> updates = Lists.newArrayList();
-		while (!places.isAfterLast()) {
-			boolean next = places.next();
-			if (next) {
-				Place place = placeRowParser.buildPlaceFromCurrentRow(places);
-				updates.add(place);	
-				highWater = new DateTime(places.getTimestamp("indexed_date"));
+		while (watermark.isBefore(DateTime.now().minusHours(1))) {		
+			log.info("Updating indexed after: " + watermark);
+			
+			final DateTime countStart = DateTime.now();
+
+			final ResultSet places = osmDAO.getPlacesIndexedAfter(watermark, COMMIT_SIZE);
+			
+			DateTime highWater = watermark;		
+			List<Place> updates = Lists.newArrayList();			
+			while (!places.isAfterLast()) {
+				boolean next = places.next();
+				if (next) {
+					Place place = placeRowParser.buildPlaceFromCurrentRow(places);
+					updates.add(place);	
+					highWater = new DateTime(places.getTimestamp("indexed_date"));
+				}
 			}
+			
+			elasticSearchIndexer.index(updates);
+			
+			final Duration duration = new Duration(countStart.getMillis(), DateTime.now().getMillis());
+			
+			log.info("Imported " + updates.size() + " partial updates in " + duration.getMillis());
+			log.info("Setting watermark to: " + highWater);
+			partialIndexWatermarkService.setWatermark(highWater);
+			
+			watermark = highWater;
 		}
 		
-		elasticSearchIndexer.index(updates);
-		log.info("Submitted updates: " + updates.size());				
-	
-		log.info("Setting watermark to: " + highWater);
-		partialIndexWatermarkService.setWatermark(highWater);
+	}
+
+	private DateTime readPersistedWatermark() {
+		final DateTime persistedWaterMark = partialIndexWatermarkService.getWatermark();
+		return persistedWaterMark != null ? persistedWaterMark : new DateTime(0L);
 	}
 	
 }
