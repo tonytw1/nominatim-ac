@@ -19,11 +19,11 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 public class ElasticSearchIndexer {
 	
 	public static final String TYPE = "places";
-	public static final String INDEX = "osm2015021001";
+	public static final String INDEX = "osm20150815";
 
 	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 		
-	private static final int COMMIT_SIZE = 1000;
+	private static final int COMMIT_SIZE = 10000;
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final JsonSerializer jsonSerializer;

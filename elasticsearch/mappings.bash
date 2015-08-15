@@ -1,6 +1,6 @@
-curl -XDELETE 'http://localhost:9200/osm/places/_mapping'
+curl -XDELETE 'http://localhost:9200/osm20150815/places/_mapping'
 
-curl -XPUT 'http://localhost:9200/osm/places/_mapping' -d '
+curl -XPUT 'http://localhost:9200/osm20150815/places/_mapping' -d '
 {
 	"places" : { 
 		"properties" : { 
