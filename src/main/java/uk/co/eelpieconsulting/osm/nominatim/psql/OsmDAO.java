@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -15,8 +14,6 @@ import org.joda.time.DateTime;
 public class OsmDAO {
 
 	private static final Logger log = Logger.getLogger(OsmDAO.class);
-
-	private static final String NAME = "name";
 
 	private final Connection conn;
 	private final PreparedStatement places;
@@ -108,24 +105,13 @@ public class OsmDAO {
 		return placesIndexedFrom.executeQuery();
 	}
 	
-	public String getAddress(long id, String type) throws SQLException {
+	public ResultSet getPlace(long id, String type) throws SQLException {
 		place.setLong(1, id);	// TODO not thread safe
 		place.setString(2, type);
 				
 		ResultSet placeRow = place.executeQuery();
-				
-		placeRow.next();		
-
-		final String address = placeRow.getString("en_label");		
-		Map<String, String> name = (Map<String, String>) placeRow.getObject(NAME);
-		if (name.containsKey(NAME)) {
-			String n = name.get(NAME);
-			if (!address.startsWith(n)) {
-				return n + ", " + address;
-			}
-  		}
-	
-		return address;
+		
+		return placeRow;
 	}
 	
 	private Connection getConnection() throws SQLException {
