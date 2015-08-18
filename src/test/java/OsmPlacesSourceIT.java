@@ -1,3 +1,8 @@
+import static org.junit.Assert.assertEquals;
+
+import java.sql.SQLException;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
@@ -6,12 +11,35 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
 public class OsmPlacesSourceIT {
 	
-	@Test
-	public void testname() throws Exception {
-		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(new OsmDAO("", "", "localhost"), new PlaceRowParser(), "R");
+	private static final String DATABASE_HOST = "localhost";
+	private static final String DATABASE_PASSWORD = "";
+	private static final String DATABASE_USER = "";
+
+	private OsmDAO osmDAO;
+
+	@Before
+	public void setup() throws SQLException {
+		osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
+	}
+	
+	//@Test
+	public void canIterateThroughPlaces() throws Exception {
+		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, new PlaceRowParser(), "R");
 		while(osmPlacesSource.hasNext()) {
 			System.out.println(osmPlacesSource.next());
 		}
 	}
-
+	
+	@Test
+	public void canExtractDisplayAddressForPlace() throws Exception {
+		final String address = osmDAO.getAddress(284926920, "W");
+		assertEquals("Twickenham Rowing Club, Church Lane, Cole Park, St Margarets, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DU, United Kingdom", address);
+	}
+	
+	@Test
+	public void nameShouldUseNameInPreferenceToRefField() throws Exception {
+		final String address = osmDAO.getAddress(202880711, "W");
+		assertEquals("Arras Tunnel, SH 1, Mount Cook, Wellington, Wellington City, WGN, 6011, New Zealand/Aotearoa", address);
+	}
+	
 }

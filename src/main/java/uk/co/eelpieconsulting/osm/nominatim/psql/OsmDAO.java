@@ -13,11 +13,12 @@ import org.joda.time.DateTime;
 
 public class OsmDAO {
 
-	private static Logger log = Logger.getLogger(OsmDAO.class);
+	private static final Logger log = Logger.getLogger(OsmDAO.class);
 
 	private final Connection conn;
 	private final PreparedStatement places;
-	private PreparedStatement placesIndexedFrom;
+	private final PreparedStatement placesIndexedFrom;
+	private final PreparedStatement place;
 	
 	private final String username;
 	private final String password;
@@ -54,9 +55,21 @@ public class OsmDAO {
 				+ "FROM placex "
 				+ "WHERE indexed_date > ? " 
 				+ "ORDER BY indexed_date "
-				+ "LIMIT ?");		
+				+ "LIMIT ?");
+		
+		place = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+				+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
+				+ "name,"
+				+ "calculated_country_code AS country,"
+				+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+				+ "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+				+ "rank_address AS rank, " 
+				+ "admin_level AS admin_level, " 
+				+ "extratags "
+				+ "FROM placex "
+				+ "WHERE osm_id = ? AND osm_type = ?");
 	}
-	
+		
 	public long getMax(String type) throws SQLException {
 		PreparedStatement prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=?");
 		prepareStatement.setString(1, type);
@@ -90,6 +103,16 @@ public class OsmDAO {
 		placesIndexedFrom.setTimestamp(1, new java.sql.Timestamp(start.getMillis()));
 		placesIndexedFrom.setLong(2, limit);
 		return placesIndexedFrom.executeQuery();
+	}
+	
+	public String getAddress(long id, String type) throws SQLException {
+		place.setLong(1, id);	// TODO not thread safe
+		place.setString(2, type);
+		
+		ResultSet executeQuery = place.executeQuery();
+		executeQuery.next();
+		
+		return executeQuery.getString(6);
 	}
 	
 	private Connection getConnection() throws SQLException {
