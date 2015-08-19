@@ -33,6 +33,7 @@ public class OsmDAO {
 		places = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
 						//+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
 						+ "get_address_by_language(place_id, ARRAY['name:en']) AS en_label,"
+						+ "name,"
 						+ "calculated_country_code AS country,"
 						+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
 						+ "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
@@ -43,8 +44,8 @@ public class OsmDAO {
 						+ "WHERE osm_id > ? AND osm_type=? order by osm_id, osm_type LIMIT ?");
 		
 		placesIndexedFrom = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
-				//+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
 				+ "get_address_by_language(place_id, ARRAY['name:en']) AS en_label,"
+				+ "name,"
 				+ "calculated_country_code AS country,"
 				+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
 				+ "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
