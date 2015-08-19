@@ -47,7 +47,7 @@ public class ElasticSearchAutoCompleteService {
 	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 	
 	private static final String COUNTRY = "country";
-	private static final String SEARCH_INDEX = ElasticSearchIndexer.INDEX;
+	private static final String SEARCH_INDEX = ElasticSearchIndexer.READ_INDEX;
 	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";

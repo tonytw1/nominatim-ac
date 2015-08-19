@@ -18,11 +18,12 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 @Component
 public class ElasticSearchIndexer {
 	
+	public static final String READ_INDEX = "osm20150815";	
+	public static final String WRITE_INDEX = "osm20150819";
 	public static final String TYPE = "places";
-	public static final String INDEX = "osm20150815";
+	
+	private static final Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 
-	private static Logger log = Logger.getLogger(ElasticSearchIndexer.class);
-		
 	private static final int COMMIT_SIZE = 10000;
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
@@ -47,7 +48,7 @@ public class ElasticSearchIndexer {
 			count++;
 			
 			final String placeJson = jsonSerializer.serialize(place);
-			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
+			bulkRequest.add(client.prepareIndex(WRITE_INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
 			
 			if (count == COMMIT_SIZE) {
 				bulkRequest.execute().actionGet();
@@ -70,7 +71,7 @@ public class ElasticSearchIndexer {
 	public void deleteAll() {
 		final Client client = elasticSearchClientFactory.getClient();
 		log.info("Deleting existing records");
-		client.prepareDeleteByQuery(INDEX).
+		client.prepareDeleteByQuery(WRITE_INDEX).
 			setQuery(QueryBuilders.matchAllQuery()).
 			setTypes(TYPE).
 			execute().
@@ -83,7 +84,7 @@ public class ElasticSearchIndexer {
 		final Client client = elasticSearchClientFactory.getClient();		
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		for (Place place : places) {
-			bulkRequest.add(client.prepareIndex(INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+			bulkRequest.add(client.prepareIndex(WRITE_INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
 		}
 		bulkRequest.execute().actionGet();
 		log.info("Update submitted");

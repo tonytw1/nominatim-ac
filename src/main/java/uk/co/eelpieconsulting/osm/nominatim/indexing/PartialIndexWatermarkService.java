@@ -35,7 +35,7 @@ public class PartialIndexWatermarkService {
 	}
 
 	public DateTime getWatermark() {
-		SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(ElasticSearchIndexer.INDEX).setTypes(WATERMARK).setQuery(boolQuery()).setSize(1);
+		SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(ElasticSearchIndexer.WRITE_INDEX).setTypes(WATERMARK).setQuery(boolQuery()).setSize(1);
 		SearchResponse searchResponse = request.get();
 		if (searchResponse.getHits().getTotalHits() == 0) {
 			return null;
@@ -58,7 +58,7 @@ public class PartialIndexWatermarkService {
 		String json = jsonSerializer.serialize(map);
 
 		try {
-			IndexRequest indexRequest = new IndexRequest().index(ElasticSearchIndexer.INDEX).type(WATERMARK).id("1").source(json);
+			IndexRequest indexRequest = new IndexRequest().index(ElasticSearchIndexer.WRITE_INDEX).type(WATERMARK).id("1").source(json);
 			client.index(indexRequest).get();
 			
 		} catch (Exception e) {
