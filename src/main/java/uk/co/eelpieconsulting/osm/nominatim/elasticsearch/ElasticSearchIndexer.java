@@ -9,6 +9,7 @@ import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
@@ -18,8 +19,6 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 @Component
 public class ElasticSearchIndexer {
 	
-	public static final String READ_INDEX = "osm20150815";	
-	public static final String WRITE_INDEX = "osm20150819";
 	public static final String TYPE = "places";
 	
 	private static final Logger log = Logger.getLogger(ElasticSearchIndexer.class);
@@ -28,10 +27,14 @@ public class ElasticSearchIndexer {
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final JsonSerializer jsonSerializer;
+
+	private final String writeIndex;
 	
 	@Autowired
-	public ElasticSearchIndexer(ElasticSearchClientFactory elasticSearchClientFactory) {
+	public ElasticSearchIndexer(ElasticSearchClientFactory elasticSearchClientFactory,
+			@Value("${elasticsearch.index.write}") String writeIndex) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
+		this.writeIndex = writeIndex;
 		this.jsonSerializer = new JsonSerializer();
 	}
 	
@@ -48,7 +51,7 @@ public class ElasticSearchIndexer {
 			count++;
 			
 			final String placeJson = jsonSerializer.serialize(place);
-			bulkRequest.add(client.prepareIndex(WRITE_INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
+			bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
 			
 			if (count == COMMIT_SIZE) {
 				bulkRequest.execute().actionGet();
@@ -68,10 +71,10 @@ public class ElasticSearchIndexer {
 		log.info("Import completed");
 	}
 
-	public void deleteAll() {
+	public void deleteAll() {	// TODO this doesn't really work with a full dataset; drop the index and rebuild
 		final Client client = elasticSearchClientFactory.getClient();
 		log.info("Deleting existing records");
-		client.prepareDeleteByQuery(WRITE_INDEX).
+		client.prepareDeleteByQuery(writeIndex).
 			setQuery(QueryBuilders.matchAllQuery()).
 			setTypes(TYPE).
 			execute().
@@ -84,7 +87,7 @@ public class ElasticSearchIndexer {
 		final Client client = elasticSearchClientFactory.getClient();		
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		for (Place place : places) {
-			bulkRequest.add(client.prepareIndex(WRITE_INDEX, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+			bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
 		}
 		bulkRequest.execute().actionGet();
 		log.info("Update submitted");

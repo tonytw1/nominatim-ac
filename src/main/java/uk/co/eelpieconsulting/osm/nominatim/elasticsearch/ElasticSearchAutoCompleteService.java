@@ -28,6 +28,7 @@ import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
@@ -47,7 +48,6 @@ public class ElasticSearchAutoCompleteService {
 	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 	
 	private static final String COUNTRY = "country";
-	private static final String SEARCH_INDEX = ElasticSearchIndexer.READ_INDEX;
 	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";
@@ -57,10 +57,13 @@ public class ElasticSearchAutoCompleteService {
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper mapper;
+
+	private final String readIndex;
 	
 	@Autowired
-	public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory) {
+	public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.read}") String readIndex) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
+		this.readIndex = readIndex;
 		this.mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
@@ -111,7 +114,7 @@ public class ElasticSearchAutoCompleteService {
 	
 	public long indexedItemsCount() {
 		final BoolQueryBuilder all = boolQuery();
-		final SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(SEARCH_INDEX).
+		final SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(readIndex).
 			setTypes(SEARCH_TYPE).
 			setQuery(all).
 			setSize(0);
@@ -124,7 +127,7 @@ public class ElasticSearchAutoCompleteService {
 		
         TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
 		
-		SearchRequestBuilder request = client.prepareSearch(SEARCH_INDEX).
+		SearchRequestBuilder request = client.prepareSearch(readIndex).
 			setTypes(SEARCH_TYPE).
 			setQuery(query).
 			addFacet(tagsFacet).

@@ -10,11 +10,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,13 +29,16 @@ public class PartialIndexWatermarkService {
 	private final JsonSerializer jsonSerializer = new JsonSerializer();
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
+	private final String writeIndex;
+
 	@Autowired
-	public PartialIndexWatermarkService(ElasticSearchClientFactory elasticSearchClientFactory) {
+	public PartialIndexWatermarkService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.write}") String writeIndex) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
+		this.writeIndex = writeIndex;
 	}
 
 	public DateTime getWatermark() {
-		SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(ElasticSearchIndexer.WRITE_INDEX).setTypes(WATERMARK).setQuery(boolQuery()).setSize(1);
+		SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(writeIndex).setTypes(WATERMARK).setQuery(boolQuery()).setSize(1);
 		SearchResponse searchResponse = request.get();
 		if (searchResponse.getHits().getTotalHits() == 0) {
 			return null;
@@ -58,7 +61,7 @@ public class PartialIndexWatermarkService {
 		String json = jsonSerializer.serialize(map);
 
 		try {
-			IndexRequest indexRequest = new IndexRequest().index(ElasticSearchIndexer.WRITE_INDEX).type(WATERMARK).id("1").source(json);
+			IndexRequest indexRequest = new IndexRequest().index(writeIndex).type(WATERMARK).id("1").source(json);
 			client.index(indexRequest).get();
 			
 		} catch (Exception e) {
