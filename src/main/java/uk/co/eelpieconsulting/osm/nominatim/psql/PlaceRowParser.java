@@ -47,7 +47,7 @@ public class PlaceRowParser {
 		
 		String address = placeRow.getString("en_label");
 		Map<String, String> name = (Map<String, String>) placeRow.getObject(NAME);
-		if (name.containsKey(NAME)) {
+		if (name != null && name.containsKey(NAME)) {
 			String n = name.get(NAME);
 			if (!address.startsWith(n)) {
 				address = n + ", " + address;
