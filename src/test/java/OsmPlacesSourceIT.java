@@ -18,15 +18,18 @@ public class OsmPlacesSourceIT {
 	private static final String DATABASE_USER = "";
 
 	private OsmDAO osmDAO;
+	private PlaceRowParser placeRowParser;
 
 	@Before
 	public void setup() throws SQLException {
+		placeRowParser = new PlaceRowParser();
 		osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
 	}
 	
 	//@Test
+	@Test
 	public void canIterateThroughPlaces() throws Exception {
-		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, new PlaceRowParser(), "R");
+		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, placeRowParser, "R");
 		while(osmPlacesSource.hasNext()) {
 			System.out.println(osmPlacesSource.next());
 		}
