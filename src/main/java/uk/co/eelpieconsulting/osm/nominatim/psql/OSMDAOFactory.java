@@ -1,10 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql;
 
-import java.sql.SQLException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.sql.SQLException;
 
 @Component
 public class OSMDAOFactory {

@@ -1,9 +1,8 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -12,13 +11,12 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
+import java.util.Map;
+
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
 @Component
 public class PartialIndexWatermarkService {
