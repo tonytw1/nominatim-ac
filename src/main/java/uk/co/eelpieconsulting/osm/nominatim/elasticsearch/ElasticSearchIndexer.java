@@ -1,20 +1,18 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.joda.time.DateTime;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
+
+import java.util.List;
 
 @Component
 public class ElasticSearchIndexer {
@@ -69,16 +67,6 @@ public class ElasticSearchIndexer {
 		}
 		
 		log.info("Import completed");
-	}
-
-	public void deleteAll() {	// TODO this doesn't really work with a full dataset; drop the index and rebuild
-		final Client client = elasticSearchClientFactory.getClient();
-		log.info("Deleting existing records");
-		client.prepareDeleteByQuery(writeIndex).
-			setQuery(QueryBuilders.matchAllQuery()).
-			setTypes(TYPE).
-			execute().
-			actionGet();
 	}
 
 	public void index(List<Place> places) {

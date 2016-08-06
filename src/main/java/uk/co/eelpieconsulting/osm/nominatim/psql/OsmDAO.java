@@ -1,15 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+
+import java.sql.*;
+import java.util.Properties;
 
 public class OsmDAO {
 

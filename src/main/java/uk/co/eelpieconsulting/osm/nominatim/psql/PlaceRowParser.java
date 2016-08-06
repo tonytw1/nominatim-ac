@@ -1,18 +1,16 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.springframework.stereotype.Component;
+import uk.co.eelpieconsulting.osm.nominatim.model.Place;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.elasticsearch.common.collect.Lists;
-import org.springframework.stereotype.Component;
-
-import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @Component
 public class PlaceRowParser {

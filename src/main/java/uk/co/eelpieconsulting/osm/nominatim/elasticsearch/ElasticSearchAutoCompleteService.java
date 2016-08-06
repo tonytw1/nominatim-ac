@@ -1,44 +1,29 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
-import static org.elasticsearch.index.query.FilterBuilders.termFilter;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.base.Strings;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.PrefixQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.facet.Facet;
-import org.elasticsearch.search.facet.FacetBuilders;
-import org.elasticsearch.search.facet.terms.TermsFacet;
-import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
-import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
-import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.apache.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
+import org.elasticsearch.index.query.PrefixQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import uk.co.eelpieconsulting.osm.nominatim.model.Place;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Component
 public class ElasticSearchAutoCompleteService {
@@ -90,20 +75,19 @@ public class ElasticSearchAutoCompleteService {
 			query = query.must(boolQuery().must(termQuery("rank", rank)));
 		}
 		
-		BoolFilterBuilder filter = FilterBuilders.boolFilter();
 		if (!Strings.isNullOrEmpty(country)) {
-			filter = filter.must(termFilter("country", country));
+			query = query.must(termQuery("country", country));
 		}
 		
 		if (lat != null && lon != null) {
 			String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
-			FilterBuilder geoCircle = FilterBuilders.geoDistanceFilter(LATLONG).
+			GeoDistanceQueryBuilder geoCircle = geoDistanceQuery(LATLONG).
 				lat(lat).lon(lon).
 				distance(distance);
-			filter = filter.must(geoCircle);
+			query = query.must(boolQuery().must(geoCircle));
 		}
 				
-		return executeAndParse(query, filter);
+		return executeAndParse(query);
 	}
 	
 	@Deprecated
@@ -122,21 +106,15 @@ public class ElasticSearchAutoCompleteService {
 		return request.get().getHits().getTotalHits();		
 	}
 	
-	private List<Place> executeAndParse(QueryBuilder query, BoolFilterBuilder filter) {
+	private List<Place> executeAndParse(QueryBuilder query) {
 		Client client = elasticSearchClientFactory.getClient();
-		
-        TermsFacetBuilder tagsFacet = FacetBuilders.termsFacet(TAGS).fields(TAGS).order(ComparatorType.COUNT).size(Integer.MAX_VALUE);
-		
+
 		SearchRequestBuilder request = client.prepareSearch(readIndex).
 			setTypes(SEARCH_TYPE).
 			setQuery(query).
-			addFacet(tagsFacet).
+			//addFacet(tagsFacet).
 			setSize(20);
-		
-		if (filter != null && filter.hasClauses()) {
-			request = request.setPostFilter(filter);
-		}
-		
+
 		SearchResponse response = request.execute().actionGet();
 		
 		List<Place> places = Lists.newArrayList();
@@ -154,18 +132,7 @@ public class ElasticSearchAutoCompleteService {
 				throw new RuntimeException(e);
 			}
 		}
-		
-		Map<String, Facet> facets = response.getFacets().facetsAsMap();
-		if (facets.containsKey(TAGS)) {
-			TermsFacet facet = (TermsFacet) facets.get(TAGS);
-			 final Map<String, Long> facetMap = Maps.newHashMap();
-             for (Entry entry : (List<? extends Entry>) facet.getEntries()) {
-            	 facetMap.put(entry.getTerm().string(), new Long(entry.getCount()));
-             }
-             
-             List<String> keySet = Lists.newArrayList(facetMap.keySet());
-             java.util.Collections.sort(keySet);            
-		}		
+
 		return places;
 	}
 	
@@ -175,8 +142,7 @@ public class ElasticSearchAutoCompleteService {
 	
 	private BoolQueryBuilder taggedAsCountry() {
 		QueryBuilder isCountry = termQuery(TAGS, "place|country");
-		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).should(isCountry);
-		return isRequiredType;
+		return boolQuery().minimumNumberShouldMatch(1).should(isCountry);
 	}
 	
 	private BoolQueryBuilder taggedAsCountryCityTownSuburb() {
@@ -188,15 +154,14 @@ public class ElasticSearchAutoCompleteService {
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
 		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
 		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
-				
-		BoolQueryBuilder isRequiredType = boolQuery().minimumNumberShouldMatch(1).
+
+		return boolQuery().minimumNumberShouldMatch(1).
 			should(isCountry).boost(10).
 			should(isCity).boost(5).
 			should(isAdminLevelSixBoundary).boost(5).
 			should(isCounty).boost(4).
 			should(isTown).boost(3).
 			should(isSuburb);
-		return isRequiredType;
 	}
 	
 }

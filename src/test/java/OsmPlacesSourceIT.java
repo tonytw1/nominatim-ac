@@ -1,15 +1,14 @@
-import static org.junit.Assert.assertEquals;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.junit.Assert.assertEquals;
 
 public class OsmPlacesSourceIT {
 	

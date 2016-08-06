@@ -1,12 +1,11 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql;
 
+import org.apache.log4j.Logger;
+import uk.co.eelpieconsulting.osm.nominatim.model.Place;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
-import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 public class OsmPlacesSource implements Iterator<Place> {
 	

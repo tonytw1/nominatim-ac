@@ -1,13 +1,13 @@
-curl -XDELETE 'http://localhost:9200/osm20150815/places/_mapping'
+curl -XDELETE 'http://localhost:9200/osm20160806/places/_mapping'
 
-curl -XPUT 'http://localhost:9200/osm20150815/places/_mapping' -d '
+curl -XPUT 'http://localhost:9200/osm20160806/places/_mapping' -d '
 {
 	"places" : { 
 		"properties" : { 
 			"address" : {
 				"type":"string",
 				"search_analyzer":"analyzer_startswith",
-				"index_analyzer":"analyzer_startswith"		
+				"analyzer":"analyzer_startswith"		
 			},
 			"classification" : {"type" : "string", "index" : "not_analyzed" },	
 			"type" : {"type" : "string", "index" : "not_analyzed" },	

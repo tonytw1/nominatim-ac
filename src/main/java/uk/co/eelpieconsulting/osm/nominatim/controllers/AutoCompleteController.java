@@ -1,8 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
-import java.sql.SQLException;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 
-import com.google.common.collect.Maps;
+import java.sql.SQLException;
+import java.util.Map;
 
 @Controller
 public class AutoCompleteController {
@@ -39,7 +37,7 @@ public class AutoCompleteController {
 	}
 	
 	@RequestMapping("/status")
-	public ModelAndView status() throws SQLException {		
+	public ModelAndView status() throws SQLException {
 		Map<String, String> data = Maps.newHashMap();
 		data.put("lastImportDate", BASIC_DATE_TIME.print(osmDAO.getLastImportDate()));		
 		data.put("indexedTo", BASIC_DATE_TIME.print(partialIndexWatermarkService.getWatermark()));		

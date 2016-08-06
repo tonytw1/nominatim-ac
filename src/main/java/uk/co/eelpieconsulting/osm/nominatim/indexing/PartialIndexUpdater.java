@@ -1,23 +1,21 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
-import com.google.common.collect.Lists;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 @Component
 public class PartialIndexUpdater {
