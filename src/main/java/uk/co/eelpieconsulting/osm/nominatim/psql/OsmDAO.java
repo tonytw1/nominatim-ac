@@ -54,7 +54,7 @@ public class OsmDAO {
 				+ "LIMIT ?");
 		
 		place = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
-				+ "get_address_by_language(place_id,  ARRAY['']) AS en_label,"
+				+ "get_address_by_language(place_id,  ARRAY['name:en']) AS en_label,"
 				+ "name,"
 				+ "calculated_country_code AS country,"
 				+ "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
