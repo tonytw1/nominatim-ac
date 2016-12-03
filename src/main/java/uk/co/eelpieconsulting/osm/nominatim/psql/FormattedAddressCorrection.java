@@ -13,15 +13,17 @@ public class FormattedAddressCorrection {
     private static final String NAME_EN = "name:en";
 
     public String appendName(String address, Map<String, String> name) {
+        final String trimmedAddress = address.trim();
+
         if (name != null && name.containsKey(NAME_EN)) {
-            String n = name.get(NAME_EN);
-            if (!address.startsWith(n)) {
-                String c = n + ", " + address;
-                log.info("Address corrected from '" + address + "' to '" + c + "'");
+            String n = name.get(NAME_EN).trim();
+            if (!trimmedAddress.startsWith(n + ",")) {
+                String c = n + ", " + trimmedAddress;
+                log.info("Address corrected from '" + trimmedAddress + "' to '" + c + "'");
                 return c;
             }
         }
-        return address;
+        return trimmedAddress;
     }
 
 }
