@@ -157,7 +157,7 @@ public class ElasticSearchAutoCompleteService {
 
 		return boolQuery().minimumNumberShouldMatch(1).
 			should(isCountry).boost(10).
-			should(isCity).boost(5).
+			should(isCity).boost(8).
 			should(isAdminLevelSixBoundary).boost(5).
 			should(isCounty).boost(4).
 			should(isTown).boost(3).
