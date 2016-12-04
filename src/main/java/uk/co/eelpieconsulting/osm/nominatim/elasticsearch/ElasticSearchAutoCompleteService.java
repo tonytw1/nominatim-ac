@@ -151,6 +151,7 @@ public class ElasticSearchAutoCompleteService {
 		QueryBuilder isCounty = termQuery(TAGS, "place|county");
 		QueryBuilder isTown = termQuery(TAGS, "place|town");
 		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
+		QueryBuilder isNationalPark = termQuery(TAGS, "boundary|national_park");
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
 		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
 		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
@@ -159,6 +160,7 @@ public class ElasticSearchAutoCompleteService {
 			should(isCountry).boost(10).
 			should(isCity).boost(8).
 			should(isAdminLevelSixBoundary).boost(5).
+			should(isNationalPark).boost(5).
 			should(isCounty).boost(4).
 			should(isTown).boost(3).
 			should(isSuburb);
