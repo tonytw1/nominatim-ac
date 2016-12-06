@@ -9,12 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class OsmPlacesSourceIT {
 	
 	private static final String DATABASE_HOST = "localhost";
-	private static final String DATABASE_USER = "";
-	private static final String DATABASE_PASSWORD = "";
+	private static final String DATABASE_USER = "www-data";
+	private static final String DATABASE_PASSWORD = "www";
 
 	private OsmDAO osmDAO;
 	private PlaceRowParser placeRowParser;
@@ -25,7 +26,7 @@ public class OsmPlacesSourceIT {
 		osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
 	}
 	
-	@Test
+	//@Test
 	public void canIterateThroughPlaces() throws Exception {
 		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, placeRowParser, "R");
 		int c = 0;
@@ -54,5 +55,17 @@ public class OsmPlacesSourceIT {
 
 		assertEquals("Arras Tunnel, Te Aro, Wellington, Wellington City, Wellington, 6011, New Zealand", place.getAddress());
 	}
-	
+
+	@Test
+	public void placeTagsShouldIncludeTheClassificationTypeAndExtraTags() throws Exception {
+		final ResultSet placeRow = osmDAO.getPlace(1643367, "R");
+		placeRow.next();
+
+		final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
+
+		assertTrue(place.getTags().contains("boundary|national_park"));
+		assertTrue(place.getTags().contains("wikipedia|en:Yosemite National Park"));
+		assertTrue(place.getTags().contains("website|http://www.nps.gov/yose/"));
+	}
+
 }

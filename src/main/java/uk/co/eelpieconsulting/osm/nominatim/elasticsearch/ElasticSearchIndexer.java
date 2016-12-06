@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -13,14 +14,16 @@ import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ElasticSearchIndexer {
 	
-	public static final String TYPE = "places";
-	
 	private static final Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 
+	private static final Set<String> IGNORED_TAG_CLASSIFICATIONS = Sets.newHashSet("wikipedia", "description", "attribution", "population", "name:prefix", "website");	// TODO is this optimisation actualy useful?
+
+	public static final String TYPE = "places";
 	private static final int COMMIT_SIZE = 10000;
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
@@ -47,7 +50,7 @@ public class ElasticSearchIndexer {
 		while (osmPlacesSource.hasNext()) {
 			Place place = osmPlacesSource.next();
 			count++;
-			
+
 			final String placeJson = jsonSerializer.serialize(place);
 			bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(placeJson));
 			
