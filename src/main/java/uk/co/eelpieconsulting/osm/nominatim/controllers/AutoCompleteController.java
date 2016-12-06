@@ -64,12 +64,5 @@ public class AutoCompleteController {
 		}
 		return mv;
 	}
-	
-	@Deprecated
-	@RequestMapping("/suggest")
-	public ModelAndView suggestions(@RequestParam(value = "q", required = true) String q, 
-			@RequestParam(value = "callback", required=false) String callback) {
-		return search(q, null, null, null, null, null, null, callback, ElasticSearchAutoCompleteService.COUNTRY_CITY_TOWN_SUBURB);
-	}
-	
+
 }
