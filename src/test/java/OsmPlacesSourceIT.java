@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 public class OsmPlacesSourceIT {
 	
 	private static final String DATABASE_HOST = "localhost";
-	private static final String DATABASE_PASSWORD = "";
 	private static final String DATABASE_USER = "";
+	private static final String DATABASE_PASSWORD = "";
 
 	private OsmDAO osmDAO;
 	private PlaceRowParser placeRowParser;
@@ -25,12 +25,13 @@ public class OsmPlacesSourceIT {
 		osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
 	}
 	
-	//@Test
 	@Test
 	public void canIterateThroughPlaces() throws Exception {
 		OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, placeRowParser, "R");
-		while(osmPlacesSource.hasNext()) {
+		int c = 0;
+		while(osmPlacesSource.hasNext() && c < 10000) {
 			System.out.println(osmPlacesSource.next());
+			c++;
 		}
 	}
 	
@@ -41,7 +42,7 @@ public class OsmPlacesSourceIT {
 
 		final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
 		
-		assertEquals("Twickenham Rowing Club, Church Lane, Cole Park, St Margarets, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DU, United Kingdom", place.getAddress());
+		assertEquals("Twickenham Rowing Club, Church Lane, Cole Park, Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DU, United Kingdom", place.getAddress());
 	}
 	
 	@Test
@@ -51,7 +52,7 @@ public class OsmPlacesSourceIT {
 		
 		final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
 
-		assertEquals("Arras Tunnel, SH 1, Mount Cook, Wellington, Wellington City, WGN, 6011, New Zealand/Aotearoa", place.getAddress());
+		assertEquals("Arras Tunnel, Te Aro, Wellington, Wellington City, Wellington, 6011, New Zealand", place.getAddress());
 	}
 	
 }
