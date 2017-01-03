@@ -36,7 +36,7 @@ public class OsmDAO {
 						+ "admin_level AS admin_level, " 
 						+ "extratags "
 						+ "FROM placex "
-						+ "WHERE osm_id > ? AND osm_type=? order by osm_id, osm_type, placex ASC LIMIT ?");
+						+ "WHERE osm_id > ? AND osm_type=? order by osm_id, osm_type LIMIT ?");
 		
 		placesIndexedFrom = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
 				+ "get_address_by_language(place_id, ARRAY['name:en', 'name']) AS en_label,"
