@@ -48,9 +48,26 @@ public class ElasticSearchIndexer {
 
 		List<Place> places = Lists.newArrayList();
 		DateTime countStart = DateTime.now();
+
+		Place currentPlace = null;
+		Set<String> currentTags = Sets.newHashSet();
 		while (osmPlacesSource.hasNext()) {
 			Place place = osmPlacesSource.next();
-			places.add(place);
+			if (currentPlace == null) {
+				currentPlace = place;
+			}
+
+			boolean placeIsDifferentFromTheLast = !(place.getOsmId() + place.getOsmType()).equals(currentPlace.getOsmId() + currentPlace.getOsmType());
+			if (placeIsDifferentFromTheLast) {
+				place.setTags(Lists.newArrayList(currentTags));
+				places.add(place);
+
+				currentPlace = place;
+				currentTags = Sets.newHashSet();
+
+			} else {
+				currentTags.addAll(place.getTags());
+			}
 
 			if (places.size() == COMMIT_SIZE) {
 				index(places);
@@ -62,6 +79,8 @@ public class ElasticSearchIndexer {
 			}
 		}
 
+		currentPlace.setTags(Lists.newArrayList(currentTags));
+		places.add(currentPlace);
 		if (!places.isEmpty()) {
 			index(places);
 		}

@@ -69,7 +69,11 @@ public class Place {
 	public List<String> getTags() {
 		return tags;
 	}
-	
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
 	public String getCountry() {
 		return country;
 	}
