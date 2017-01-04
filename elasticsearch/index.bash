@@ -1,6 +1,6 @@
-curl -XDELETE 'http://localhost:9200/osm20160806/'
+curl -XDELETE 'http://localhost:9200/osm20170104/'
 
-curl -XPUT http://localhost:9200/osm20160806/ -d '
+curl -XPUT http://localhost:9200/osm20170104/ -d '
 {
 	"settings":{
 		"index":{
