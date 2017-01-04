@@ -56,6 +56,7 @@ public class ElasticSearchIndexer {
 			if (currentPlace == null) {
 				currentPlace = place;
 			}
+			currentTags.addAll(place.getTags());
 
 			boolean placeIsDifferentFromTheLast = !(place.getOsmId() + place.getOsmType()).equals(currentPlace.getOsmId() + currentPlace.getOsmType());
 			if (placeIsDifferentFromTheLast) {
@@ -64,9 +65,6 @@ public class ElasticSearchIndexer {
 
 				currentPlace = place;
 				currentTags = Sets.newHashSet();
-
-			} else {
-				currentTags.addAll(place.getTags());
 			}
 
 			if (places.size() == COMMIT_SIZE) {
