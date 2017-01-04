@@ -86,7 +86,7 @@ public class OsmDAO {
 		prepareStatement.close();
 		return new DateTime(latest.getTime());
 	}
-	
+
 	public ResultSet getPlaces(long start, long stepSize, String type) throws SQLException {
 		log.info("Get places: " + start + ", " + stepSize + ", " + type);
 		places.setLong(1, start);
@@ -100,16 +100,13 @@ public class OsmDAO {
 		placesIndexedFrom.setLong(2, limit);
 		return placesIndexedFrom.executeQuery();
 	}
-	
+
 	public ResultSet getPlace(long id, String type) throws SQLException {
 		place.setLong(1, id);	// TODO not thread safe
 		place.setString(2, type);
-				
-		ResultSet placeRow = place.executeQuery();
-		
-		return placeRow;
+		return place.executeQuery();
 	}
-	
+
 	private Connection getConnection() throws SQLException {
 		String url = "jdbc:postgresql://" + host + "/nominatim";
 		Properties props = new Properties();

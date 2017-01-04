@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.controllers;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,11 +44,17 @@ public class PlaceController {
             long osmId = Long.parseLong(matcher.group(1));
             String osmType = matcher.group(2);
 
-            ResultSet placeRow = osmDAO.getPlace(osmId, osmType);
-            placeRow.next();
+            ResultSet placeRows = osmDAO.getPlace(osmId, osmType);
+            Place currentPlace = null;
+            Set<String> currentTags = Sets.newHashSet();
+            while(placeRows.next()) {
+                final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRows);
+                currentPlace = place;
+                currentTags.addAll(place.getTags());    // TODO deduplicate with indexer
+            }
 
-            final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
-            return new ModelAndView(viewFactory.getJsonView()).addObject("data", place);
+            currentPlace.setTags(Lists.newArrayList(currentTags));
+            return new ModelAndView(viewFactory.getJsonView()).addObject("data", currentPlace);
 
         } else {
             throw new IllegalArgumentException();
