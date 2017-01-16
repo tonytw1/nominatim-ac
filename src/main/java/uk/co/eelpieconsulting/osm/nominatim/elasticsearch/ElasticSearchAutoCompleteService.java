@@ -152,7 +152,7 @@ public class ElasticSearchAutoCompleteService {
 		QueryBuilder isTown = termQuery(TAGS, "place|town");
 		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
 		QueryBuilder isNationalPark = termQuery(TAGS, "boundary|national_park");
-		QueryBuilder isLeisurePark = termQuery(TAGS, "leisure|npark");
+		QueryBuilder isLeisurePark = termQuery(TAGS, "leisure|park");
 		QueryBuilder isPeak = termQuery(TAGS, "natural|peak");
 		QueryBuilder isVillage = termQuery(TAGS, "place|village");
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
