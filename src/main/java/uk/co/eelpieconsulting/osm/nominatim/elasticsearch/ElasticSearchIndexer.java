@@ -40,8 +40,6 @@ public class ElasticSearchIndexer {
 	
 	public void indexLines(OsmPlacesSource osmPlacesSource) {
 		log.info("Importing records");
-		BulkRequestBuilder bulkRequest = client.prepareBulk();		
-
 		List<Place> places = Lists.newArrayList();
 		DateTime countStart = DateTime.now();
 
