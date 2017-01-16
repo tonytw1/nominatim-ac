@@ -22,12 +22,9 @@ public class ElasticSearchIndexer {
 	
 	private static final Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 
-	private static final Set<String> IGNORED_TAG_CLASSIFICATIONS = Sets.newHashSet("wikipedia", "description", "attribution", "population", "name:prefix", "website");	// TODO is this optimisation actualy useful?
-
 	public static final String TYPE = "places";
 	private static final int COMMIT_SIZE = 1000;
 	
-	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final JsonSerializer jsonSerializer;
 
 	private final String writeIndex;
@@ -36,7 +33,6 @@ public class ElasticSearchIndexer {
 
 	@Autowired
 	public ElasticSearchIndexer(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.write}") String writeIndex) {
-		this.elasticSearchClientFactory = elasticSearchClientFactory;
 		this.writeIndex = writeIndex;
 		this.jsonSerializer = new JsonSerializer();
 		client = elasticSearchClientFactory.getClient();
