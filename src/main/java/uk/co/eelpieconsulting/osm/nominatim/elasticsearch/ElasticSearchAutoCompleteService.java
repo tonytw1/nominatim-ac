@@ -155,6 +155,7 @@ public class ElasticSearchAutoCompleteService {
 		QueryBuilder isLeisurePark = termQuery(TAGS, "leisure|park");
 		QueryBuilder isLeisureCommon = termQuery(TAGS, "leisure|common");
 		QueryBuilder isPeak = termQuery(TAGS, "natural|peak");
+		QueryBuilder isIsland = termQuery(TAGS, "place|island");
 		QueryBuilder isVillage = termQuery(TAGS, "place|village");
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
 		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
@@ -168,6 +169,7 @@ public class ElasticSearchAutoCompleteService {
 			should(isCounty).boost(4).
 			should(isTown).boost(3).
 			should(isPeak).boost(3).
+			should(isIsland).
 			should(isLeisurePark).
 			should(isLeisureCommon).
 			should(isVillage).
