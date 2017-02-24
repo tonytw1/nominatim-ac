@@ -183,7 +183,6 @@ public class ElasticSearchAutoCompleteService {
 	private BoolQueryBuilder taggedAsCountryStateCity() {
 		QueryBuilder isCountry = termQuery(TAGS, "place|country");
 		QueryBuilder isCity = termQuery(TAGS, "place|city");
-		QueryBuilder isCounty = termQuery(TAGS, "place|county");
 		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
 		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
 		QueryBuilder isAdminLevelFour = termQuery("adminLevel", "4");
@@ -194,7 +193,6 @@ public class ElasticSearchAutoCompleteService {
 				should(isCountry).boost(10).
 				should(isCity).boost(8).
 				should(isAdminLevelFourBoundary).boost(6).
-				should(isAdminLevelSixBoundary).boost(5).
-				should(isCounty).boost(0);
+				should(isAdminLevelSixBoundary).boost(5);
 	}
 }
