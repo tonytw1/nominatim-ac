@@ -29,7 +29,8 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class ElasticSearchAutoCompleteService {
 
 	public static final String COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb";
-	
+	public static final String COUNTRY_STATE_CITY = "countryStateCity";
+
 	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 	
 	private static final String COUNTRY = "country";
@@ -63,6 +64,9 @@ public class ElasticSearchAutoCompleteService {
 		
 		if (COUNTRY_CITY_TOWN_SUBURB.equals(profile)) {			
 			query.must(taggedAsCountryCityTownSuburb());
+		}
+		if (COUNTRY_STATE_CITY.equals(profile)) {
+			query.must(taggedAsCountryStateCity());
 		}
 		if (COUNTRY.equals(profile)) {			
 			query.must(taggedAsCountry());
@@ -175,5 +179,23 @@ public class ElasticSearchAutoCompleteService {
 			should(isVillage).
 			should(isSuburb);
 	}
-	
+
+	private BoolQueryBuilder taggedAsCountryStateCity() {
+		QueryBuilder isCountry = termQuery(TAGS, "place|country");
+		QueryBuilder isState = termQuery(TAGS, "place|state");
+		QueryBuilder isCity = termQuery(TAGS, "place|city");
+		QueryBuilder isCounty = termQuery(TAGS, "place|county");
+		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
+		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
+		QueryBuilder isAdminLevelFour = termQuery("adminLevel", "4");
+		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
+		QueryBuilder isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour);
+
+		return boolQuery().minimumNumberShouldMatch(1).
+				should(isCountry).boost(10).
+				should(isCity).boost(8).
+				should(isAdminLevelFourBoundary).boost(6).
+				should(isAdminLevelSixBoundary).boost(5).
+				should(isCounty).boost(4);
+	}
 }
