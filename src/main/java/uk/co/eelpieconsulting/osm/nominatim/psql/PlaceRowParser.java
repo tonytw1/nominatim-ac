@@ -28,7 +28,8 @@ public class PlaceRowParser {
 		double longitude = placeRow.getDouble("longitude");
 		String country = placeRow.getString("country");
 		int adminLevel = placeRow.getInt("admin_level");
-		
+		String name = placeRow.getString("name");
+
 		Map<String, String> extratags = (Map<String, String>) placeRow.getObject("extratags");
 
 		Map<String, Double> latlong = Maps.newHashMap();
@@ -47,7 +48,7 @@ public class PlaceRowParser {
 
 		String correctedAddress = formattedAddressCorrection.appendName(address, (Map<String, String>) placeRow.getObject(NAME));
 
-		return new Place(osmId, osmType, null, correctedAddress, classification, type, rank, latlong, Lists.newArrayList(tags), country, adminLevel);
+		return new Place(osmId, osmType, null, correctedAddress, classification, type, rank, latlong, Lists.newArrayList(tags), country, adminLevel, name);
 	}
 	
 	private void appendTag(String classification, String type, Set<String> tags) {

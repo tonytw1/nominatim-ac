@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.Strings;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,9 @@ public class ElasticSearchIndexer {
 
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		for (Place place : places) {
-			bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+			if (!Strings.isNullOrEmpty(place.getName())) {	// Discard entires with not specifc name
+				bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+			}
 		}
 		bulkRequest.execute().actionGet();
 		log.info("Update submitted");

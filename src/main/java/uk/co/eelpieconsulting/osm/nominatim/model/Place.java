@@ -16,11 +16,12 @@ public class Place {
 	private List<String> tags;
 	private String country;
 	private int adminLevel;
+	private String name;
 	
 	public Place() {
 	}
 	
-	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags, String country, int adminLevel) {
+	public Place(long osmId, String osmType, String houseNumber, String address, String classification, String type, int rank, Map<String, Double> latlong, List<String> tags, String country, int adminLevel, String name) {
 		this.osmId = osmId;
 		this.osmType = osmType;
 		this.housenumber = houseNumber;
@@ -32,6 +33,7 @@ public class Place {
 		this.tags = tags;
 		this.country = country;
 		this.adminLevel = adminLevel;
+		this.name = name;
 	}
 
 	public long getOsmId() {
@@ -101,13 +103,26 @@ public class Place {
 		return classification.toUpperCase() + "/" + type.toUpperCase();
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public String toString() {
-		return "Place [address=" + address + ", adminLevel=" + adminLevel
-				+ ", classification=" + classification + ", country=" + country
-				+ ", housenumber=" + housenumber + ", latlong=" + latlong
-				+ ", osmId=" + osmId + ", osmType=" + osmType + ", rank="
-				+ rank + ", tags=" + tags + ", type=" + type + "]";
+		return "Place{" +
+				"osmId=" + osmId +
+				", osmType='" + osmType + '\'' +
+				", housenumber='" + housenumber + '\'' +
+				", address='" + address + '\'' +
+				", classification='" + classification + '\'' +
+				", type='" + type + '\'' +
+				", rank=" + rank +
+				", latlong=" + latlong +
+				", tags=" + tags +
+				", country='" + country + '\'' +
+				", adminLevel=" + adminLevel +
+				", name='" + name + '\'' +
+				'}';
 	}
-	
+
 }
