@@ -85,13 +85,18 @@ public class ElasticSearchIndexer {
 		log.info("Importing updates");
 
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
+		boolean bulkRequestHasItems = false;
 		for (Place place : places) {
 			if (!Strings.isNullOrEmpty(place.getName())) {	// Discard entires with not specifc name
 				bulkRequest.add(client.prepareIndex(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).setSource(jsonSerializer.serialize(place)));
+				bulkRequestHasItems = true;
 			}
 		}
-		bulkRequest.execute().actionGet();
-		log.info("Update submitted");
+
+		if (bulkRequestHasItems) {
+			bulkRequest.execute().actionGet();
+			log.info("Update submitted");
+		}
 	}
 
 }
