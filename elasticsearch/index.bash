@@ -1,6 +1,4 @@
-curl -XDELETE 'http://localhost:9200/osm20170104/'
-
-curl -XPUT http://localhost:9200/osm20170104/ -d '
+curl -XPUT http://debian.local:9200/osm20170104/ -d '
 {
 	"settings":{
 		"index":{

@@ -18,6 +18,10 @@ import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Country;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTownSuburb;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 import java.io.IOException;
@@ -28,12 +32,8 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Component
 public class ElasticSearchAutoCompleteService {
 
-	public static final String COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb";
-	public static final String COUNTRY_STATE_CITY = "countryStateCity";
-
 	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
 	
-	private static final String COUNTRY = "country";
 	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";
@@ -45,33 +45,41 @@ public class ElasticSearchAutoCompleteService {
 	private final ObjectMapper mapper;
 
 	private final String readIndex;
-	
+
+	private final List<Profile> availableProfiles;
+
 	@Autowired
 	public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.read}") String readIndex) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
 		this.readIndex = readIndex;
 		this.mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		this.availableProfiles = Lists.newArrayList();
+		availableProfiles.add(new Country());
+		availableProfiles.add(new CountryCityTownSuburb());
+		availableProfiles.add(new CountryStateCity());
+	}
+
+	public List<Profile> getAvailableProfiles() {
+		return availableProfiles;
 	}
 	
-	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profile) {
+	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profileName) {
 		if (Strings.isNullOrEmpty(q)) {
 			return Lists.newArrayList();
 		}
-		
-		BoolQueryBuilder query = boolQuery();
+
+		Profile profile = null;
+		for(Profile p: availableProfiles) {
+			if (p.getName().equals(profileName)) {
+				profile = p;
+			}
+		}
+
+		BoolQueryBuilder query = profile.getQuery();
 		query = query.must(startsWith(q));
-		
-		if (COUNTRY_CITY_TOWN_SUBURB.equals(profile)) {			
-			query.must(taggedAsCountryCityTownSuburb());
-		}
-		if (COUNTRY_STATE_CITY.equals(profile)) {
-			query.must(taggedAsCountryStateCity());
-		}
-		if (COUNTRY.equals(profile)) {			
-			query.must(taggedAsCountry());
-		}
-		
+
 		if (!Strings.isNullOrEmpty(tag)) {
 			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
 		}
@@ -93,13 +101,7 @@ public class ElasticSearchAutoCompleteService {
 				
 		return executeAndParse(query);
 	}
-	
-	@Deprecated
-	public List<Place> getSuggestionsFor(String q) {
-		log.info("Finding sugestions for: " + q);
-		return search(q, null, null, null, null, null, null, COUNTRY_CITY_TOWN_SUBURB);
-	}
-	
+
 	public long indexedItemsCount() {
 		final BoolQueryBuilder all = boolQuery();
 		final SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(readIndex).
@@ -143,56 +145,5 @@ public class ElasticSearchAutoCompleteService {
 	private PrefixQueryBuilder startsWith(String q) {
 		return prefixQuery(ADDRESS, q.toLowerCase());
 	}
-	
-	private BoolQueryBuilder taggedAsCountry() {
-		QueryBuilder isCountry = termQuery(TAGS, "place|country");
-		return boolQuery().minimumNumberShouldMatch(1).should(isCountry);
-	}
-	
-	private BoolQueryBuilder taggedAsCountryCityTownSuburb() {
-		QueryBuilder isCountry = termQuery(TAGS, "place|country");
-		QueryBuilder isCity = termQuery(TAGS, "place|city");	
-		QueryBuilder isCounty = termQuery(TAGS, "place|county");
-		QueryBuilder isTown = termQuery(TAGS, "place|town");
-		QueryBuilder isSuburb = termQuery(TAGS, "place|suburb");
-		QueryBuilder isNationalPark = termQuery(TAGS, "boundary|national_park");
-		QueryBuilder isLeisurePark = termQuery(TAGS, "leisure|park");
-		QueryBuilder isLeisureCommon = termQuery(TAGS, "leisure|common");
-		QueryBuilder isPeak = termQuery(TAGS, "natural|peak");
-		QueryBuilder isIsland = termQuery(TAGS, "place|island");
-		QueryBuilder isVillage = termQuery(TAGS, "place|village");
-		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
-		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
-		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
 
-		return boolQuery().minimumNumberShouldMatch(1).
-			should(isCountry).boost(10).
-			should(isCity).boost(8).
-			should(isNationalPark).boost(8).
-			should(isAdminLevelSixBoundary).boost(5).
-			should(isCounty).boost(4).
-			should(isTown).boost(3).
-			should(isPeak).boost(3).
-			should(isIsland).
-			should(isLeisurePark).
-			should(isLeisureCommon).
-			should(isVillage).
-			should(isSuburb);
-	}
-
-	private BoolQueryBuilder taggedAsCountryStateCity() {
-		QueryBuilder isCountry = termQuery(TAGS, "place|country");
-		QueryBuilder isCity = termQuery(TAGS, "place|city");
-		QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
-		QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
-		QueryBuilder isAdminLevelFour = termQuery("adminLevel", "4");
-		QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
-		QueryBuilder isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour);
-
-		return boolQuery().minimumNumberShouldMatch(1).
-				should(isCountry).boost(10).
-				should(isCity).boost(8).
-				should(isAdminLevelFourBoundary).boost(6).
-				should(isAdminLevelSixBoundary).boost(5);
-	}
 }

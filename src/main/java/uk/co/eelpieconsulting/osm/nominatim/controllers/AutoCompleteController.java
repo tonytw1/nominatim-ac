@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
@@ -63,6 +64,15 @@ public class AutoCompleteController {
 			mv.addObject("callback", callback);
 		}
 		return mv;
+	}
+
+	@RequestMapping("/profiles")
+	public ModelAndView profiles() throws SQLException {
+		Map<String, String> data = Maps.newHashMap();
+		for(Profile p: autoCompleteService.getAvailableProfiles()) {
+			data.put(p.getName(), p.getName());
+		}
+		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
 
 }
