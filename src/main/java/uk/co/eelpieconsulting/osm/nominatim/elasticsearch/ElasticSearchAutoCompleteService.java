@@ -77,7 +77,7 @@ public class ElasticSearchAutoCompleteService {
 			}
 		}
 
-		BoolQueryBuilder query = profile.getQuery();
+		BoolQueryBuilder query = profile != null ? profile.getQuery(): new BoolQueryBuilder();
 		query = query.must(startsWith(q));
 
 		if (!Strings.isNullOrEmpty(tag)) {
