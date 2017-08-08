@@ -3,8 +3,7 @@ $( "#location" ).autocomplete({
 		$.ajax({
 			url: "https://nominatim-ac.eelpieconsulting.co.uk/search",
 			cache: true,
-			jsonpCallback : "callback",
-			dataType: "jsonp",
+			method: "GET",
 			data: {
 				q: request.term,
 				profile: $("#profile").val()					
