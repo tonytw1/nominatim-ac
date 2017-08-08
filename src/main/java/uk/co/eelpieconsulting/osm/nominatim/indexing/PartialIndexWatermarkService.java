@@ -11,8 +11,8 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.common.views.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
+import uk.co.eelpieconsulting.osm.nominatim.views.json.JsonSerializer;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class PartialIndexWatermarkService {
 	private static final String WATERMARK = "watermark";
 
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
-	private final JsonSerializer jsonSerializer = new JsonSerializer();
+	private final JsonSerializer jsonSerializer = new JsonSerializer();	// TODO This is a bad use of a view package; get your own one!
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private final String writeIndex;

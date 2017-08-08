@@ -7,11 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
+import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 @Controller
 public class PlaceController {
 
-    Pattern OSM_IDENTIFIER_FORMAT = Pattern.compile("^(\\d+)(R|W|N)$");
+    private final Pattern OSM_IDENTIFIER_FORMAT = Pattern.compile("^(\\d+)(R|W|N)$");
 
     private final ViewFactory viewFactory;
     private final OsmDAO osmDAO;

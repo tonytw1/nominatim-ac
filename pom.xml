@@ -86,12 +86,6 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.6</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>uk.co.eelpieconsulting.common</groupId>
-			<artifactId>common-views</artifactId>
-			<version>1.0.9</version>
-		</dependency>
 
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -124,6 +118,12 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
 		</dependency>
 
 		<dependency>

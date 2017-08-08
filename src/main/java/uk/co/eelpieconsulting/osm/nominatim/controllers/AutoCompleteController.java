@@ -6,14 +6,15 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
+import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class AutoCompleteController {
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", data);
 	}
 	
-	@RequestMapping("/search")
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public ModelAndView search(
 			@RequestParam(value = "q", required = false) String q,
 			@RequestParam(value = "tag", required = false) String tag,
@@ -66,7 +67,12 @@ public class AutoCompleteController {
 		return mv;
 	}
 
-	@RequestMapping("/profiles")
+	@RequestMapping(value = "/search", method = RequestMethod.OPTIONS)
+	public ModelAndView searchOptions() {
+			return new ModelAndView();
+	}
+
+	@RequestMapping(value = "/profiles", method = RequestMethod.GET)
 	public ModelAndView profiles() throws SQLException {
 		Map<String, String> data = Maps.newHashMap();
 		for(Profile p: autoCompleteService.getAvailableProfiles()) {
