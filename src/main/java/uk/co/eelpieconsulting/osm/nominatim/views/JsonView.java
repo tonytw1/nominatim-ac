@@ -32,7 +32,10 @@ public class JsonView implements View {
 		}
 		final String json = jsonSerializer.serialize(model.get("data"));
 		response.setHeader("Etag", etagGenerator.makeEtagFor(json));
-		
+
+		response.setHeader("Access-Control-Allow-Origin",  "*");
+		response.setHeader("Access-Control-Allow-Method",  "GET");
+
 		String callbackFunction = null;
 		if (model.containsKey("callback")) {			
 			callbackFunction = (String) model.get("callback");
