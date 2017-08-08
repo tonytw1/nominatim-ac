@@ -62,6 +62,19 @@ Nominatim AC will be maintained to further investigate the use of search 'profil
 ie. selectively excluding things like post boxes and bus stops.
 
 
+
+### Local development
+
+The framework used is Spring Boot.
+
+Configuration is in the file named application.properties.
+
+Run locally with:
+```
+mvn spring-boot:run
+```
+
+
 ### Installation
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.
 
