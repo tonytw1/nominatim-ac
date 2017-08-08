@@ -7,7 +7,6 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;

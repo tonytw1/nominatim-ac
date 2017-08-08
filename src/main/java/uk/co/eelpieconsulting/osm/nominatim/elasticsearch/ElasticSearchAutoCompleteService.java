@@ -22,6 +22,7 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Country;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTownSuburb;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
+import uk.co.eelpieconsulting.osm.nominatim.indexing.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 import java.io.IOException;

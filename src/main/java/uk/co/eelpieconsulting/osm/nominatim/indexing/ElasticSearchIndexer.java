@@ -1,4 +1,4 @@
-package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
+package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -11,9 +11,9 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
-import uk.co.eelpieconsulting.osm.nominatim.views.json.JsonSerializer;
 
 import java.util.List;
 import java.util.Set;

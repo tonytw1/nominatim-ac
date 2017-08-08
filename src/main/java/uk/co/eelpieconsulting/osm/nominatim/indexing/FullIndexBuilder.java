@@ -2,7 +2,6 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
