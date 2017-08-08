@@ -14,13 +14,11 @@ public class ViewFactory {
 	}
 
 	public JsonView getJsonView() {
-		return new JsonView(new WebStyleJsonSerializer(), etagGenerator);
+		return new JsonView(new WebStyleJsonSerializer(), etagGenerator, null);
 	}
 	
 	public JsonView getJsonView(int maxAge) {
-		final JsonView view = new JsonView(new WebStyleJsonSerializer(), etagGenerator);
-		view.setMaxAge(maxAge);
-		return view;
+		return new JsonView(new WebStyleJsonSerializer(), etagGenerator, maxAge);
 	}
 
 }
