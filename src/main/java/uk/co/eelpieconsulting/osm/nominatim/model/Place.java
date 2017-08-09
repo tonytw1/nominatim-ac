@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,7 @@ public class Place {
 		return osmType;
 	}
 
+	@JsonIgnore
 	public String getHousenumber() {
 		return housenumber;
 	}
@@ -59,15 +62,17 @@ public class Place {
 	public String getType() {
 		return type;
 	}
-	
+
+	@JsonIgnore
 	public int getRank() {
 		return rank;
 	}
-	
+
 	public Map<String, Double> getLatlong() {
 		return latlong;
 	}
 
+	@JsonIgnore
 	public List<String> getTags() {
 		return tags;
 	}
@@ -79,7 +84,8 @@ public class Place {
 	public String getCountry() {
 		return country;
 	}
-	
+
+	@JsonIgnore
 	public Integer getAdminLevel() {
 		return adminLevel;
 	}
@@ -103,6 +109,7 @@ public class Place {
 		return classification.toUpperCase() + "/" + type.toUpperCase();
 	}
 
+	@JsonIgnore
 	public String getName() {
 		return name;
 	}
