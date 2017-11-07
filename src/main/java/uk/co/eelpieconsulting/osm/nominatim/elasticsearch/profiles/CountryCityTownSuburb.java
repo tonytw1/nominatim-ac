@@ -28,6 +28,8 @@ public class CountryCityTownSuburb implements Profile {
         QueryBuilder isIsland = termQuery(TAGS, "place|island");
         QueryBuilder isVillage = termQuery(TAGS, "place|village");
         QueryBuilder isBoundary = termQuery(TAGS, "boundary|administrative");
+        QueryBuilder isAdminLevelFour = termQuery("adminLevel", "4");
+        QueryBuilder isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour);
         QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
         QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
 
@@ -35,6 +37,7 @@ public class CountryCityTownSuburb implements Profile {
                 should(isCountry).boost(10).
                 should(isCity).boost(8).
                 should(isNationalPark).boost(8).
+                should(isAdminLevelFourBoundary).boost(6).
                 should(isAdminLevelSixBoundary).boost(5).
                 should(isCounty).boost(4).
                 should(isTown).boost(3).
