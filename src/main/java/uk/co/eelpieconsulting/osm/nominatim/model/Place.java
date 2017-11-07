@@ -72,7 +72,7 @@ public class Place {
 		return latlong;
 	}
 
-	@JsonIgnore
+	// @JsonIgnore
 	public List<String> getTags() {
 		return tags;
 	}
