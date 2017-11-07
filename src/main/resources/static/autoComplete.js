@@ -1,7 +1,8 @@
+ var searchUrl = window.location.href + "search";
 $( "#location" ).autocomplete({
 	source: function( request, response ) {	
 		$.ajax({
-			url: "https://nominatim-ac.eelpieconsulting.co.uk/search",
+			url: searchUrl,
 			cache: true,
 			method: "GET",
 			data: {
