@@ -55,7 +55,7 @@ public class ElasticSearchIndexer {
 
 			boolean placeIsDifferentFromTheLast = !(place.getOsmId() + place.getOsmType()).equals(currentPlace.getOsmId() + currentPlace.getOsmType());
 			if (placeIsDifferentFromTheLast) {
-				place.setTags(Lists.newArrayList(currentTags));
+				place.setTags(filterTags(currentTags));
 				places.add(place);
 
 				currentPlace = place;
@@ -72,7 +72,7 @@ public class ElasticSearchIndexer {
 			}
 		}
 
-		currentPlace.setTags(Lists.newArrayList(currentTags));
+		currentPlace.setTags(filterTags(currentTags));
 		places.add(currentPlace);
 		if (!places.isEmpty()) {
 			index(places);
@@ -97,6 +97,10 @@ public class ElasticSearchIndexer {
 			bulkRequest.execute().actionGet();
 			log.info("Update submitted");
 		}
+	}
+
+	private List<String> filterTags(Set<String> tags) {
+		return Lists.newArrayList(tags);	// TODO drop non searchable tags to trim the index size
 	}
 
 }
