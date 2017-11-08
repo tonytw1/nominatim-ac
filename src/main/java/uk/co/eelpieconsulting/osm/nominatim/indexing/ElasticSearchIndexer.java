@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
@@ -15,17 +16,22 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFac
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 @Component
 public class ElasticSearchIndexer {
-	
+
 	private static final Logger log = Logger.getLogger(ElasticSearchIndexer.class);
 
 	public static final String TYPE = "places";
+
 	private static final int COMMIT_SIZE = 1000;
-	
+	private static final HashSet<String> TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED = Sets.newHashSet("population", "wikipedia", "wikidata", "website");
+	private static final Splitter pipeSplitter = Splitter.on("|");
+
 	private final JsonSerializer jsonSerializer;
 
 	private final String writeIndex;
@@ -100,7 +106,17 @@ public class ElasticSearchIndexer {
 	}
 
 	private List<String> filterTags(Set<String> tags) {
-		return Lists.newArrayList(tags);	// TODO drop non searchable tags to trim the index size
+		Set<String> filtered = Sets.newHashSet();
+		for (String t : tags) {
+			Iterator<String> split = pipeSplitter.split(t).iterator();
+			if (split.hasNext()) {
+				String prefix = split.next();
+				if (!TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED.contains(prefix)) {
+					filtered.add(t);
+				}
+			}
+		}
+		return Lists.newArrayList(filtered);
 	}
 
 }
