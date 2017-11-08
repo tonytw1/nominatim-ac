@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -23,6 +22,7 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTo
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
 import uk.co.eelpieconsulting.osm.nominatim.indexing.ElasticSearchIndexer;
+import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
 import java.io.IOException;
@@ -33,8 +33,6 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Component
 public class ElasticSearchAutoCompleteService {
 
-	private static final Logger log = Logger.getLogger(ElasticSearchAutoCompleteService.class);
-	
 	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
 	private static final String ADDRESS = "address";
@@ -66,7 +64,7 @@ public class ElasticSearchAutoCompleteService {
 		return availableProfiles;
 	}
 	
-	public List<Place> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profileName) {
+	public List<DisplayPlace> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profileName) {
 		if (Strings.isNullOrEmpty(q)) {
 			return Lists.newArrayList();
 		}
@@ -113,7 +111,7 @@ public class ElasticSearchAutoCompleteService {
 		return request.get().getHits().getTotalHits();		
 	}
 	
-	private List<Place> executeAndParse(QueryBuilder query) {
+	private List<DisplayPlace> executeAndParse(QueryBuilder query) {
 		Client client = elasticSearchClientFactory.getClient();
 
 		SearchRequestBuilder request = client.prepareSearch(readIndex).
@@ -124,12 +122,13 @@ public class ElasticSearchAutoCompleteService {
 
 		SearchResponse response = request.execute().actionGet();
 		
-		List<Place> places = Lists.newArrayList();
+		List<DisplayPlace> places = Lists.newArrayList();
 		for (int i = 0; i < response.getHits().getHits().length; i++) {
 			SearchHit searchHit = response.getHits().getHits()[i];
 
 			try {
-				places.add(mapper.readValue(searchHit.getSourceAsString(), Place.class));
+				Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
+				places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(), place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
 
 			} catch (JsonParseException e) {
 				throw new RuntimeException(e);
