@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,117 +35,121 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Component
 public class ElasticSearchAutoCompleteService {
 
-	private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
+  private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
 
-	private static final String ADDRESS = "address";
-	private static final String DEFAULT_RADIUS = "100km";
-	private static final String LATLONG = "latlong";
-	private static final String TAGS = "tags";
-	
-	private final ElasticSearchClientFactory elasticSearchClientFactory;
-	private final ObjectMapper mapper;
+  private static final String ADDRESS = "address";
+  private static final String DEFAULT_RADIUS = "100km";
+  private static final String LATLONG = "latlong";
+  private static final String TAGS = "tags";
 
-	private final String readIndex;
+  private final ElasticSearchClientFactory elasticSearchClientFactory;
+  private final ObjectMapper mapper;
 
-	private final List<Profile> availableProfiles;
+  private final String readIndex;
 
-	@Autowired
-	public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.read}") String readIndex) {
-		this.elasticSearchClientFactory = elasticSearchClientFactory;
-		this.readIndex = readIndex;
-		this.mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  private final List<Profile> availableProfiles;
 
-		this.availableProfiles = Lists.newArrayList();
-		availableProfiles.add(new Country());
-		availableProfiles.add(new CountryCityTownSuburb());
-		availableProfiles.add(new CountryStateCity());
-	}
+  @Autowired
+  public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.read}") String readIndex) {
+    this.elasticSearchClientFactory = elasticSearchClientFactory;
+    this.readIndex = readIndex;
+    this.mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-	public List<Profile> getAvailableProfiles() {
-		return availableProfiles;
-	}
-	
-	public List<DisplayPlace> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profileName) {
-		if (Strings.isNullOrEmpty(q)) {
-			return Lists.newArrayList();
-		}
+    this.availableProfiles = Lists.newArrayList();
+    availableProfiles.add(new Country());
+    availableProfiles.add(new CountryCityTownSuburb());
+    availableProfiles.add(new CountryStateCity());
+  }
 
-		Profile profile = null;
-		for(Profile p: availableProfiles) {
-			if (p.getName().equals(profileName)) {
-				profile = p;
-			}
-		}
+  public List<Profile> getAvailableProfiles() {
+    return availableProfiles;
+  }
 
-		BoolQueryBuilder query = profile != null ? profile.getQuery(): new BoolQueryBuilder();
-		query = query.must(startsWith(q));
+  public List<DisplayPlace> search(String q, String tag, Double lat, Double lon, Double radius, Integer rank, String country, String profileName) throws IOException {
+    if (Strings.isNullOrEmpty(q)) {
+      return Lists.newArrayList();
+    }
 
-		if (!Strings.isNullOrEmpty(tag)) {
-			query = query.must(boolQuery().must(termQuery(TAGS, tag)));
-		}
-		if (rank != null) {
-			query = query.must(boolQuery().must(termQuery("rank", rank)));
-		}
-		
-		if (!Strings.isNullOrEmpty(country)) {
-			query = query.must(termQuery("country", country));
-		}
-		
-		if (lat != null && lon != null) {
-			String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
-			GeoDistanceQueryBuilder geoCircle = geoDistanceQuery(LATLONG).
-				lat(lat).lon(lon).
-				distance(distance);
-			query = query.must(boolQuery().must(geoCircle));
-		}
-				
-		return executeAndParse(query);
-	}
+    Profile profile = null;
+    for (Profile p : availableProfiles) {
+      if (p.getName().equals(profileName)) {
+        profile = p;
+      }
+    }
 
-	public long indexedItemsCount() {
-		final BoolQueryBuilder all = boolQuery();
-		final SearchRequestBuilder request = elasticSearchClientFactory.getClient().prepareSearch(readIndex).
-			setTypes(SEARCH_TYPE).
-			setQuery(all).
-			setSize(0);
-	
-		return request.get().getHits().getTotalHits();		
-	}
-	
-	private List<DisplayPlace> executeAndParse(QueryBuilder query) {
-		Client client = elasticSearchClientFactory.getClient();
+    BoolQueryBuilder query = profile != null ? profile.getQuery() : new BoolQueryBuilder();
+    query = query.must(startsWith(q));
 
-		SearchRequestBuilder request = client.prepareSearch(readIndex).
-			setTypes(SEARCH_TYPE).
-			setQuery(query).
-			//addFacet(tagsFacet).
-			setSize(20);
+    if (!Strings.isNullOrEmpty(tag)) {
+      query = query.must(boolQuery().must(termQuery(TAGS, tag)));
+    }
+    if (rank != null) {
+      query = query.must(boolQuery().must(termQuery("rank", rank)));
+    }
 
-		SearchResponse response = request.execute().actionGet();
-		
-		List<DisplayPlace> places = Lists.newArrayList();
-		for (int i = 0; i < response.getHits().getHits().length; i++) {
-			SearchHit searchHit = response.getHits().getHits()[i];
+    if (!Strings.isNullOrEmpty(country)) {
+      query = query.must(termQuery("country", country));
+    }
 
-			try {
-				Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
-				places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(), place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
+    if (lat != null && lon != null) {
+      String distance = radius != null ? Double.toString(radius) + "km" : DEFAULT_RADIUS;
+      GeoDistanceQueryBuilder geoCircle = geoDistanceQuery(LATLONG).point(lat, lon).distance(distance);
+      query = query.must(boolQuery().must(geoCircle));
+    }
 
-			} catch (JsonParseException e) {
-				throw new RuntimeException(e);
-			} catch (JsonMappingException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+    return executeAndParse(query);
+  }
 
-		return places;
-	}
-	
-	private PrefixQueryBuilder startsWith(String q) {
-		return prefixQuery(ADDRESS, q.toLowerCase());
-	}
+  public long indexedItemsCount() throws IOException {
+    final BoolQueryBuilder all = boolQuery();
+
+    SearchRequest searchRequest = new SearchRequest(readIndex);
+    searchRequest.types(SEARCH_TYPE);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.query(all);
+    searchSourceBuilder.size(0);
+    searchRequest.source(searchSourceBuilder);
+
+    RestHighLevelClient client = elasticSearchClientFactory.getClient();
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT.DEFAULT);
+
+    return response.getHits().totalHits;
+  }
+
+  private List<DisplayPlace> executeAndParse(QueryBuilder query) throws IOException {
+    RestHighLevelClient client = elasticSearchClientFactory.getClient();
+
+    SearchRequest searchRequest = new SearchRequest(readIndex);
+    searchRequest.types(SEARCH_TYPE);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.query(query);
+    searchRequest.source(searchSourceBuilder);
+
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT.DEFAULT);
+
+    List<DisplayPlace> places = Lists.newArrayList();
+    for (int i = 0; i < response.getHits().getHits().length; i++) {
+      SearchHit searchHit = response.getHits().getHits()[i];
+
+      try {
+        Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
+        places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(), place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
+
+      } catch (JsonParseException e) {
+        throw new RuntimeException(e);
+      } catch (JsonMappingException e) {
+        throw new RuntimeException(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    return places;
+  }
+
+  private PrefixQueryBuilder startsWith(String q) {
+    return prefixQuery(ADDRESS, q.toLowerCase());
+  }
 
 }

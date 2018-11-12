@@ -6,6 +6,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 @Component
@@ -22,7 +23,7 @@ public class FullIndexBuilder {
 		this.placeRowParser = placeRowParser;
 	}
 		
-	public void buildFullIndex() throws SQLException {	
+	public void buildFullIndex() throws SQLException, IOException {
 		//indexer.deleteAll();		
 		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "R"));
 		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "W"));
