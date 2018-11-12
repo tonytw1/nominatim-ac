@@ -28,7 +28,7 @@ dependencies {
 	testCompile "junit:junit:4.8.2"
 	testCompile "org.mockito:mockito-core:1.8.5"
 	testCompile "org.springframework:spring-mock:2.0.8"
-	compile "org.elasticsearch:elasticsearch:2.3.2"
+	compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.3.2'
 	compile "org.slf4j:slf4j-api:1.6.6"
 	compile "joda-time:joda-time:2.0"
 	compile "org.postgresql:postgresql:9.3-1102-jdbc4"
@@ -37,6 +37,6 @@ dependencies {
 	compile "com.google.guava:guava:19.0"
 	compile "commons-codec:commons-codec:1.6"
 	compile "commons-io:commons-io:2.4"
-	compile "com.fasterxml.jackson.core:jackson-core:2.7.0"
-	compile "com.fasterxml.jackson.core:jackson-databind:2.7.0"
+	compile "com.fasterxml.jackson.core:jackson-core:2.9.7"
+	compile "com.fasterxml.jackson.core:jackson-databind:2.9.7"
 }

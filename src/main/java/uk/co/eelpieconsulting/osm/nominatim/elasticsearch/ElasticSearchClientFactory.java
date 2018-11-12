@@ -1,15 +1,13 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
+import org.apache.http.HttpHost;
 import org.apache.log4j.Logger;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @Component
@@ -20,7 +18,7 @@ public class ElasticSearchClientFactory {
 	private String clusterName;
 	private String unicastHost;
 	
-	private Client client;
+	private RestClient client;
 	
 	@Autowired
 	public ElasticSearchClientFactory(@Value("${elasticsearch.cluster}") String clusterName,
@@ -29,7 +27,7 @@ public class ElasticSearchClientFactory {
 		this.unicastHost = unicastHost;
 	}
 	
-	public synchronized Client getClient() {
+	public synchronized RestClient getClient() {
 		if (client == null) {
 			try {
 				client = connectToCluster();
@@ -40,12 +38,13 @@ public class ElasticSearchClientFactory {
 		return client;
 	}
 
-	private Client connectToCluster() throws UnknownHostException {
+	private RestClient connectToCluster() throws UnknownHostException {
 		if (client == null) {			
 			log.info("Connecting to elastic search cluster: " + clusterName + ", unicast hosts: " + unicastHost);
-			final Settings settings = Settings.settingsBuilder().put("cluster.name", "elasticsearch").build();
-			client = TransportClient.builder().settings(settings).build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(unicastHost), 9300));
+			final Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
+			client = RestClient.builder(new HttpHost(unicastHost, 9200, "http")).build();	// TODO clustername
 		}
+
 		return client;
 	}
 	
