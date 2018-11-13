@@ -1,14 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
-import com.google.common.collect.Lists
-import com.google.common.collect.Maps
-import com.google.common.collect.Sets
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.osm.nominatim.model.LatLong
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import java.sql.ResultSet
 import java.sql.SQLException
-
 
 @Component
 class PlaceRowParser {
@@ -18,19 +14,23 @@ class PlaceRowParser {
     @Throws(SQLException::class)
     fun buildPlaceFromCurrentRow(placeRow: ResultSet): Place {
 
-        fun appendTag(classification: String, type: String?, tags: MutableSet<String>) {    // TODO remove optional
-            tags.add("$classification|$type")
-        }
-
-        val extratags = placeRow.getObject("extratags") as Map<String, String>
-
-        val tags = Sets.newHashSet<String>()
-        appendTag(placeRow.getString(3), placeRow.getString(4), tags)
-        if (extratags != null) {
-            for (key in extratags.keys) {
-                appendTag(key, extratags[key], tags)
+        fun extractTagsFromRow(): List<String> {
+            fun asTag(classification: String, type: String): String {
+                return "$classification|$type"
             }
+
+            val tag = listOf(asTag(placeRow.getString(3), placeRow.getString(4)))
+            val extratagsField = placeRow.getObject("extratags") as Map<String, String>
+            val extraTags = if (extratagsField != null) {
+                extratagsField.entries.map {
+                    asTag(it.key, it.value)
+                }
+            } else {
+                emptyList()
+            }
+            return tag + extraTags
         }
+
 
         val address = placeRow.getString("en_label")
         val correctedAddress = formattedAddressCorrection.appendName(address, placeRow.getObject("name") as Map<String, String>)
@@ -46,7 +46,7 @@ class PlaceRowParser {
                 type = placeRow.getString(4),
                 rank = placeRow.getInt("rank"),
                 latlong = latlong,
-                tags = Lists.newArrayList(tags),
+                tags = extractTagsFromRow(),
                 country = placeRow.getString("country"),
                 adminLevel = placeRow.getInt("admin_level"))
     }
