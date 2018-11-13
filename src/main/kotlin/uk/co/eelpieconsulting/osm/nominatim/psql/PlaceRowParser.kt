@@ -9,8 +9,6 @@ import java.sql.SQLException
 @Component
 class PlaceRowParser {
 
-    private val formattedAddressCorrection = FormattedAddressCorrection()
-
     @Throws(SQLException::class)
     fun buildPlaceFromCurrentRow(placeRow: ResultSet): Place {
 
@@ -31,17 +29,13 @@ class PlaceRowParser {
             return tag + extraTags
         }
 
-
-        val address = placeRow.getString("en_label")
-        val correctedAddress = formattedAddressCorrection.appendName(address, placeRow.getObject("name") as Map<String, String>)
-
         val latlong = LatLong(
                 placeRow.getDouble("latitude"),
                 placeRow.getDouble("longitude"))
 
         return Place(osmId = placeRow.getLong("osm_id"),
                 osmType = placeRow.getString("osm_type"),
-                address = correctedAddress,
+                address = placeRow.getString("en_label").trim(),
                 classification = placeRow.getString(3),
                 type = placeRow.getString(4),
                 rank = placeRow.getInt("rank"),
