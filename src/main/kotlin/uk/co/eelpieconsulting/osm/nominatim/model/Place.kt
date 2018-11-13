@@ -12,26 +12,7 @@ class Place(
         var tags: List<String>,
         val country: String,
         val adminLevel: Int,
-        val name: String) {
-
-
-    fun getDisplayType(): String {
-        if (tags.contains("place|country")) {
-            return "country"
-        }
-        if (tags.contains("place|county")) {
-            return "county"
-        }
-        if (tags.contains("place|city")) {
-            return "city"
-        }
-        if (tags.contains("place|town")) {
-            return "town"
-        }
-        return if (tags.contains("place|suburb")) {
-            "suburb"
-        } else classification.toUpperCase() + "/" + type.toUpperCase()
-    }
+        val name: String? = null) {
 
 }
 

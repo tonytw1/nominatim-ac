@@ -48,8 +48,7 @@ class PlaceRowParser {
                 latlong = latlong,
                 tags = Lists.newArrayList(tags),
                 country = placeRow.getString("country"),
-                adminLevel = placeRow.getInt("admin_level"),
-                name = placeRow.getString("name"))
+                adminLevel = placeRow.getInt("admin_level"))
     }
 
 }

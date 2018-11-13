@@ -129,19 +129,13 @@ public class ElasticSearchAutoCompleteService {
     for (int i = 0; i < response.getHits().getHits().length; i++) {
       SearchHit searchHit = response.getHits().getHits()[i];
 
-      try {
-        Place place = jsonDeserializer.deserializePlace(searchHit.getSourceAsString());
 
-        places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(),
-                place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
+      Place place = jsonDeserializer.deserializePlace(searchHit.getSourceAsString());
 
-      } catch (JsonParseException e) {
-        throw new RuntimeException(e);
-      } catch (JsonMappingException e) {
-        throw new RuntimeException(e);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(),
+              place.getType(), place.getLatlong(), place.getCountry(), place.getType()));
+
+
     }
 
     return places;
