@@ -134,7 +134,8 @@ public class ElasticSearchAutoCompleteService {
 
       try {
         Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
-        places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(), place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
+        places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(),
+                place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
 
       } catch (JsonParseException e) {
         throw new RuntimeException(e);
