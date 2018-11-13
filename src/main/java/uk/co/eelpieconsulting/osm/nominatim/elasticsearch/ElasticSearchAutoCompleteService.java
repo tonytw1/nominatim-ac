@@ -1,9 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequest;
@@ -24,6 +22,7 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTo
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
 import uk.co.eelpieconsulting.osm.nominatim.indexing.ElasticSearchIndexer;
+import uk.co.eelpieconsulting.osm.nominatim.json.JsonDeserializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 
@@ -43,19 +42,17 @@ public class ElasticSearchAutoCompleteService {
   private static final String TAGS = "tags";
 
   private final ElasticSearchClientFactory elasticSearchClientFactory;
-  private final ObjectMapper mapper;
-
+  private final JsonDeserializer jsonDeserializer;
   private final String readIndex;
 
   private final List<Profile> availableProfiles;
 
   @Autowired
-  public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, @Value("${elasticsearch.index.read}") String readIndex) {
+  public ElasticSearchAutoCompleteService(ElasticSearchClientFactory elasticSearchClientFactory, JsonDeserializer jsonDeserializer,
+                                          @Value("${elasticsearch.index.read}") String readIndex) {
     this.elasticSearchClientFactory = elasticSearchClientFactory;
+    this.jsonDeserializer = jsonDeserializer;
     this.readIndex = readIndex;
-    this.mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     this.availableProfiles = Lists.newArrayList();
     availableProfiles.add(new Country());
     availableProfiles.add(new CountryCityTownSuburb());
@@ -133,7 +130,8 @@ public class ElasticSearchAutoCompleteService {
       SearchHit searchHit = response.getHits().getHits()[i];
 
       try {
-        Place place = mapper.readValue(searchHit.getSourceAsString(), Place.class);
+        Place place = jsonDeserializer.deserializePlace(searchHit.getSourceAsString());
+
         places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(),
                 place.getType(), place.getLatlong(), place.getCountry(), place.getDisplayType()));
 
