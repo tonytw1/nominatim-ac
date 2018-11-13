@@ -33,7 +33,7 @@ public class CountryCityTownSuburb implements Profile {
         QueryBuilder isAdminLevelSix = termQuery("adminLevel", "6");
         QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
 
-        return boolQuery().minimumNumberShouldMatch(1).
+        return boolQuery().minimumShouldMatch(1).
                 should(isCountry).boost(10).
                 should(isCity).boost(8).
                 should(isNationalPark).boost(8).

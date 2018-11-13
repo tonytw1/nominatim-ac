@@ -17,7 +17,7 @@ public class Country implements Profile {
 
     public BoolQueryBuilder getQuery() {
         QueryBuilder isCountry = termQuery(TAGS, "place|country");
-        return boolQuery().minimumNumberShouldMatch(1).should(isCountry);
+        return boolQuery().minimumShouldMatch(1).should(isCountry);
     }
 
 }

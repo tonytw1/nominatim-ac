@@ -51,7 +51,7 @@ public class PartialIndexWatermarkService {
     }
 
     try {
-      JsonNode asJson = objectMapper.readTree(searchResponse.getHits().getAt(0).sourceAsString());
+      JsonNode asJson = objectMapper.readTree(searchResponse.getHits().getAt(0).getSourceAsString());
       return new DateTime(asJson.get(WATERMARK).asLong());
 
     } catch (Exception e) {

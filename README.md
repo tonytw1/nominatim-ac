@@ -65,13 +65,13 @@ ie. selectively excluding things like post boxes and bus stops.
 
 ### Local development
 
-The framework used is Spring Boot.
+This is a Spring Boot project with a Gradle build.
 
 Configuration is in the file named application.properties.
 
-Run locally with:
+Build locally with:
 ```
-mvn spring-boot:run
+gradle clean build
 ```
 
 

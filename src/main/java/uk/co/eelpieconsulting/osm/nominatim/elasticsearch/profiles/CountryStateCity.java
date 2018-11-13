@@ -24,7 +24,7 @@ public class CountryStateCity implements Profile {
         QueryBuilder isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix);
         QueryBuilder isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour);
 
-        return boolQuery().minimumNumberShouldMatch(1).
+        return boolQuery().minimumShouldMatch(1).
                 should(isCountry).boost(10).
                 should(isCity).boost(8).
                 should(isAdminLevelFourBoundary).boost(6).
