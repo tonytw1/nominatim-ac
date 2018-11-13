@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class OsmPlacesSourceIT {
+public class OsmPlacesSourceTest {
 
     private static final String DATABASE_HOST = "10.0.45.11";  // TODO inject
     private static final String DATABASE_USER = "www-data";
