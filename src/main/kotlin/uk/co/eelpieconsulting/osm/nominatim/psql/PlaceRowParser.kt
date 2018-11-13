@@ -18,7 +18,7 @@ class PlaceRowParser {
             }
 
             val tag = listOf(asTag(placeRow.getString(3), placeRow.getString(4)))
-            val extratagsField = placeRow.getObject("extratags") as Map<String, String>
+            val extratagsField = placeRow.getObject("extratags") as Map<String, String>?
             val extraTags = if (extratagsField != null) {
                 extratagsField.entries.map {
                     asTag(it.key, it.value)

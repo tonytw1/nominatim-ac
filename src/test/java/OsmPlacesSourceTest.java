@@ -34,6 +34,7 @@ public class OsmPlacesSourceTest {
         OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, placeRowParser, "R");
         int rowsInterated = 0;
         while (osmPlacesSource.hasNext() && rowsInterated < 1000) {
+            osmPlacesSource.next();
             rowsInterated++;
         }
 
