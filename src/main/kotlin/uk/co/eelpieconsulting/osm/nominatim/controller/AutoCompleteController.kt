@@ -14,6 +14,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
 import java.io.IOException
+import java.lang.Long
 import java.sql.SQLException
 
 @Controller
@@ -27,10 +28,12 @@ class AutoCompleteController(private val autoCompleteService: ElasticSearchAutoC
     @RequestMapping("/status")
     @Throws(SQLException::class, IOException::class)
     fun status(): ModelAndView {
-        val data = Maps.newHashMap<String, String>()    // TODO Kotlin map please
-        data["lastImportDate"] = BASIC_DATE_TIME.print(osmDAO.lastImportDate)
-        data["indexedTo"] = BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark)
-        data["indexedItems"] = java.lang.Long.toString(autoCompleteService.indexedItemsCount())
+        val data = mapOf<String, String>(
+                "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.lastImportDate),
+                "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
+                "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount())
+        )
+
         return ModelAndView(viewFactory.jsonView).addObject("data", data)
     }
 
