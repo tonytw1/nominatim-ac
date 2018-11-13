@@ -87,4 +87,4 @@ The initial Nominatim import of planet.osm took approximately 6 weeks to complet
 The indexing the Nominatim postgres database into Elasticsearch takes around 48 hours.
 The Elasticsearch index is topped up every 5 minutes to capture updates feed into Nominatim via Osmosis (as per Nominatims' install instructions).
 
-TODO local compile instructions
+Mediagis have published a Nominatim Docker build which can be used for local development (https://github.com/mediagis/nominatim-docker).
