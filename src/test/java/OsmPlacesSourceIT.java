@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 public class OsmPlacesSourceIT {
 
-  private static final String DATABASE_HOST = "localhost";  // TODO inject
+  private static final String DATABASE_HOST = "10.0.45.11";  // TODO inject
   private static final String DATABASE_USER = "www-data";
   private static final String DATABASE_PASSWORD = "";
 
