@@ -1,5 +1,8 @@
 An experimental Open Street Map (OSM) / Nominatim place name auto-complete service.
 
+Indexes the contents of a Nominatim 3.1 database into Elasticsearch version 6.
+
+
 ### End points
 
 #### /search
