@@ -3,7 +3,7 @@ package uk.co.eelpieconsulting.osm.nominatim.model
 class Place(
         val osmId: Long,
         val osmType: String,
-        val housenumber: String?,
+        val housenumber: String? = null,
         val address: String,
         val classification: String,
         val type: String,
