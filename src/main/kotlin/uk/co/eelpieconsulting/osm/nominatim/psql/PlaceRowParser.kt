@@ -21,7 +21,8 @@ class PlaceRowParser {
             tags.add("$classification|$type")
         }
 
-        //val extratags = placeRow.getObject("extratags") as Map<String, String>
+        val extratags = placeRow.getObject("extratags") as Map<String, String>
+        System.out.println(extratags)
 
         val latlong = Maps.newHashMap<String, Double>()
         latlong["lat"] = placeRow.getDouble("latitude")
@@ -29,11 +30,11 @@ class PlaceRowParser {
 
         val tags = Sets.newHashSet<String>()
         appendTag(placeRow.getString(3), placeRow.getString(4), tags)
-        //if (extratags != null) {
-        //    for (key in extratags.keys) {
-        //        appendTag(key, extratags[key], tags)
-         //   }
-       // }
+        if (extratags != null) {
+            for (key in extratags.keys) {
+                appendTag(key, extratags[key], tags)
+            }
+        }
 
         val address = placeRow.getString("en_label")
 
