@@ -98,7 +98,6 @@ public class ElasticSearchIndexer {
     for (Place place : places) {
       if (!Strings.isNullOrEmpty(place.getName())) {  // Discard entires with not specifc name
         String serialize = jsonSerializer.serialize(place);
-        log.info("Indexing source: "  + serialize);
         bulkRequest.add(new IndexRequest(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).source(serialize, XContentType.JSON));
         bulkRequestHasItems = true;
       }

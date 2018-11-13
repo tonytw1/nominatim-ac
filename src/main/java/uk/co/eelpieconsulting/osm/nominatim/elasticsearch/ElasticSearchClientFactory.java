@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.settings.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,16 +16,17 @@ public class ElasticSearchClientFactory {
 
   private static Logger log = Logger.getLogger(ElasticSearchClientFactory.class);
 
-  private String clusterName;
-  private String unicastHost;
+  private final String host;
+  private final Integer port;
 
   private RestHighLevelClient client;
 
   @Autowired
-  public ElasticSearchClientFactory(@Value("${elasticsearch.cluster}") String clusterName,
-                                    @Value("${elasticsearch.unicasthost}") String unicastHost) {
-    this.clusterName = clusterName;
-    this.unicastHost = unicastHost;
+  public ElasticSearchClientFactory(
+          @Value("${elasticsearch.host}") String host,
+          @Value("${elasticsearch.port}") Integer port) {
+    this.host = host;
+    this.port = port;
   }
 
   public synchronized RestHighLevelClient getClient() {
@@ -42,10 +42,9 @@ public class ElasticSearchClientFactory {
 
   private RestHighLevelClient connectToCluster() throws UnknownHostException {
     if (client == null) {
-      log.info("Connecting to elastic search cluster: " + clusterName + ", unicast hosts: " + unicastHost);
-      final Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
-      RestClientBuilder restClient = RestClient.builder(new HttpHost(unicastHost, 32400, "http"));
-      client = new RestHighLevelClient(restClient);  // TODO clustername
+      log.info("Setting up elastic rest client with host and port: " + host + ":" + port);
+      RestClientBuilder restClient = RestClient.builder(new HttpHost(host, port, "http"));
+      client = new RestHighLevelClient(restClient);
     }
 
     return client;
