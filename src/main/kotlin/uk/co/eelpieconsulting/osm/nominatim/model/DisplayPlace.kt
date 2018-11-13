@@ -6,7 +6,7 @@ class DisplayPlace(
         val address: String,
         val classification: String,
         val type: String,
-        val latlong: Map<String, Double>,
+        val latlong: LatLong,
         val country: String,
         val displayType: String
 )

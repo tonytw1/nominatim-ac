@@ -8,7 +8,7 @@ class Place(
         val classification: String,
         val type: String,
         val rank: Int,
-        val latlong: Map<String, Double>,
+        val latlong: LatLong,
         var tags: List<String>,
         val country: String,
         val adminLevel: Int,

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.osm.nominatim.model.LatLong
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -22,11 +23,6 @@ class PlaceRowParser {
         }
 
         val extratags = placeRow.getObject("extratags") as Map<String, String>
-        System.out.println(extratags)
-
-        val latlong = Maps.newHashMap<String, Double>()
-        latlong["lat"] = placeRow.getDouble("latitude")
-        latlong["lon"] = placeRow.getDouble("longitude")
 
         val tags = Sets.newHashSet<String>()
         appendTag(placeRow.getString(3), placeRow.getString(4), tags)
@@ -37,8 +33,11 @@ class PlaceRowParser {
         }
 
         val address = placeRow.getString("en_label")
-
         val correctedAddress = formattedAddressCorrection.appendName(address, placeRow.getObject("name") as Map<String, String>)
+
+        val latlong = LatLong(
+                placeRow.getDouble("latitude"),
+                placeRow.getDouble("longitude"))
 
         return Place(osmId = placeRow.getLong("osm_id"),
                 osmType = placeRow.getString("osm_type"),
