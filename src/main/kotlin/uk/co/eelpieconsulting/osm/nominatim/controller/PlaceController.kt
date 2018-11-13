@@ -2,7 +2,6 @@ package uk.co.eelpieconsulting.osm.nominatim.controller
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Sets
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,9 +15,7 @@ import java.sql.SQLException
 import java.util.regex.Pattern
 
 @Controller
-class PlaceController @Autowired
-@Throws(SQLException::class)
-constructor(private val viewFactory: ViewFactory, osmDAOFactory: OSMDAOFactory, private val placeRowParser: PlaceRowParser) {
+class PlaceController(private val viewFactory: ViewFactory, osmDAOFactory: OSMDAOFactory, private val placeRowParser: PlaceRowParser) {
 
     private val OSM_IDENTIFIER_FORMAT = Pattern.compile("^(\\d+)(R|W|N)$")
     private val osmDAO: OsmDAO
