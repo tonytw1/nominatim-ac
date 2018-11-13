@@ -17,7 +17,7 @@ class JsonSerializer {
 	public String serialize(Object object) {
 		try {
 			return mapper.writeValueAsString(object);
-		} catch (JsonProcessingException e) {			
+		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
