@@ -1,0 +1,21 @@
+{
+  "osmId": 4551386,
+  "osmType": "R",
+  "address": "Twickenham Stoop Stadium, Langhorn Drive, Cole Park, Strawberry Hill, London Borough of Richmond upon Thames, London, Greater London, England, TW2 7SX, United Kingdom",
+  "classification": "building",
+  "type": "yes",
+  "latlong": {
+    "lon": -0.34445729999999997,
+    "lat": 51.44970445
+  },
+  "tags": [
+    "contact:website|http://www.quins.co.uk",
+    "contact:fax|+442084106001",
+    "description|Home of Harlequins rugby union and rugby league clubs.",
+    "contact:phone|+442084106000",
+    "sport|rugby",
+    "building|yes"
+  ],
+  "country": "gb",
+  "displayType": "BUILDING/YES"
+}
