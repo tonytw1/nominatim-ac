@@ -8,6 +8,7 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,9 @@ public class ElasticSearchIndexer {
     boolean bulkRequestHasItems = false;
     for (Place place : places) {
       if (!Strings.isNullOrEmpty(place.getName())) {  // Discard entires with not specifc name
-        bulkRequest.add(new IndexRequest(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).source(jsonSerializer.serialize(place)));
+        String serialize = jsonSerializer.serialize(place);
+        log.info("Indexing source: "  + serialize);
+        bulkRequest.add(new IndexRequest(writeIndex, TYPE, place.getOsmId() + place.getOsmType()).source(serialize, XContentType.JSON));
         bulkRequestHasItems = true;
       }
     }

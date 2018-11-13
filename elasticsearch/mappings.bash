@@ -1,19 +1,17 @@
-curl -XDELETE 'http://localhost:9200/osm20170104/places/_mapping'
-
-curl -XPUT 'http://localhost:9200/osm20170104/places/_mapping' -d '
+curl -XPUT -H "Content-Type: application/json" 'http://10.0.45.11:32400/nominatimac/places/_mapping' -d '
 {
 	"places" : { 
 		"properties" : { 
 			"address" : {
-				"type":"string",
+				"type":"text",
 				"search_analyzer":"analyzer_startswith",
 				"analyzer":"analyzer_startswith"		
 			},
-			"rank" : {"type" : "integer", "index" : "not_analyzed" },
-			"adminLevel" : {"type" : "integer", "index" : "not_analyzed" },
-			"tags" : {"type" : "string", "index" : "not_analyzed" },	
+			"rank" : {"type" : "integer" },
+			"adminLevel" : {"type" : "integer"},
+			"tags" : {"type" : "keyword" },
 			"latlong" : {"type" : "geo_point"},
-			"country" : {"type" : "string", "index" : "not_analyzed" }
+			"country" : {"type" : "keyword" }
 		} 
 	}
 }

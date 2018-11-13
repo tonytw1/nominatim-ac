@@ -1,4 +1,4 @@
-curl -XPUT http://debian.local:9200/osm20170104/ -d '
+curl -XPUT -H "Content-Type: application/json" http://10.0.45.11:32400/nominatimac -d '
 {
 	"settings":{
 		"index":{

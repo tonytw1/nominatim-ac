@@ -44,7 +44,7 @@ public class ElasticSearchClientFactory {
     if (client == null) {
       log.info("Connecting to elastic search cluster: " + clusterName + ", unicast hosts: " + unicastHost);
       final Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
-      RestClientBuilder restClient = RestClient.builder(new HttpHost(unicastHost, 9200, "http"));
+      RestClientBuilder restClient = RestClient.builder(new HttpHost(unicastHost, 32400, "http"));
       client = new RestHighLevelClient(restClient);  // TODO clustername
     }
 
