@@ -28,7 +28,7 @@ class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, va
 
     fun next(): Place {
         val place = placeRowParser.buildPlaceFromCurrentRow(currentPage)
-        readFromCurrentPage = readFromCurrentPage + 1
+        readFromCurrentPage += 1
         start = place.osmId // TODO not a perfect watermark; will jam if a single place spans more than page size row.
 
         hasNext = currentPage.next()
