@@ -39,21 +39,30 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
     fun indexLines(osmPlacesSource: OsmPlacesSource) {
         log.info("Importing records")
 
-        var places: MutableList<Place> = Lists.newArrayList()
+        fun filterTags(tags: Set<String>): List<String> {
+            return tags.filter { t ->
+                val split = pipeSplitter.split(t).iterator()
+                if (split.hasNext()) {
+                    val prefix = split.next()
+                    !TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED.contains(prefix)
+                } else {
+                    false
+                }
+            }
+        }
+
+        var places = emptyList<Place>()
         var countStart = DateTime.now()
 
         fun onNewPlace(newPlace: Place) {
-            val filteredTags = filterTags(newPlace.tags.toSet())
-            newPlace.tags = filteredTags
-
-            places.add(newPlace)
-
+            newPlace.tags = filterTags(newPlace.tags.toSet())   // TODO don't mutate the input? Pattern in Kotlin?
+            places += newPlace
             if (places.size == COMMIT_SIZE) {
                 index(places)
 
                 val duration = Duration(countStart.millis, DateTime.now().millis)
                 log.info("Imported " + COMMIT_SIZE + " in " + duration.millis)
-                places = Lists.newArrayList()
+                places = emptyList()
                 countStart = DateTime.now()
             }
         }
@@ -72,7 +81,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
         log.info("Importing updates")
 
         val bulkRequest = BulkRequest()
-        var bulkRequestHasItems = false
+        var bulkRequestHasItems = false // TODO can be derived from the bulk request?
         for (place in places) {
             if (!Strings.isNullOrEmpty(place.name)) {  // Discard entires with not specifc name
                 val serialize = jsonSerializer.serialize(place)
@@ -86,17 +95,4 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
         }
     }
 
-    private fun filterTags(tags: Set<String>): List<String> {
-        val filtered = Sets.newHashSet<String>()
-        for (t in tags) {
-            val split = pipeSplitter.split(t).iterator()
-            if (split.hasNext()) {
-                val prefix = split.next()
-                if (!TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED.contains(prefix)) {
-                    filtered.add(t)
-                }
-            }
-        }
-        return Lists.newArrayList(filtered)
-    }
 }
