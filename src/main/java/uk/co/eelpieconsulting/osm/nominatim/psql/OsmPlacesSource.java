@@ -29,10 +29,10 @@ public class OsmPlacesSource implements Iterator<Place> {
 		this.type = type;
 		start = 0;
 		this.max = osmDAO.getMax(type);
-		prepare(osmDAO);
+		prepare();
 	}
 
-	private void prepare(OsmDAO osmDAO) {
+	private void prepare() {
 		log.info("Preparing type: " + type + " " + start + "/" + max);
 		try {
 			places = osmDAO.getPlaces(start, STEP_SIZE, type);						
@@ -51,7 +51,7 @@ public class OsmPlacesSource implements Iterator<Place> {
 		try {
 			if (places.isLast()) {
 				log.debug("After last; preparing again");
-				prepare(osmDAO);
+				prepare();
 			}			
 			places.next();
 			
