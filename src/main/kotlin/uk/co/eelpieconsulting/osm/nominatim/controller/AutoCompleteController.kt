@@ -2,19 +2,17 @@ package uk.co.eelpieconsulting.osm.nominatim.controller
 
 import com.google.common.collect.Maps
 import org.joda.time.format.ISODateTimeFormat
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
+import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
 import java.lang.Long
+import java.util.HashMap
 
-@Controller
+@RestController
 class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteService,
                              val viewFactory: ViewFactory,
                              val partialIndexWatermarkService: PartialIndexWatermarkService,
@@ -22,14 +20,14 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
 
     private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
 
-    @RequestMapping("/status")
-    fun status(): ModelAndView {
-        val data = mapOf<String, String>(
+    @GetMapping("/status")
+    fun status(): Map<String, String> {
+        val status = mapOf<String, String>(
                 "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
                 "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
                 "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount()))
 
-        return ModelAndView(viewFactory.jsonView).addObject("data", data)
+        return status
     }
 
     @GetMapping("/search")
@@ -42,14 +40,9 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
             @RequestParam(required = false) rank: Int?,
             @RequestParam(required = false) country: String?,
             @RequestParam(required = false) callback: String?,
-            @RequestParam(required = false) profile: String?): ModelAndView {
+            @RequestParam(required = false) profile: String?): List<DisplayPlace> {
 
-        val mv = ModelAndView(viewFactory.getJsonView(600))
-        mv.addObject("data", autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile))
-        if (callback != null) {
-            mv.addObject("callback", callback)
-        }
-        return mv
+        return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
     }
 
     @RequestMapping(value = arrayOf("/search"), method = arrayOf(RequestMethod.OPTIONS))
@@ -58,12 +51,12 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
     }
 
     @GetMapping("/profiles")
-    fun profiles(): ModelAndView {
-        val data = Maps.newHashMap<String, String>()
+    fun profiles(): HashMap<String, String>? {
+        val profiles = Maps.newHashMap<String, String>()
         for (p in autoCompleteService.availableProfiles) {
-            data[p.name] = p.name
+            profiles[p.name] = p.name
         }
-        return ModelAndView(viewFactory.jsonView).addObject("data", data)
+        return profiles
     }
 
 }

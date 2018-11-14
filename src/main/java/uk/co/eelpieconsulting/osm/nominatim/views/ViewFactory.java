@@ -13,12 +13,4 @@ public class ViewFactory {
 		this.etagGenerator = etagGenerator;
 	}
 
-	public JsonView getJsonView() {
-		return new JsonView(new WebStyleJsonSerializer(), etagGenerator, null);
-	}
-	
-	public JsonView getJsonView(int maxAge) {
-		return new JsonView(new WebStyleJsonSerializer(), etagGenerator, maxAge);
-	}
-
 }
