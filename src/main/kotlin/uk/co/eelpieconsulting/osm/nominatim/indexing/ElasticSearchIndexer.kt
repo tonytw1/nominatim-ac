@@ -41,6 +41,9 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
         var countStart = DateTime.now()
 
         fun onNewPlace(newPlace: Place) {
+            val filteredTags = filterTags(newPlace.tags.toSet())
+            newPlace.tags = filteredTags
+
             places.add(newPlace)
 
             if (places.size == COMMIT_SIZE) {
@@ -64,15 +67,16 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
 
             val placeIsDifferentFromTheLast = place.osmId.toString() + place.osmType != currentPlace!!.osmId.toString() + currentPlace.osmType
             if (placeIsDifferentFromTheLast) {
-                place.tags = filterTags(currentTags)    // TODO filter moves up
+                place.tags = currentTags.toList()
                 onNewPlace(place)
                 currentPlace = place
                 currentTags = Sets.newHashSet()
             }
         }
+        if (currentPlace != null) {
+            onNewPlace(currentPlace!!)
+        }
 
-        currentPlace!!.tags = filterTags(currentTags)
-        onNewPlace(currentPlace)
         if (!places.isEmpty()) {
             index(places)
         }
