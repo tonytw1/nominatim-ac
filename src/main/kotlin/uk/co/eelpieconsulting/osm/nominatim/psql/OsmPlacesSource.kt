@@ -10,7 +10,7 @@ class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, va
 
     private val PAGE_SIZE = 10L
 
-    private var start: Long = 0
+    private var start = 0L
     private var currentPage = newPage()
     private var readFromCurrentPage = 0L
     private var hasNext: Boolean = false
@@ -21,7 +21,7 @@ class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, va
 
     fun newPage(): ResultSet {
         currentPage = cursor(start, PAGE_SIZE)
-        readFromCurrentPage = 0
+        readFromCurrentPage = 0L
         hasNext = currentPage.next()
         return currentPage
     }
