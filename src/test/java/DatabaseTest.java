@@ -38,15 +38,4 @@ public class DatabaseTest {
         assertEquals("Twickenham Rowing Club, Church Lane, Cole Park, Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DY, United Kingdom", place.getAddress());
     }
 
-    @Test
-    public void placeTagsShouldIncludeTheClassificationTypeAndExtraTags() throws Exception {
-        final ResultSet placeRow = osmDAO.getPlace(284926920, "W");
-        placeRow.next();
-
-        final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
-
-        assertTrue(place.getTags().contains("leisure|sports_centre"));
-        assertTrue(place.getTags().contains("sport|rowing"));
-    }
-
 }
