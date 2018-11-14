@@ -7,6 +7,7 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
@@ -24,16 +25,19 @@ public class PartialIndexUpdater {
   private static final int COMMIT_SIZE = 1000;
 
   private final OsmDAO osmDAO;
+  private final JsonSerializer jsonSerializer;
   private final PlaceRowParser placeRowParser;
   private final ElasticSearchIndexer elasticSearchIndexer;
   private final PartialIndexWatermarkService partialIndexWatermarkService;
 
   @Autowired
-  public PartialIndexUpdater(OsmDAO osmDAO, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer, PartialIndexWatermarkService partialIndexWatermarkService) throws SQLException {
+  public PartialIndexUpdater(OsmDAO osmDAO, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer,
+                             PartialIndexWatermarkService partialIndexWatermarkService, JsonSerializer jsonSerializer) throws SQLException {
     this.placeRowParser = placeRowParser;
     this.elasticSearchIndexer = elasticSearchIndexer;
     this.partialIndexWatermarkService = partialIndexWatermarkService;
     this.osmDAO = osmDAO;
+    this.jsonSerializer = jsonSerializer;
   }
 
   @Scheduled(fixedRate = 60000)

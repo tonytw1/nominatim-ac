@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory;
+import uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer;
 
 import java.io.IOException;
 import java.util.Map;

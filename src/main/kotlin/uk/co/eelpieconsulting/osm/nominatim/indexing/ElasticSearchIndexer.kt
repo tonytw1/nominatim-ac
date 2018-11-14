@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchClientFactory
+import uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceExtractor
@@ -20,12 +21,11 @@ import java.io.IOException
 @Component
 class ElasticSearchIndexer @Autowired
 constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
-            val placeExtractor: PlaceExtractor,
+            val placeExtractor: PlaceExtractor, val jsonSerializer: JsonSerializer,
             @param:Value("\${elasticsearch.index.write}") val writeIndex: String) {
 
     private val log = Logger.getLogger(ElasticSearchIndexer::class.java)
 
-    private val jsonSerializer: JsonSerializer = JsonSerializer()
     private val client = elasticSearchClientFactory.client
 
     val TYPE = "places"
@@ -80,7 +80,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             val bulkRequest = BulkRequest()
             places.forEach { p ->
                 bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
-                        source(jsonSerializer.serialize(p), XContentType.JSON))
+                        source(jsonSerializer.serializePlace(p), XContentType.JSON))
             }
             client.bulk(bulkRequest)
         }
