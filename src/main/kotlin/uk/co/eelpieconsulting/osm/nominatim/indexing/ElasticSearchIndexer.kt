@@ -1,12 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing
 
 import com.google.common.base.Splitter
-import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import org.apache.log4j.Logger
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.common.Strings
 import org.elasticsearch.common.xcontent.XContentType
 import org.joda.time.DateTime
 import org.joda.time.Duration
@@ -38,6 +36,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
     @Throws(IOException::class)
     fun indexLines(osmPlacesSource: OsmPlacesSource) {
         log.info("Importing records")
+        //if (!Strings.isNullOrEmpty(place.name)) {  // Discard entires with not specifc name TODO why not do this at sql select time?
 
         fun filterTags(tags: Set<String>): List<String> {
             return tags.filter { t ->
@@ -76,21 +75,14 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
         log.info("Import completed")
     }
 
-    @Throws(IOException::class)
     fun index(places: List<Place>) {
-        log.info("Importing updates")
-
-        val bulkRequest = BulkRequest()
-        var bulkRequestHasItems = false // TODO can be derived from the bulk request?
-        for (place in places) {
-            if (!Strings.isNullOrEmpty(place.name)) {  // Discard entires with not specifc name
-                val serialize = jsonSerializer.serialize(place)
-                bulkRequest.add(IndexRequest(writeIndex, TYPE, place.osmId.toString() + place.osmType).source(serialize, XContentType.JSON))
-                bulkRequestHasItems = true
+        if (!places.isEmpty()) {
+            log.info("Importing updates")
+            val bulkRequest = BulkRequest()
+            places.forEach { p ->
+                bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
+                        source(jsonSerializer.serialize(p), XContentType.JSON))
             }
-        }
-
-        if (bulkRequestHasItems) {
             client.bulk(bulkRequest)
         }
     }
