@@ -1,6 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.model
 
-class Place(
+data class Place(
         val osmId: Long,
         val osmType: String,
         val housenumber: String? = null,

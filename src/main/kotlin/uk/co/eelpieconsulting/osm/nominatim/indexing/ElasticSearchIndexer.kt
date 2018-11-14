@@ -53,9 +53,8 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
         var places = emptyList<Place>()
         var countStart = DateTime.now()
 
-        fun onNewPlace(newPlace: Place) {
-            newPlace.tags = filterTags(newPlace.tags.toSet())   // TODO don't mutate the input? Pattern in Kotlin?
-            places += newPlace
+        fun indexPlaces(newPlace: Place) {
+            places += newPlace.copy(tags = filterTags(newPlace.tags.toSet()))
             if (places.size == COMMIT_SIZE) {
                 index(places)
 
@@ -66,7 +65,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             }
         }
 
-        placeExtractor.extractPlaces(osmPlacesSource, ::onNewPlace)
+        placeExtractor.extractPlaces(osmPlacesSource, ::indexPlaces)
 
         if (!places.isEmpty()) {
             index(places)
