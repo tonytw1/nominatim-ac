@@ -51,8 +51,7 @@ class OsmPlacesSourceTest {
         var rowsIterated = 0
         val recordCountKnownToExceedPaginationSize = 20
         while (osmPlacesSource.hasNext() && rowsIterated < recordCountKnownToExceedPaginationSize) {
-            val next = osmPlacesSource.next();
-            System.out.println(next.osmId)
+            osmPlacesSource.next();
             rowsIterated++;
         }
 
