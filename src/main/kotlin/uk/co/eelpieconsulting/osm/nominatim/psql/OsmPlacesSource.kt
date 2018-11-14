@@ -8,7 +8,7 @@ class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, va
 
     private val log = Logger.getLogger(OsmPlacesSource::class.java)
 
-    private val PAGE_SIZE = 10L
+    private val PAGE_SIZE = 1000L
 
     private var start = 0L
     private var currentPage = newPage()
