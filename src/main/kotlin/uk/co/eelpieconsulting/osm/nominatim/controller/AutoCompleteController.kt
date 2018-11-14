@@ -12,32 +12,27 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompl
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
-import java.io.IOException
 import java.lang.Long
-import java.sql.SQLException
 
 @Controller
-class AutoCompleteController( val autoCompleteService: ElasticSearchAutoCompleteService,
-                              val viewFactory: ViewFactory,
-                              val partialIndexWatermarkService: PartialIndexWatermarkService,
-                              val osmDAO: OsmDAO) {
+class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteService,
+                             val viewFactory: ViewFactory,
+                             val partialIndexWatermarkService: PartialIndexWatermarkService,
+                             val osmDAO: OsmDAO) {
 
     private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
 
     @RequestMapping("/status")
-    @Throws(SQLException::class, IOException::class)
     fun status(): ModelAndView {
         val data = mapOf<String, String>(
                 "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
                 "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
-                "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount())
-        )
+                "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount()))
 
         return ModelAndView(viewFactory.jsonView).addObject("data", data)
     }
 
     @GetMapping("/search")
-    @Throws(IOException::class)
     fun search(
             @RequestParam(required = false) q: String?,
             @RequestParam(required = false) tag: String?,
@@ -63,7 +58,6 @@ class AutoCompleteController( val autoCompleteService: ElasticSearchAutoComplete
     }
 
     @GetMapping("/profiles")
-    @Throws(SQLException::class)
     fun profiles(): ModelAndView {
         val data = Maps.newHashMap<String, String>()
         for (p in autoCompleteService.availableProfiles) {
