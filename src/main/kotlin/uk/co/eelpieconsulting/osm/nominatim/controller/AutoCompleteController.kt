@@ -28,7 +28,7 @@ class AutoCompleteController( val autoCompleteService: ElasticSearchAutoComplete
     @Throws(SQLException::class, IOException::class)
     fun status(): ModelAndView {
         val data = mapOf<String, String>(
-                "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.lastImportDate),
+                "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
                 "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
                 "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount())
         )

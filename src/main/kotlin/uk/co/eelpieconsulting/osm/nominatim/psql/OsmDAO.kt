@@ -1,0 +1,107 @@
+package uk.co.eelpieconsulting.osm.nominatim.psql
+
+import org.apache.log4j.Logger
+import org.joda.time.DateTime
+
+import java.sql.*
+import java.util.Properties
+
+class OsmDAO(val username: String, val password: String, val host: String) {
+
+    private val log = Logger.getLogger(OsmDAO::class.java)
+
+    var conn: Connection = getConnection()
+
+    private var placesIndexedFrom: PreparedStatement = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+            + "get_address_by_language(place_id, NULL ARRAY['name:en', 'name']) AS en_label,"
+            + "name,"
+            + "country_code AS country,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+            + "rank_address AS rank, "
+            + "admin_level AS admin_level, "
+            + "indexed_date AS indexed_date, "
+            + "extratags "
+            + "FROM placex "
+            + "WHERE indexed_date > ? "
+            + "ORDER BY indexed_date "
+            + "LIMIT ?")
+
+    private var places: PreparedStatement = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+            //+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
+            + "get_address_by_language(place_id, NULL, ARRAY['name:en', 'name']) AS en_label,"
+            + "name,"
+            + "country_code AS country,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+            + "rank_address AS rank, "
+            + "admin_level AS admin_level, "
+            + "extratags "
+            + "FROM placex "
+            + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type LIMIT ?")
+
+
+    private var place = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+            + "get_address_by_language(place_id, NULL,  ARRAY['name:en', 'name']) AS en_label,"
+            + "name,"
+            + "country_code AS country,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+            + "rank_address AS rank, "
+            + "admin_level AS admin_level, "
+            + "extratags "
+            + "FROM placex "
+            + "WHERE osm_id = ? AND osm_type = ?")
+
+
+    fun getMax(type: String): Long {
+        val prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=?")
+        prepareStatement.setString(1, type)
+        val rs = prepareStatement.executeQuery()
+        rs.next()
+        val max = rs.getLong(1)
+        rs.close()
+        prepareStatement.close()
+        return max
+    }
+
+    fun getLastImportDate(): DateTime {
+        val prepareStatement = conn.prepareStatement("SELECT lastimportdate AS lastimportdate FROM import_status")
+        val rs = prepareStatement.executeQuery()
+        rs.next()
+        val latest = rs.getTimestamp(1)
+        rs.close()
+        prepareStatement.close()
+        return DateTime(latest.time)
+    }
+
+    fun getPlaces(start: Long, stepSize: Long, type: String): ResultSet {
+        log.info("Get places: $start, $stepSize, $type")
+        places.setLong(1, start)
+        places.setString(2, type)
+        places.setLong(3, stepSize)
+        return places.executeQuery()
+    }
+
+    fun getPlacesIndexedAfter(start: DateTime, limit: Int): ResultSet {
+        placesIndexedFrom.setTimestamp(1, java.sql.Timestamp(start.millis))
+        placesIndexedFrom.setLong(2, limit.toLong())
+        return placesIndexedFrom.executeQuery()
+    }
+
+    fun getPlace(id: Long, type: String): ResultSet {
+        place.setLong(1, id)  // TODO not thread safe
+        place.setString(2, type)
+        return place.executeQuery()
+    }
+
+    private fun getConnection(): Connection {
+        val url = "jdbc:postgresql://$host/nominatim"
+        val props = Properties()
+        props.setProperty("user", username)
+        props.setProperty("password", password)
+
+        return DriverManager.getConnection(url, props)
+    }
+
+}
