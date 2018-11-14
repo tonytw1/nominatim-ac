@@ -1,8 +1,9 @@
 package uk.co.eelpieconsulting.osm.nominatim.controller
 
 import org.joda.time.format.ISODateTimeFormat
-import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
@@ -37,11 +38,6 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
             @RequestParam(required = false) profile: String?): List<DisplayPlace> {
 
         return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
-    }
-
-    @RequestMapping(value = arrayOf("/search"), method = arrayOf(RequestMethod.OPTIONS))
-    fun searchOptions(): ModelAndView {
-        return ModelAndView()   // TODO this is for CORS support? Be explict about it
     }
 
     @GetMapping("/profiles")
