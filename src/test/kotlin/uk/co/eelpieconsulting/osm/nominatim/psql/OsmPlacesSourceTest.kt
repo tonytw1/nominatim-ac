@@ -16,9 +16,7 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveSingleRowPlace() {
-        fun cursor(start: Long, pageSize: Long): ResultSet {
-            return osmDAO.getPlace(11, "R")
-        }
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(11, "R")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -32,9 +30,7 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveRowsForMultiRowPlaces() {
-        fun cursor(start: Long, pageSize: Long): ResultSet {
-            return osmDAO.getPlace(4599, "R")
-        }
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(4599, "R")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -48,9 +44,7 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canPaginateBeyondTheFirstPage() {
-        fun cursor(start: Long, pageSize: Long): ResultSet {
-            return osmDAO.getPlaces(start, pageSize, "R")
-        }
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlaces(start, pageSize, "R")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
