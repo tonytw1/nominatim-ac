@@ -1,4 +1,4 @@
-
+import com.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -9,6 +9,7 @@ import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +28,23 @@ public class OsmPlacesSourceTest {
     public void setup() throws SQLException {
         placeRowParser = new PlaceRowParser();
         osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
+    }
+
+    @Test
+    public void somePlacesSpanMultipleRowsWithTypeAndCategories() throws SQLException {
+        ResultSet r = osmDAO.getPlace(4599, "R");
+
+        List<String> types = Lists.newArrayList();
+        List<String> categories = Lists.newArrayList();
+        while (r.next()) {
+            Place place = placeRowParser.buildPlaceFromCurrentRow(r);
+            types.add(place.getType());
+            categories.add(place.getClassification());
+        }
+
+        assertEquals(2, types.size());
+        assertEquals( Lists.newArrayList("attraction" , "government"), types);
+        assertEquals( Lists.newArrayList("tourism" , "office"), categories);
     }
 
     @Test
