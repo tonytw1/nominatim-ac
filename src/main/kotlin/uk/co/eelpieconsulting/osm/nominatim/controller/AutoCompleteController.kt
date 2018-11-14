@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
-import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
 import java.io.IOException
@@ -18,11 +17,11 @@ import java.lang.Long
 import java.sql.SQLException
 
 @Controller
-class AutoCompleteController(private val autoCompleteService: ElasticSearchAutoCompleteService,
-                             private val viewFactory: ViewFactory, osmDAOFactory: OSMDAOFactory,
-                             private val partialIndexWatermarkService: PartialIndexWatermarkService) {
+class AutoCompleteController( val autoCompleteService: ElasticSearchAutoCompleteService,
+                              val viewFactory: ViewFactory,
+                              val partialIndexWatermarkService: PartialIndexWatermarkService,
+                              val osmDAO: OsmDAO) {
 
-    private val osmDAO: OsmDAO = osmDAOFactory.build()
     private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
 
     @RequestMapping("/status")

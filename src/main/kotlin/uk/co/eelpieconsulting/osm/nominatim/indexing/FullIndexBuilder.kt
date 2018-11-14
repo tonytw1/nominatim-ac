@@ -2,15 +2,13 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory
+import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser
 
 @Component
 class FullIndexBuilder @Autowired
-constructor(private val indexer: ElasticSearchIndexer, private val osmDaoFactory: OSMDAOFactory, private val placeRowParser: PlaceRowParser) {
-
-    val osmDAO = osmDaoFactory.build()
+constructor(private val indexer: ElasticSearchIndexer, private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowParser) {
 
     fun buildFullIndex() {
         //indexer.deleteAll();

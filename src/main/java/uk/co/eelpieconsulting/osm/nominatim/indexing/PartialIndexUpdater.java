@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-import uk.co.eelpieconsulting.osm.nominatim.psql.OSMDAOFactory;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
@@ -30,11 +29,11 @@ public class PartialIndexUpdater {
   private final PartialIndexWatermarkService partialIndexWatermarkService;
 
   @Autowired
-  public PartialIndexUpdater(OSMDAOFactory osmDaoFactory, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer, PartialIndexWatermarkService partialIndexWatermarkService) throws SQLException {
+  public PartialIndexUpdater(OsmDAO osmDAO, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer, PartialIndexWatermarkService partialIndexWatermarkService) throws SQLException {
     this.placeRowParser = placeRowParser;
     this.elasticSearchIndexer = elasticSearchIndexer;
     this.partialIndexWatermarkService = partialIndexWatermarkService;
-    this.osmDAO = osmDaoFactory.build();
+    this.osmDAO = osmDAO;
   }
 
   @Scheduled(fixedRate = 60000)
