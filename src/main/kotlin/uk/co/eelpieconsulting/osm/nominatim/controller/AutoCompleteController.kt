@@ -20,12 +20,10 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
 
     @GetMapping("/status")
     fun status(): Map<String, String> {
-        val status = mapOf<String, String>(
+        return mapOf(
                 "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
                 "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
                 "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount()))
-
-        return status
     }
 
     @GetMapping("/search")
