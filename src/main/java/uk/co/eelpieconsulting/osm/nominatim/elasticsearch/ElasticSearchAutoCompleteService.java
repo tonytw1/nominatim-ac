@@ -34,7 +34,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Component
 public class ElasticSearchAutoCompleteService {
 
-  private static final String SEARCH_TYPE = ElasticSearchIndexer.TYPE;
+  private static final String SEARCH_TYPE = "places";  // TODO ElasticSearchIndexer.TYPE;
 
   private static final String ADDRESS = "address";
   private static final String DEFAULT_RADIUS = "100km";
