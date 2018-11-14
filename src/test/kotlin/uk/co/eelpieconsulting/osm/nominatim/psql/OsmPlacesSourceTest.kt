@@ -15,7 +15,23 @@ class OsmPlacesSourceTest {
     private var placeRowParser = PlaceRowParser()
 
     @Test
-    fun canRetrievePlacesFromRecordSet() {
+    fun canRetrieveSingleRowPlace() {
+        fun cursor(start: Long, pageSize: Long): ResultSet {
+            return osmDAO.getPlace(11, "R")
+        }
+
+        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+
+        var found = emptyList<Place>()
+        while (osmPlacesSource.hasNext()) {
+            found = found + osmPlacesSource.next()
+        }
+
+        assertEquals(1, found.size)
+    }
+
+    @Test
+    fun canRetrieveRowsForMultiRowPlaces() {
         fun cursor(start: Long, pageSize: Long): ResultSet {
             return osmDAO.getPlace(4599, "R")
         }
@@ -24,8 +40,7 @@ class OsmPlacesSourceTest {
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
-            val place = osmPlacesSource.next()
-            found = found + place
+            found = found + osmPlacesSource.next()
         }
 
         assertEquals(2, found.size)
@@ -40,9 +55,10 @@ class OsmPlacesSourceTest {
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
         var rowsIterated = 0
-        val recordCountKnownToExceedPaginationSize = 2000
+        val recordCountKnownToExceedPaginationSize = 20
         while (osmPlacesSource.hasNext() && rowsIterated < recordCountKnownToExceedPaginationSize) {
-            osmPlacesSource.next();
+            val next = osmPlacesSource.next();
+            System.out.println(next.osmId)
             rowsIterated++;
         }
 
