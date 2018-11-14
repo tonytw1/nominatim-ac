@@ -56,6 +56,16 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
             }
         }
 
+        extractPlaces(osmPlacesSource, ::onNewPlace)
+
+        if (!places.isEmpty()) {
+            index(places)
+        }
+
+        log.info("Import completed")
+    }
+
+    fun extractPlaces(osmPlacesSource: OsmPlacesSource, callback: (Place) -> Unit) {
         var currentPlace: Place? = null
         var currentTags: MutableSet<String> = Sets.newHashSet()
         while (osmPlacesSource.hasNext()) {
@@ -68,20 +78,14 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
             val placeIsDifferentFromTheLast = place.osmId.toString() + place.osmType != currentPlace!!.osmId.toString() + currentPlace.osmType
             if (placeIsDifferentFromTheLast) {
                 place.tags = currentTags.toList()
-                onNewPlace(place)
+                callback(place)
                 currentPlace = place
                 currentTags = Sets.newHashSet()
             }
         }
         if (currentPlace != null) {
-            onNewPlace(currentPlace!!)
+            callback(currentPlace!!)
         }
-
-        if (!places.isEmpty()) {
-            index(places)
-        }
-
-        log.info("Import completed")
     }
 
     @Throws(IOException::class)
