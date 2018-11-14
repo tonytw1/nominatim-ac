@@ -36,8 +36,22 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
     @Throws(IOException::class)
     fun indexLines(osmPlacesSource: OsmPlacesSource) {
         log.info("Importing records")
+
         var places: MutableList<Place> = Lists.newArrayList()
         var countStart = DateTime.now()
+
+        fun onNewPlace(newPlace: Place) {
+            places.add(newPlace)
+
+            if (places.size == COMMIT_SIZE) {
+                index(places)
+
+                val duration = Duration(countStart.millis, DateTime.now().millis)
+                log.info("Imported " + COMMIT_SIZE + " in " + duration.millis)
+                places = Lists.newArrayList()
+                countStart = DateTime.now()
+            }
+        }
 
         var currentPlace: Place? = null
         var currentTags: MutableSet<String> = Sets.newHashSet()
@@ -50,25 +64,15 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory, @param:Value
 
             val placeIsDifferentFromTheLast = place.osmId.toString() + place.osmType != currentPlace!!.osmId.toString() + currentPlace.osmType
             if (placeIsDifferentFromTheLast) {
-                place.tags = filterTags(currentTags)
-                places.add(place)
-
+                place.tags = filterTags(currentTags)    // TODO filter moves up
+                onNewPlace(place)
                 currentPlace = place
                 currentTags = Sets.newHashSet()
-            }
-
-            if (places.size == COMMIT_SIZE) {
-                index(places)
-
-                val duration = Duration(countStart.millis, DateTime.now().millis)
-                log.info("Imported " + COMMIT_SIZE + " in " + duration.millis)
-                places = Lists.newArrayList()
-                countStart = DateTime.now()
             }
         }
 
         currentPlace!!.tags = filterTags(currentTags)
-        places.add(currentPlace)
+        onNewPlace(currentPlace)
         if (!places.isEmpty()) {
             index(places)
         }
