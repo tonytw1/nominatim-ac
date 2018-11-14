@@ -59,7 +59,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
                 index(places)
 
                 val duration = Duration(countStart.millis, DateTime.now().millis)
-                log.info("Imported " + COMMIT_SIZE + " in " + duration.millis)
+                log.info("Indexed " + COMMIT_SIZE + " in " + duration.millis)
                 places = emptyList()
                 countStart = DateTime.now()
             }
@@ -76,7 +76,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
 
     fun index(places: List<Place>) {
         if (!places.isEmpty()) {
-            log.info("Importing updates")
+            log.info("Indexing places")
             val bulkRequest = BulkRequest()
             places.forEach { p ->
                 bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
