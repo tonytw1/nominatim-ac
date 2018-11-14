@@ -10,7 +10,7 @@ data class Place(
         val rank: Int,
         val latlong: LatLong,
         var tags: List<String>,
-        val country: String,
+        val country: String?,
         val adminLevel: Int,
         val name: String? = null) {
 
