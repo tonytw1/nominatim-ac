@@ -6,58 +6,43 @@ import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import java.sql.ResultSet
 import java.sql.SQLException
 
-class OsmPlacesSource @Throws(SQLException::class)
-constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowParser, private val type: String) {
-
-    fun cursor(start: Long, stepSize: Long): ResultSet {
-        return osmDAO.getPlaces(start, stepSize, type)
-    }
-
-    private var places: ResultSet? = null
-    private var start: Long = 0
-
-    private val max: Long
+class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, val cursor: (Long, Long) -> ResultSet) {
 
     private val log = Logger.getLogger(OsmPlacesSource::class.java)
 
-    private val STEP_SIZE: Long = 1000
+    private val PAGE_SIZE = 1000L
 
-    init {
-        start = 0
-        this.max = osmDAO.getMax(type)
-        this.places = prepare(start, STEP_SIZE)
-    }
+    private var start: Long = 0
+    private var currentPage: ResultSet = prepare(start, PAGE_SIZE)
 
     private fun prepare(start: Long, stepSize: Long): ResultSet {
-        log.info("Preparing type: $type $start")
         return cursor(start, stepSize)
     }
 
     fun hasNext(): Boolean {
-        return start < max
+        return !currentPage.isLast()    // TODO breaks pagination
     }
 
     fun next(): Place {
         try {
-            if (places!!.isLast) {
+            if (currentPage.isLast) {
                 log.debug("After last; preparing again")
-                this.places = prepare(start, STEP_SIZE)
+                this.currentPage = prepare(start, PAGE_SIZE)
             }
-            places!!.next()
+            currentPage.next()
 
         } catch (e: SQLException) {
             throw RuntimeException(e)
         }
 
         try {
-            val place = placeRowParser.buildPlaceFromCurrentRow(places!!)
+            val place = placeRowParser.buildPlaceFromCurrentRow(currentPage)
             start = place.osmId
             return place
 
         } catch (e: SQLException) {
             throw RuntimeException(e)
         }
-
     }
 
 }

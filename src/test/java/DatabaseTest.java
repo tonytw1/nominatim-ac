@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class OsmPlacesSourceTest {
+public class DatabaseTest {
 
     private static final String DATABASE_HOST = "10.0.45.11";  // TODO inject
     private static final String DATABASE_USER = "www-data";
@@ -26,18 +26,6 @@ public class OsmPlacesSourceTest {
     public void setup() throws SQLException {
         placeRowParser = new PlaceRowParser();
         osmDAO = new OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST);
-    }
-
-    @Test
-    public void canIterateThroughPlaces() throws Exception {
-        OsmPlacesSource osmPlacesSource = new OsmPlacesSource(osmDAO, placeRowParser, "R");
-        int rowsInterated = 0;
-        while (osmPlacesSource.hasNext() && rowsInterated < 1000) {
-            osmPlacesSource.next();
-            rowsInterated++;
-        }
-
-        assertEquals(1000, rowsInterated);
     }
 
     @Test

@@ -24,10 +24,11 @@ public class FullIndexBuilder {
 	}
 		
 	public void buildFullIndex() throws SQLException, IOException {
-		//indexer.deleteAll();		
-		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "R"));
-		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "W"));
-		indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "N"));				
+		//indexer.deleteAll();
+
+		//indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "R"));
+		//indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "W"));
+		//indexer.indexLines(new OsmPlacesSource(osmDaoFactory.build(), placeRowParser, "N"));
 	}
 	
 }
