@@ -1,21 +1,17 @@
 package uk.co.eelpieconsulting.osm.nominatim.controller
 
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceExtractor
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser
-import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
-import java.sql.SQLException
 import java.util.regex.Pattern
 
 @RestController
-class PlaceController(val viewFactory: ViewFactory, val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser) {
+class PlaceController(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser) {
 
     private val OSM_IDENTIFIER_FORMAT = Pattern.compile("^(\\d+)(R|W|N)$")
 

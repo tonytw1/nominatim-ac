@@ -7,12 +7,10 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompl
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
-import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
 import java.lang.Long
 
 @RestController
 class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteService,
-                             val viewFactory: ViewFactory,
                              val partialIndexWatermarkService: PartialIndexWatermarkService,
                              val osmDAO: OsmDAO) {
 
