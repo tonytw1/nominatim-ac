@@ -27,16 +27,14 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
 
     @GetMapping("/search")
     fun search(
-            @RequestParam(required = false) q: String?,
-            @RequestParam(required = false) tag: String?,
-            @RequestParam(required = false) lat: Double?,
-            @RequestParam(required = false) lon: Double?,
-            @RequestParam(required = false) radius: Double?,
-            @RequestParam(required = false) rank: Int?,
-            @RequestParam(required = false) country: String?,
-            @RequestParam(required = false) callback: String?,
-            @RequestParam(required = false) profile: String?): List<DisplayPlace> {
-
+            q: String?,
+            tag: String?,
+            lat: Double?,
+            lon: Double?,
+            radius: Double?,
+            rank: Int?,
+            country: String?,
+            profile: String?): List<DisplayPlace> {
         return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
     }
 
