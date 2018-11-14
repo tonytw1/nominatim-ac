@@ -9,6 +9,10 @@ import java.sql.SQLException
 class OsmPlacesSource @Throws(SQLException::class)
 constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowParser, private val type: String) {
 
+    fun cursor(start: Long, stepSize: Long): ResultSet {
+        return osmDAO.getPlaces(start, stepSize, type)
+    }
+
     private var places: ResultSet? = null
     private var start: Long = 0
 
@@ -17,7 +21,7 @@ constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowPars
     private val log = Logger.getLogger(OsmPlacesSource::class.java)
 
     private val STEP_SIZE: Long = 1000
-    
+
     init {
         start = 0
         this.max = osmDAO.getMax(type)
@@ -26,19 +30,14 @@ constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowPars
 
     private fun prepare(start: Long, stepSize: Long): ResultSet {
         log.info("Preparing type: $type $start")
-        try {
-            return osmDAO.getPlaces(start, stepSize, type)
-        } catch (e: SQLException) {
-            throw RuntimeException(e)
-        }
-
+        return cursor(start, stepSize)
     }
 
-    operator fun hasNext(): Boolean {
+    fun hasNext(): Boolean {
         return start < max
     }
 
-    operator fun next(): Place {
+    fun next(): Place {
         try {
             if (places!!.isLast) {
                 log.debug("After last; preparing again")
