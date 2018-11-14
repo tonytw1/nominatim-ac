@@ -35,7 +35,7 @@ class PlaceExtractorTest {
 
     @Test
     fun canExtractMultiRowPlaceWithAllExpectedTags() {
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(4599, "R")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(4599, "R")
 
         val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
