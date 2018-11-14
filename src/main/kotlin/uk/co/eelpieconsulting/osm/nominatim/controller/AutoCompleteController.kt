@@ -1,6 +1,5 @@
 package uk.co.eelpieconsulting.osm.nominatim.controller
 
-import com.google.common.collect.Maps
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
@@ -10,7 +9,6 @@ import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
 import uk.co.eelpieconsulting.osm.nominatim.views.ViewFactory
 import java.lang.Long
-import java.util.HashMap
 
 @RestController
 class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteService,
@@ -51,11 +49,8 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
     }
 
     @GetMapping("/profiles")
-    fun profiles(): HashMap<String, String>? {
-        val profiles = Maps.newHashMap<String, String>()
-        for (p in autoCompleteService.availableProfiles) {
-            profiles[p.name] = p.name
-        }
+    fun profiles(): Map<String, String> {
+        val profiles = autoCompleteService.availableProfiles.associate { p -> p.name to p.name }
         return profiles
     }
 
