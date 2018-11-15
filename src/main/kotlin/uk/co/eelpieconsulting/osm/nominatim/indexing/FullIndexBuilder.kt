@@ -17,9 +17,9 @@ constructor(private val indexer: ElasticSearchIndexer, private val osmDAO: OsmDA
         fun ways(start: Long, pageSize: Long) = osmDAO.getPlaces(start, pageSize, "W")
         fun nodes(start: Long, pageSize: Long) = osmDAO.getPlaces(start, pageSize, "N")
 
-        indexer.indexLines( OsmPlacesSource(osmDAO, placeRowParser, ::relations))
-        indexer.indexLines( OsmPlacesSource(osmDAO, placeRowParser, ::ways))
-        indexer.indexLines( OsmPlacesSource(osmDAO, placeRowParser, ::nodes))
+        indexer.indexLines(OsmPlacesSource(osmDAO, placeRowParser, ::relations))
+        indexer.indexLines(OsmPlacesSource(osmDAO, placeRowParser, ::ways))
+        indexer.indexLines(OsmPlacesSource(osmDAO, placeRowParser, ::nodes))
     }
 
 }

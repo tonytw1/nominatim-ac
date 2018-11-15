@@ -36,8 +36,6 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
     @Throws(IOException::class)
     fun indexLines(osmPlacesSource: OsmPlacesSource) {
         log.info("Importing records")
-        //if (!Strings.isNullOrEmpty(place.name)) {  // Discard entires with not specifc name TODO why not do this at sql select time?
-
         fun filterTags(tags: Set<String>): List<String> {
             return tags.filter { t ->
                 val split = pipeSplitter.split(t).iterator()
@@ -79,6 +77,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             log.info("Indexing places")
             val bulkRequest = BulkRequest()
             places.forEach { p ->
+                log.info("Indexing: " + p.osmId + " / " + p.name)
                 bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
                         source(jsonSerializer.serializePlace(p), XContentType.JSON))
             }
