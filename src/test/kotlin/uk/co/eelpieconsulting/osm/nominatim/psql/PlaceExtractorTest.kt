@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
+import java.sql.ResultSet
 
 class PlaceExtractorTest {
 
@@ -65,6 +66,24 @@ class PlaceExtractorTest {
         PlaceExtractor().extractPlaces(source, ::collectPages)
 
         assertTrue(places.first().tags.contains("sport|rowing"))
+    }
+
+    @Test
+    fun correctExtractsSequenceOfPlaces() {
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlaces(start, pageSize, "R")
+
+        val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+
+        var places = emptyList<Place>()
+        fun collectPlaces(place: Place) {
+            places += place
+        }
+
+        PlaceExtractor().extractPlaces(source, ::collectPlaces)
+
+        assertEquals(11L, places[0].osmId)
+        assertEquals(13L, places[1].osmId)
+        assertEquals(58L, places[2].osmId)
     }
 
 }
