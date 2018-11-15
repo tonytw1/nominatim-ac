@@ -35,6 +35,7 @@ class PlaceRowParser {
 
         return Place(osmId = placeRow.getLong("osm_id"),
                 osmType = placeRow.getString("osm_type"),
+                name = placeRow.getString("name"),
                 address = placeRow.getString("en_label").trim(),
                 classification = placeRow.getString(3),
                 type = placeRow.getString(4),

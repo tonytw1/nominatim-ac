@@ -16,7 +16,9 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveSingleRowPlace() {
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(11, "R")
+        val winton = 17858832L
+
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(winton, "N")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -26,6 +28,7 @@ class OsmPlacesSourceTest {
         }
 
         assertEquals(1, found.size)
+        assertEquals("Winton", found.first().name)
     }
 
     @Test
