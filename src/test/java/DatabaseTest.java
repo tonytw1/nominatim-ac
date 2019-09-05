@@ -3,19 +3,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
-import uk.co.eelpieconsulting.osm.nominatim.psql.OsmPlacesSource;
 import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DatabaseTest {
 
-    private static final String DATABASE_HOST = "10.0.45.11";  // TODO inject
+    private static final String DATABASE_HOST = "localhost:6432";  // TODO inject
     private static final String DATABASE_USER = "www-data";
     private static final String DATABASE_PASSWORD = "";
 
@@ -35,7 +33,7 @@ public class DatabaseTest {
 
         final Place place = placeRowParser.buildPlaceFromCurrentRow(placeRow);
 
-        assertEquals("Twickenham Rowing Club, Church Lane, Cole Park, Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DY, United Kingdom", place.getAddress());
+        assertEquals("Twickenham Rowing Club, Church Lane, Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3DY, United Kingdom", place.getAddress());
     }
 
 }

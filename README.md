@@ -77,6 +77,9 @@ Build locally with:
 gradle clean build
 ```
 
+The tests are expecting to see a Postgres Nominatim 3.3 schema containing a Sep 2019 Great Britain import
+on localhost port 6432 (which is where nominatim-docker would be).
+
 
 ### Installation
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.

@@ -9,7 +9,7 @@ import java.sql.ResultSet
 
 class PlaceExtractorTest {
 
-    private val DATABASE_HOST = "10.0.45.11"  // TODO inject
+    private val DATABASE_HOST = "localhost:6432"  // TODO inject
     private val DATABASE_USER = "www-data"
     private val DATABASE_PASSWORD = ""
 
@@ -29,8 +29,8 @@ class PlaceExtractorTest {
         }
 
         assertEquals(2, types.size)
-        assertEquals(Lists.newArrayList("attraction", "government"), types)
-        assertEquals(Lists.newArrayList("tourism", "office"), categories)
+        assertEquals(Lists.newArrayList("government", "attraction"), types)
+        assertEquals(Lists.newArrayList("office", "tourism"), categories)
     }
 
     @Test

@@ -7,7 +7,7 @@ import java.sql.ResultSet
 
 class OsmPlacesSourceTest {
 
-    private val DATABASE_HOST = "10.0.45.11"  // TODO inject
+    private val DATABASE_HOST = "localhost:6432"  // TODO inject
     private val DATABASE_USER = "www-data"
     private val DATABASE_PASSWORD = ""
 
