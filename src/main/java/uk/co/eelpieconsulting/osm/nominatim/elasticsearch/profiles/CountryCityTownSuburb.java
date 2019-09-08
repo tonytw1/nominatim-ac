@@ -8,7 +8,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class CountryCityTownSuburb implements Profile {
 
-    public static final String COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb";
+    private static final String COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb";
     private static final String TAGS = "tags";
 
     public String getName() {

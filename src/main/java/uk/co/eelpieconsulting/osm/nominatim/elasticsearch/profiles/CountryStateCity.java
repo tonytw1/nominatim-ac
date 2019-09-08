@@ -8,7 +8,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class CountryStateCity implements Profile {
 
-    public static final String COUNTRY_STATE_CITY = "countryStateCity";
+    private static final String COUNTRY_STATE_CITY = "countryStateCity";
     private static final String TAGS = "tags";
 
     public String getName() {
