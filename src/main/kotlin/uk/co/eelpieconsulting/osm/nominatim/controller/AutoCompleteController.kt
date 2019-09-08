@@ -39,7 +39,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
 
     @GetMapping("/profiles")
     fun profiles(): Map<String, String> {
-        val profiles = autoCompleteService.availableProfiles.associate { p -> p.name to p.name }
+        val profiles = autoCompleteService.availableProfiles.associate { p -> p.getName() to p.getName() }
         return profiles
     }
 
