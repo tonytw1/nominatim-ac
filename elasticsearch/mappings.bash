@@ -1,4 +1,4 @@
-curl -XPUT -H "Content-Type: application/json" 'http://10.0.45.11:32400/nominatimac/places/_mapping' -d '
+curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/nominatimac/places/_mapping' -d '
 {
 	"places" : { 
 		"properties" : { 
