@@ -11,7 +11,7 @@ class OsmPlacesSourceTest {
     private val DATABASE_USER = "www-data"
     private val DATABASE_PASSWORD = ""
 
-    private var osmDAO =  OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
+    private var osmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
     @Test
@@ -54,11 +54,11 @@ class OsmPlacesSourceTest {
         var rowsIterated = 0
         val recordCountKnownToExceedPaginationSize = 20
         while (osmPlacesSource.hasNext() && rowsIterated < recordCountKnownToExceedPaginationSize) {
-            osmPlacesSource.next();
-            rowsIterated++;
+            osmPlacesSource.next()
+            rowsIterated++
         }
 
-        assertEquals(recordCountKnownToExceedPaginationSize, rowsIterated);
+        assertEquals(recordCountKnownToExceedPaginationSize, rowsIterated)
     }
 
 }
