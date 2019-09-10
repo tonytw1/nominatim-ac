@@ -11,7 +11,7 @@ class OsmPlacesSourceTest {
     private val DATABASE_USER = "www-data"
     private val DATABASE_PASSWORD = ""
 
-    private var osmDAO: OsmDAO =  OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
+    private var osmDAO =  OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
     @Test
