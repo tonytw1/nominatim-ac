@@ -17,12 +17,14 @@ callback | The name of an optional JSONP callback to wrap the results in
 
 
 ### Motivation
-Allowing users to tag content with just a latitude/longitude point loses alot of the context.
+
+Allowing users to tag content with just a latitude/longitude point loses a lot of the context.
 Was the user referring to a country, a city or a specific building when they applied the tag?
 
 Can OSM data be used to provide a user friendly auto complete place name service which preserves context by assigning a repeatable location id to each result?
 
 ### Background
+
 Many existing location lookup services resolve to a point location only.
 The Google Maps geocoding service does provide some context information, but lacks ids which can be advertised and referred back to at a later date (update - no longer true).
 
@@ -36,13 +38,13 @@ This has been tackled by the Nominatim project (http://wiki.openstreetmap.org/wi
 This means we can infer things like 'if this content is tagged with that street, then it must also be relevant to this city and this country'.
 OSM ids are public so we can advertise them and be confident that other applications can make use of that information.
 
-Nominatims' terms and conditions state that it shouldn't be used as an auto complete service.
-This is fair. Using Nominatim in this manner would result in alot of expensive database queries.
+The Nominatim terms and conditions state that it shouldn't be used as an auto complete service.
+This is fair. Using Nominatim in this manner would result in a lot of expensive database queries.
 
 
 ### Overview
 
-This code base dumps out the contents of a populated Nominatim postgres instance into Elasticsearch which is then exposed as a JSON web service.
+This code base dumps out the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
 
 This service is able to quickly respond to key stokes as the Nominatim output has been pre-rendered and indexed and does not need to be calculated in real time.
 The Elasticsearch index can be distributed to smaller machines than those needed to run a whole planet Nominatim instance.
@@ -53,6 +55,8 @@ The calling application can now persist the OSM id of the selected result for fu
 
 ### Implementation
 Java / Spring Boot and Elasticsearch.
+
+Reads from a populated Nominatim 3.4 postgres database and indexes into an Elasticsearch 6.8 index.
 
 An example install containing the whole planet data set is available at https://nominatim-ac.eelpieconsulting.co.uk
 
@@ -72,14 +76,36 @@ This is a Spring Boot project with a Gradle build.
 
 Configuration is in the file named application.properties.
 
+The tests are expecting to see a Postgres Nominatim 3.4 schema containing a Sep 2019 Great Britain import
+on localhost port 6432 (which is where nominatim-docker would be).
+
+Start Elasticsearch:
+```
+docker-compose -f docker-compose/docker-compose.yml up
+```
+
+Create Elasticsearch index:
+```
+bash elasticsearch/index.bash 
+{"acknowledged":true,"shards_acknowledged":true,"index":"nominatimac"}
+
+bash elasticsearch/mappings.bash 
+{"acknowledged":true}
+```
+
 Build locally with:
 ```
 gradle clean build
 ```
 
-The tests are expecting to see a Postgres Nominatim 3.3 schema containing a Sep 2019 Great Britain import
-on localhost port 6432 (which is where nominatim-docker would be).
+Start locally
 
+
+Build index
+
+```
+curl http://localhost:8080/import
+```
 
 ### Installation
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.
