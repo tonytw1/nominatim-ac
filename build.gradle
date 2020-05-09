@@ -8,7 +8,6 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
-
     }
 }
 
@@ -32,8 +31,8 @@ targetCompatibility = 1.8
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
-    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.4.2'
-    compile 'org.elasticsearch:elasticsearch:6.4.2'
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.8'
+    compile 'org.elasticsearch:elasticsearch:6.8.8'
     compile "joda-time:joda-time:2.0"
     compile "org.postgresql:postgresql:9.3-1102-jdbc4"
     compile "log4j:log4j:1.2.16"
