@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 
 class JsonDeserializerTest {
 
-    val jsonDeserializer = uk.co.eelpieconsulting.osm.nominatim.json.JsonDeserializer()
+    val jsonDeserializer = JsonDeserializer()
 
     @Test
     fun canSerializeKotlinModelClass() {
