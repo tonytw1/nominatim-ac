@@ -12,7 +12,7 @@ $( "#location" ).autocomplete({
 			success: function( data ) {
 				response( $.map( data, function( item ) {				
 					return {
-						label: (item.address + " (" + item.classification + "/" + item.type + ")"),
+						label: (item.address + " (" + item.classification + "/" + item.type + ") " + item.adminLevel + " " + item.addressRank),
 						value: item.address,
 						osmId: item.osmId,
 						osmType: item.osmType,

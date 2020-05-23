@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequest;
@@ -14,6 +12,8 @@ import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,6 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Country;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTownSuburb;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
-import uk.co.eelpieconsulting.osm.nominatim.indexing.ElasticSearchIndexer;
 import uk.co.eelpieconsulting.osm.nominatim.json.JsonDeserializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
@@ -121,6 +120,7 @@ public class ElasticSearchAutoCompleteService {
     searchRequest.types(SEARCH_TYPE);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.query(query);
+    searchSourceBuilder.sort(SortBuilders.fieldSort("adminLevel").order(SortOrder.ASC)).sort(SortBuilders.fieldSort("addressRank").order(SortOrder.ASC));
     searchRequest.source(searchSourceBuilder);
 
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT.DEFAULT);
@@ -133,9 +133,8 @@ public class ElasticSearchAutoCompleteService {
       Place place = jsonDeserializer.deserializePlace(searchHit.getSourceAsString());
 
       places.add(new DisplayPlace(place.getOsmId(), place.getOsmType(), place.getAddress(), place.getClassification(),
-              place.getType(), place.getLatlong(), place.getCountry(), place.getType()));
-
-
+              place.getType(), place.getLatlong(), place.getCountry(), place.getType(),
+              place.getAdminLevel(), place.getAddressRank()));
     }
 
     return places;

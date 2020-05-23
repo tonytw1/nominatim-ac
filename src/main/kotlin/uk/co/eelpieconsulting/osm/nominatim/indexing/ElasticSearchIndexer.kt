@@ -77,7 +77,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             log.info("Indexing places")
             val bulkRequest = BulkRequest()
             places.forEach { p ->
-                log.info("Indexing: " + p.osmId + " / " + p.name)
+                log.debug("Indexing: " + p.osmId + " / " + p.name)
                 bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
                         source(jsonSerializer.serializePlace(p), XContentType.JSON))
             }
