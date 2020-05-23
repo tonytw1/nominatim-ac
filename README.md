@@ -26,10 +26,11 @@ Can OSM data be used to provide a user friendly auto complete place name service
 ### Background
 
 Many existing location lookup services resolve to a point location only.
-The Google Maps geocoding service does provide some context information, but lacks ids which can be advertised and referred back to at a later date (update - no longer true).
+The Google Maps geocoding service provided some context information, but lacked persistant ids which can be advertised and referred back to at a later date 
+(it now does).
 
-Some services such as Twitter and Instagram expose their own in-house ids for locations.
-The data sets which these ids refer to aren't available to 3rd party developers.
+Some services such as Twitter and Instagram exposed their own in-house location ids
+but data ids referred to wasn't available to 3rd party developers.
 
 OSM does provide publicly accessible ids for locations.
 Resolving the fairly basic OSM schema into a hierarchy is a fairly complicated task.
