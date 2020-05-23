@@ -96,11 +96,15 @@ bash elasticsearch/mappings.bash
 
 Build locally with:
 ```
-gradle clean build
+gradle clean build -x test
 ```
 
 Start locally
 
+```
+mv build/libs/nominatim-ac-0.1.0.jar .
+java -jar nominatim-ac-0.1.0.jar 
+```
 
 Build index
 
