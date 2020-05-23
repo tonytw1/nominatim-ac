@@ -39,6 +39,26 @@ class OsmPlacesSourceTest {
     }
 
     @Test
+    fun countriesHaveLowerAdminLevels() {
+        val england = 58447L
+
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(england, "R")
+
+        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+
+        var found = emptyList<Place>()
+        while (osmPlacesSource.hasNext()) {
+            found = found + osmPlacesSource.next()
+        }
+
+        assertEquals(1, found.size)
+
+        val firstRow = found.first()
+        assertEquals("England", firstRow.name)
+        assertEquals(4, firstRow.adminLevel)
+    }
+
+    @Test
     fun canRetrieveRowsForMultiRowPlaces() {
         fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(4599, "R")
 
