@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing
 
 import com.google.common.base.Splitter
 import com.google.common.collect.Sets
+import joptsimple.internal.Strings
 import org.apache.log4j.Logger
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.index.IndexRequest
@@ -76,11 +77,17 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
         if (!places.isEmpty()) {
             log.info("Indexing places")
             val bulkRequest = BulkRequest()
-            places.forEach { p ->
+
+            places.filter { p ->
+                // Places with no name tend to take the address of their parent which causes clauses
+                !Strings.isNullOrEmpty(p.name)
+            }.forEach { p ->
                 log.debug("Indexing: " + p.osmId + " / " + p.name)
-                bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).
-                        source(jsonSerializer.serializePlace(p), XContentType.JSON))
+                if (!Strings.isNullOrEmpty(p.name)) {
+                    bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).source(jsonSerializer.serializePlace(p), XContentType.JSON))
+                }
             }
+
             client.bulk(bulkRequest)
         }
     }
