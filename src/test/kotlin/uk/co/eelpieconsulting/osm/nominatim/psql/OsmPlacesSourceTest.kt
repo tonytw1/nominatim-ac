@@ -16,9 +16,9 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveSingleRowPlace() {
-        val winton = 17858832L
+        val twickenham = 21099166L
 
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(winton, "N")
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(twickenham, "N")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -28,7 +28,13 @@ class OsmPlacesSourceTest {
         }
 
         assertEquals(1, found.size)
-        assertEquals("Winton", found.first().name)
+
+        val firstRow = found.first()
+        assertEquals("Twickenham", firstRow.name)
+        assertEquals("Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3RZ, United Kingdom", firstRow.address)
+        assertEquals("place", firstRow.classification)
+        assertEquals("suburb", firstRow.type)
+        assertEquals(15, firstRow.adminLevel)
     }
 
     @Test
