@@ -7,7 +7,7 @@ curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/nominatima
 				"search_analyzer":"analyzer_startswith",
 				"analyzer":"analyzer_startswith"		
 			},
-			"rank" : {"type" : "integer" },
+			"addressRank" : {"type" : "integer" },
 			"adminLevel" : {"type" : "integer"},
 			"tags" : {"type" : "keyword" },
 			"latlong" : {"type" : "geo_point"},
