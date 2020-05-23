@@ -7,13 +7,11 @@ data class Place(
         val address: String,
         val classification: String,
         val type: String,
-        val rank: Int,
+        val addressRank: Int,
         val latlong: LatLong,
         var tags: List<String>,
         val country: String?,
         val adminLevel: Int,
         val name: String?) {
-
 }
-
 

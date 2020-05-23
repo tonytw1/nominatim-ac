@@ -34,7 +34,8 @@ class OsmPlacesSourceTest {
         assertEquals("Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 3RZ, United Kingdom", firstRow.address)
         assertEquals("place", firstRow.classification)
         assertEquals("suburb", firstRow.type)
-        assertEquals(15, firstRow.adminLevel)
+        assertEquals(15, firstRow.adminLevel) // Admin levels increase with depth; countries are highest
+        assertEquals(20, firstRow.addressRank) // This is an address rank; higher numbers will present further to the left in an en address
     }
 
     @Test

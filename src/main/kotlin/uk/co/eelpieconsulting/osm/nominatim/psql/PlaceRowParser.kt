@@ -36,13 +36,20 @@ class PlaceRowParser {
         val nameField = placeRow.getObject("name") as Map<String, String>
         val name = nameField.get("name")
 
+        val placeAddressRank = placeRow.getInt("rank")
+        val addressRank = if (placeAddressRank > 0) {
+            placeAddressRank
+        } else {
+            100 // TODO Confirm is the data has null values or not
+        }
+
         return Place(osmId = placeRow.getLong("osm_id"),
                 osmType = placeRow.getString("osm_type"),
                 name = name,
                 address = placeRow.getString("en_label").trim(),
                 classification = placeRow.getString(3),
                 type = placeRow.getString(4),
-                rank = placeRow.getInt("rank"),
+                addressRank = addressRank,
                 latlong = latlong,
                 tags = extractTagsFromRow(),
                 country = placeRow.getString("country"),
