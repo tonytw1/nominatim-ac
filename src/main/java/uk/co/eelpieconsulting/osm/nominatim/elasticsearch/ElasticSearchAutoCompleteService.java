@@ -17,10 +17,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Country;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryCityTownSuburb;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.CountryStateCity;
-import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.Profile;
+import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles.*;
 import uk.co.eelpieconsulting.osm.nominatim.json.JsonDeserializer;
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace;
 import uk.co.eelpieconsulting.osm.nominatim.model.Place;
@@ -52,10 +49,12 @@ public class ElasticSearchAutoCompleteService {
     this.elasticSearchClientFactory = elasticSearchClientFactory;
     this.jsonDeserializer = jsonDeserializer;
     this.readIndex = readIndex;
+
     this.availableProfiles = Lists.newArrayList();
     availableProfiles.add(new Country());
     availableProfiles.add(new CountryCityTownSuburb());
     availableProfiles.add(new CountryStateCity());
+    availableProfiles.add(new Everything());
   }
 
   public List<Profile> getAvailableProfiles() {
@@ -67,14 +66,14 @@ public class ElasticSearchAutoCompleteService {
       return Lists.newArrayList();
     }
 
-    Profile profile = null;
+    Profile profile = new Everything();
     for (Profile p : availableProfiles) {
       if (p.getName().equals(profileName)) {
         profile = p;
       }
     }
 
-    BoolQueryBuilder query = profile != null ? profile.getQuery() : new BoolQueryBuilder();
+    BoolQueryBuilder query = profile.getQuery();
     query = query.must(startsWith(q));
 
     if (!Strings.isNullOrEmpty(tag)) {

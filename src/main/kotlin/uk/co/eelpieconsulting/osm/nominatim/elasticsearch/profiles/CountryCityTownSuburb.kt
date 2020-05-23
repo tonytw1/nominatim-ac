@@ -6,11 +6,10 @@ import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class CountryCityTownSuburb : Profile {
 
-    private val COUNTRY_CITY_TOWN_SUBURB = "countryCityTownSuburb"
     private val TAGS = "tags"
 
     override fun getName(): String {
-        return COUNTRY_CITY_TOWN_SUBURB
+        return "countryCityTownSuburb"
     }
 
     override fun getQuery(): BoolQueryBuilder {

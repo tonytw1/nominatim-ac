@@ -1,18 +1,17 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles
 
 import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
 
 import org.elasticsearch.index.query.QueryBuilders.boolQuery
 import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class CountryStateCity : Profile {
 
-    private val COUNTRY_STATE_CITY = "countryStateCity"
     private val TAGS = "tags"
 
     override fun getName(): String {
-        return COUNTRY_STATE_CITY
+        return "countryStateCity"
     }
 
     override fun getQuery(): BoolQueryBuilder {

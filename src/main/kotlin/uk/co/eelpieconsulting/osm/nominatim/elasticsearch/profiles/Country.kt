@@ -7,11 +7,10 @@ import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class Country : Profile {
 
-    private val COUNTRY = "country"
     private val TAGS = "tags"
 
     override fun getName(): String {
-        return COUNTRY
+        return "country"
     }
 
     override fun getQuery(): BoolQueryBuilder {
