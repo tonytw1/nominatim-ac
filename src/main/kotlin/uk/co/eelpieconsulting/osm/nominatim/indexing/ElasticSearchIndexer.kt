@@ -27,7 +27,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
 
     private val log = Logger.getLogger(ElasticSearchIndexer::class.java)
 
-    private val client = elasticSearchClientFactory.client
+    private val client = elasticSearchClientFactory.getClient()
 
     val TYPE = "places"
     private val COMMIT_SIZE = 1000
