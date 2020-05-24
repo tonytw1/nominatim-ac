@@ -66,7 +66,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
 
         placeExtractor.extractPlaces(osmPlacesSource, ::indexPlaces)
 
-        if (!places.isEmpty()) {
+        if (places.isNotEmpty()) {
             index(places)
         }
 
@@ -74,7 +74,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
     }
 
     fun index(places: List<Place>) {
-        if (!places.isEmpty()) {
+        if (places.isNotEmpty()) {
             log.info("Indexing places")
             val bulkRequest = BulkRequest()
 
