@@ -1,8 +1,8 @@
 package uk.co.eelpieconsulting.osm.nominatim.json
 
 import org.apache.commons.io.IOUtils
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class JsonSerializerTest {
 

@@ -1,8 +1,8 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Test
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import java.sql.ResultSet
 
