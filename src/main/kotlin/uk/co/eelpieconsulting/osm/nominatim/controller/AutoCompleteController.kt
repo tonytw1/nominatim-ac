@@ -7,7 +7,6 @@ import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompl
 import uk.co.eelpieconsulting.osm.nominatim.indexing.PartialIndexWatermarkService
 import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
 import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
-import java.lang.Long
 
 @RestController
 class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteService,
@@ -21,7 +20,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
         return mapOf(
                 "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
                 "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.watermark),
-                "indexedItems" to Long.toString(autoCompleteService.indexedItemsCount()))
+                "indexedItems" to autoCompleteService.indexedItemsCount().toString())
     }
 
     @GetMapping("/search")
