@@ -1,83 +1,57 @@
-package uk.co.eelpieconsulting.osm.nominatim.indexing;
+package uk.co.eelpieconsulting.osm.nominatim.indexing
 
-import com.google.common.collect.Lists;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer;
-import uk.co.eelpieconsulting.osm.nominatim.model.Place;
-import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO;
-import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser;
-
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import com.google.common.collect.Lists
+import org.apache.log4j.Logger
+import org.joda.time.DateTime
+import org.joda.time.Duration
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer
+import uk.co.eelpieconsulting.osm.nominatim.model.Place
+import uk.co.eelpieconsulting.osm.nominatim.psql.OsmDAO
+import uk.co.eelpieconsulting.osm.nominatim.psql.PlaceRowParser
+import java.io.IOException
+import java.sql.SQLException
 
 @Component
-public class PartialIndexUpdater {
+class PartialIndexUpdater @Autowired constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowParser, private val elasticSearchIndexer: ElasticSearchIndexer,
+                                                 private val partialIndexWatermarkService: PartialIndexWatermarkService, private val jsonSerializer: JsonSerializer) {
 
-  private static final Logger log = Logger.getLogger(PartialIndexUpdater.class);
+    private val log = Logger.getLogger(PartialIndexUpdater::class.java)
+    private val COMMIT_SIZE = 1000
 
-  private static final int COMMIT_SIZE = 1000;
-
-  private final OsmDAO osmDAO;
-  private final JsonSerializer jsonSerializer;
-  private final PlaceRowParser placeRowParser;
-  private final ElasticSearchIndexer elasticSearchIndexer;
-  private final PartialIndexWatermarkService partialIndexWatermarkService;
-
-  @Autowired
-  public PartialIndexUpdater(OsmDAO osmDAO, PlaceRowParser placeRowParser, ElasticSearchIndexer elasticSearchIndexer,
-                             PartialIndexWatermarkService partialIndexWatermarkService, JsonSerializer jsonSerializer) throws SQLException {
-    this.placeRowParser = placeRowParser;
-    this.elasticSearchIndexer = elasticSearchIndexer;
-    this.partialIndexWatermarkService = partialIndexWatermarkService;
-    this.osmDAO = osmDAO;
-    this.jsonSerializer = jsonSerializer;
-  }
-
-  @Scheduled(fixedRate = 60000)
-  public void update() throws SQLException, IOException {
-    DateTime watermark = readPersistedWatermark();
-
-    while (watermark.isBefore(DateTime.now().minusHours(1))) {
-      log.info("Updating indexed after: " + watermark);
-
-      final DateTime countStart = DateTime.now();
-
-      final ResultSet places = osmDAO.getPlacesIndexedAfter(watermark, COMMIT_SIZE);
-
-      DateTime highWater = watermark;
-      List<Place> updates = Lists.newArrayList();
-      while (!places.isAfterLast()) {
-        boolean next = places.next();
-        if (next) {
-          Place place = placeRowParser.buildPlaceFromCurrentRow(places);
-          updates.add(place);
-          highWater = new DateTime(places.getTimestamp("indexed_date"));
+    @Scheduled(fixedRate = 60000)
+    @Throws(SQLException::class, IOException::class)
+    fun update() {
+        var watermark = readPersistedWatermark()
+        while (watermark.isBefore(DateTime.now().minusHours(1))) {
+            log.info("Updating indexed after: $watermark")
+            val countStart = DateTime.now()
+            val places = osmDAO.getPlacesIndexedAfter(watermark, COMMIT_SIZE)
+            var highWater = watermark
+            val updates: MutableList<Place> = Lists.newArrayList()
+            while (!places.isAfterLast) {
+                val next = places.next()
+                if (next) {
+                    val place = placeRowParser.buildPlaceFromCurrentRow(places)
+                    updates.add(place)
+                    highWater = DateTime(places.getTimestamp("indexed_date"))
+                }
+            }
+            elasticSearchIndexer.index(updates)
+            val duration = Duration(countStart.millis, DateTime.now().millis)
+            log.info("Imported " + updates.size + " partial updates in " + duration.millis)
+            log.info("Setting watermark to: $highWater")
+            partialIndexWatermarkService.setWatermark(highWater)
+            watermark = highWater
         }
-      }
-
-      elasticSearchIndexer.index(updates);
-
-      final Duration duration = new Duration(countStart.getMillis(), DateTime.now().getMillis());
-
-      log.info("Imported " + updates.size() + " partial updates in " + duration.getMillis());
-      log.info("Setting watermark to: " + highWater);
-      partialIndexWatermarkService.setWatermark(highWater);
-
-      watermark = highWater;
     }
 
-  }
-
-  private DateTime readPersistedWatermark() throws IOException {
-    final DateTime persistedWaterMark = partialIndexWatermarkService.getWatermark();
-    return persistedWaterMark != null ? persistedWaterMark : new DateTime(0L);
-  }
+    @Throws(IOException::class)
+    private fun readPersistedWatermark(): DateTime {
+        val persistedWaterMark = partialIndexWatermarkService.getWatermark()
+        return persistedWaterMark ?: DateTime(0L)
+    }
 
 }
