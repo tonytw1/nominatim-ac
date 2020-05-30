@@ -96,7 +96,7 @@ bash elasticsearch/mappings.bash
 
 Build locally with:
 ```
-gradle clean build -x test
+./gradlew clean build -x test
 ```
 
 Start locally
