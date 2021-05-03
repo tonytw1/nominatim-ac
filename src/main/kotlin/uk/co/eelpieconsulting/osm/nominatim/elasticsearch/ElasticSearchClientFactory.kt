@@ -11,8 +11,7 @@ import java.net.UnknownHostException
 
 @Component
 class ElasticSearchClientFactory @Autowired constructor(
-        @param:Value("\${elasticsearch.host}") private val host: String,
-        @param:Value("\${elasticsearch.port}") private val port: Int) {
+        @param:Value("\${elasticsearch.url}") private val url: String) {
 
     private val log = Logger.getLogger(ElasticSearchClientFactory::class.java)
 
@@ -33,8 +32,8 @@ class ElasticSearchClientFactory @Autowired constructor(
     @Throws(UnknownHostException::class)
     private fun connectToCluster(): RestHighLevelClient {
         if (client == null) {
-            log.info("Setting up elastic rest client with host and port: $host:$port")
-            val restClient = RestClient.builder(HttpHost(host, port, "http"))
+            log.info("Setting up elastic rest client with host and port: $url")
+            val restClient = RestClient.builder(HttpHost.create(url))
             client = RestHighLevelClient(restClient)
         }
         return client!!
