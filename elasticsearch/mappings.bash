@@ -1,6 +1,5 @@
-curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/nominatimac/places/_mapping' -d '
+curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/nominatimac/_mapping' -d '
 {
-	"places" : { 
 		"properties" : { 
 			"address" : {
 				"type":"text",
@@ -12,7 +11,6 @@ curl -XPUT -H "Content-Type: application/json" 'http://localhost:9200/nominatima
 			"tags" : {"type" : "keyword" },
 			"latlong" : {"type" : "geo_point"},
 			"country" : {"type" : "keyword" }
-		} 
-	}
+		}
 }
 '
