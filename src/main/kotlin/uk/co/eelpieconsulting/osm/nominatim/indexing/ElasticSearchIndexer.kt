@@ -75,20 +75,20 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
     }
 
     fun index(places: List<Place>) {
-        if (places.isNotEmpty()) {
+        val indexablePlaces = places.filter { p ->
+            // Places with no name tend to take the address of their parent which causes clauses
+            !Strings.isNullOrEmpty(p.name)
+        }
+
+        if (indexablePlaces.isNotEmpty()) {
             log.info("Indexing places")
             val bulkRequest = BulkRequest()
-
-            places.filter { p ->
-                // Places with no name tend to take the address of their parent which causes clauses
-                !Strings.isNullOrEmpty(p.name)
-            }.forEach { p ->
+            indexablePlaces.forEach { p ->
                 log.debug("Indexing: " + p.osmId + " / " + p.name)
                 if (!Strings.isNullOrEmpty(p.name)) {
                     bulkRequest.add(IndexRequest(writeIndex).source(jsonSerializer.serializePlace(p), XContentType.JSON))
                 }
             }
-
             client.bulk(bulkRequest, RequestOptions.DEFAULT)
         }
     }
