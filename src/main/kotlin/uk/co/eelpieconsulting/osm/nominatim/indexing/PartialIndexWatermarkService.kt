@@ -33,7 +33,7 @@ class PartialIndexWatermarkService @Autowired constructor(private val elasticSea
         searchRequest.source(searchSourceBuilder)
 
         val searchResponse = elasticSearchClientFactory.getClient().search(searchRequest, RequestOptions.DEFAULT)
-        if (searchResponse.hits.getTotalHits() == 0L) {
+        if (searchResponse.hits.getTotalHits().value == 0L) {
             return null
         } else {
             try {
@@ -52,7 +52,7 @@ class PartialIndexWatermarkService @Autowired constructor(private val elasticSea
         val json = objectMapper.writeValueAsString(map)
         try {
             val indexRequest = IndexRequest().index(writeIndex).type(WATERMARK).id("1").source(json)
-            client.index(indexRequest)
+            client.index(indexRequest, RequestOptions.DEFAULT)
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

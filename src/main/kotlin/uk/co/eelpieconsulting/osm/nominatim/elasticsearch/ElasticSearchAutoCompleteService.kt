@@ -22,7 +22,6 @@ import java.io.IOException
 class ElasticSearchAutoCompleteService @Autowired constructor(private val elasticSearchClientFactory: ElasticSearchClientFactory, private val jsonDeserializer: JsonDeserializer,
                                                               @param:Value("\${elasticsearch.index.read}") private val readIndex: String) {
 
-    private val SEARCH_TYPE = "places" // TODO ElasticSearchIndexer.TYPE;
     private val ADDRESS = "address"
     private val DEFAULT_RADIUS = "100km"
     private val LATLONG = "latlong"
@@ -81,7 +80,6 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
     fun indexedItemsCount(): Long {
         val all = QueryBuilders.boolQuery()
         val searchRequest = SearchRequest(readIndex)
-        searchRequest.types(SEARCH_TYPE)
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(all)
         searchSourceBuilder.size(0)
@@ -89,14 +87,13 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
 
         val client = elasticSearchClientFactory.getClient()
         val response = client.search(searchRequest, RequestOptions.DEFAULT)
-        return response.hits.totalHits
+        return response.hits.totalHits.value
     }
 
     @Throws(IOException::class)
     private fun executeAndParse(query: QueryBuilder): List<DisplayPlace> {
         val client = elasticSearchClientFactory.getClient()
         val searchRequest = SearchRequest(readIndex)
-        searchRequest.types(SEARCH_TYPE)
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(query)
         searchSourceBuilder.sort(SortBuilders.fieldSort("adminLevel").order(SortOrder.ASC)).sort(SortBuilders.fieldSort("addressRank").order(SortOrder.ASC))

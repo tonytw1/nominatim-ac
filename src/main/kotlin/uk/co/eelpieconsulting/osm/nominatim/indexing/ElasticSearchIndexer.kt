@@ -6,6 +6,7 @@ import joptsimple.internal.Strings
 import org.apache.log4j.Logger
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.index.IndexRequest
+import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.common.xcontent.XContentType
 import org.joda.time.DateTime
 import org.joda.time.Duration
@@ -84,11 +85,11 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             }.forEach { p ->
                 log.debug("Indexing: " + p.osmId + " / " + p.name)
                 if (!Strings.isNullOrEmpty(p.name)) {
-                    bulkRequest.add(IndexRequest(writeIndex, TYPE, p.osmId.toString() + p.osmType).source(jsonSerializer.serializePlace(p), XContentType.JSON))
+                    bulkRequest.add(IndexRequest(writeIndex).source(jsonSerializer.serializePlace(p), XContentType.JSON))
                 }
             }
 
-            client.bulk(bulkRequest)
+            client.bulk(bulkRequest, RequestOptions.DEFAULT)
         }
     }
 
