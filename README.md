@@ -112,6 +112,9 @@ Build index
 curl http://localhost:8080/import
 ```
 
+The full index is ~ 16Gb.
+
+
 ### Installation
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.
 
