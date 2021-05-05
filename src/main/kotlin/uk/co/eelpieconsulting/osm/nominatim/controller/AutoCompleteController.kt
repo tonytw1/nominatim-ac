@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.controller
 
 import org.joda.time.format.ISODateTimeFormat
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.co.eelpieconsulting.osm.nominatim.elasticsearch.ElasticSearchAutoCompleteService
@@ -15,6 +16,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
 
     private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
 
+    @CrossOrigin(origins = arrayOf("*"))
     @GetMapping("/status")
     fun status(): Map<String, String> {
         return mapOf(
@@ -23,6 +25,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
                 "indexedItems" to autoCompleteService.indexedItemsCount().toString())
     }
 
+    @CrossOrigin(origins = arrayOf("*"))
     @GetMapping("/search")
     fun search(
             q: String?,
@@ -36,6 +39,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
         return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
     }
 
+    @CrossOrigin(origins = arrayOf("*"))
     @GetMapping("/profiles")
     fun profiles(): Map<String, String> {
         val profiles = autoCompleteService.getAvailableProfiles().associate { p -> p.getName() to p.getName() }
