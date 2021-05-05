@@ -25,6 +25,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
                 "indexedItems" to autoCompleteService.indexedItemsCount().toString())
     }
 
+    @CrossOrigin(origins = arrayOf("*"))
     @GetMapping("/search")
     fun search(
             q: String?,
@@ -38,6 +39,7 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
         return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
     }
 
+    @CrossOrigin(origins = arrayOf("*"))
     @GetMapping("/profiles")
     fun profiles(): Map<String, String> {
         val profiles = autoCompleteService.getAvailableProfiles().associate { p -> p.getName() to p.getName() }
