@@ -1,6 +1,6 @@
 An experimental Open Street Map (OSM) / Nominatim place name auto-complete service.
 
-Indexes the contents of a Nominatim 3.1 database into Elasticsearch version 6.
+Indexes the contents of a Nominatim 3.4 database into Elasticsearch version 7.8.
 
 
 ### End points
@@ -23,10 +23,10 @@ Was the user referring to a country, a city or a specific building when they app
 
 Can OSM data be used to provide a user friendly auto complete place name service which preserves context by assigning a repeatable location id to each result?
 
-### Background
+### Background (Circa 2013)
 
 Many existing location lookup services resolve to a point location only.
-The Google Maps geocoding service provided some context information, but lacked persistant ids which can be advertised and referred back to at a later date 
+The Google Maps geocoding service provided some context information but lacked persistent ids which can be advertised and referred back to at a later date
 (it now does).
 
 Some services such as Twitter and Instagram exposed their own in-house location ids
@@ -45,9 +45,10 @@ This is fair. Using Nominatim in this manner would result in a lot of expensive 
 
 ### Overview
 
-This code base dumps out the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
+This code dumps out the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
+Ther is some useful intuition here around reliably paging through the entire places table.
 
-This service is able to quickly respond to key stokes as the Nominatim output has been pre-rendered and indexed and does not need to be calculated in real time.
+The service is able to quickly respond to key stokes as the Nominatim output has been pre-rendered and indexed and does not need to be calculated in real time.
 The Elasticsearch index can be distributed to smaller machines than those needed to run a whole planet Nominatim instance.
 
 The Nominatim place name and OSM id is made available in the JSON returned to clients.
@@ -57,7 +58,7 @@ The calling application can now persist the OSM id of the selected result for fu
 ### Implementation
 Java / Spring Boot and Elasticsearch.
 
-Reads from a populated Nominatim 3.4 postgres database and indexes into an Elasticsearch 6.8 index.
+Reads from a populated Nominatim 3.4 postgres database and indexes into an Elasticsearch 7.8 index.
 
 An example install containing the whole planet data set is available at https://nominatim-ac.eelpieconsulting.co.uk
 
@@ -112,19 +113,21 @@ Build index
 curl http://localhost:8080/import
 ```
 
-The full index is ~ 16Gb.
+A full index is around 16Gb in size.
+It takes 18 hours to index; this could probably be improved with threading.
 
 
 ### Installation
+
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.
 
 Installing a whole world Nominatim instances is a fairly large undertaking.
 From experience a full world Nominatim instance requires a machine with at least 32GB of RAM available.
-I struggled to build a consumer machine which could complete a full install. A full install was
-eventually successful using a HP DL360 server with 32Gb of RAM (single Xeon processor).
+I struggled to build a consumer machine which could complete ea full install. A full install was
 
-The initial Nominatim import of planet.osm took approximately 6 weeks to complete and consumed around 1TB of disk.
-The indexing the Nominatim postgres database into Elasticsearch takes around 48 hours.
-The Elasticsearch index is topped up every 5 minutes to capture updates feed into Nominatim via Osmosis (as per Nominatims' install instructions).
+Back in 2013 the Nominatim import of planet.osm took approximately 6 weeks to complete and consumed around 1TB of disk
+(single CPU HP DL360 server with 48Gb of RAM; single SATA SSD drive).
+
+In 2021 this import takes around 3 days (HP z620; dual CPU; 96Gb RAM; 1.5TB of NVME SSD).
 
 Mediagis have published a Nominatim Docker build which can be used for local development (https://github.com/mediagis/nominatim-docker).
