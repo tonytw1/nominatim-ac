@@ -2,6 +2,8 @@ An experimental Open Street Map (OSM) / Nominatim place name auto-complete servi
 
 Indexes the contents of a Nominatim 3.4 database into Elasticsearch version 7.8.
 
+An example containing the whole planet data set is available at (https://nominatim-ac.eelpieconsulting.co.uk).
+
 
 ### End points
 
@@ -67,8 +69,6 @@ The calling application can now persist the OSM id of the selected result for fu
 Java / Spring Boot and Elasticsearch.
 
 Reads from a populated Nominatim 3.4 postgres database and indexes into an Elasticsearch 7.8 index.
-
-An example install containing the whole planet data set is available at https://nominatim-ac.eelpieconsulting.co.uk
 
 
 ### Also see
