@@ -16,6 +16,14 @@ country | Restrict results to a given country code
 callback | The name of an optional JSONP callback to wrap the results in
 
 
+#### /places/{id}
+
+Retrieve a single place by the `id` provided in search results.a
+
+Potentially useful for applications which have identified an OSM id using autocomplete
+and need to retrieve it's details later in a flow but do not have access to a Nominatim API.
+
+
 ### Motivation
 
 Allowing users to tag content with just a latitude/longitude point loses a lot of the context.
@@ -23,7 +31,7 @@ Was the user referring to a country, a city or a specific building when they app
 
 Can OSM data be used to provide a user friendly auto complete place name service which preserves context by assigning a repeatable location id to each result?
 
-### Background (Circa 2013)
+### Background (circa 2013)
 
 Many existing location lookup services resolve to a point location only.
 The Google Maps geocoding service provided some context information but lacked persistent ids which can be advertised and referred back to at a later date

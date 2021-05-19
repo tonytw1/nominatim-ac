@@ -10,12 +10,12 @@ $( "#location" ).autocomplete({
 				profile: $("#profile").val()					
 			},
 			success: function( data ) {
-			    console.log(data);
                 $("#jsonPreview").text(JSON.stringify(data));
 				response( $.map( data, function( item ) {
 					return {
 						label: (item.address + " (" + item.classification + "/" + item.type + ") "),
 						value: item.address,
+						id: item.id,
 						osmId: item.osmId,
 						osmType: item.osmType,
 						latitude: item.latlong.lat,
@@ -28,9 +28,9 @@ $( "#location" ).autocomplete({
 
 	select: function( event, ui ) {
 		var osmUrl = osmUrlFor(ui.item.osmId, ui.item.osmType);
-		$("#selected").html( ui.item ? '<a href="' + osmUrl + '" target="_blank">' + ui.item.osmId + "/" + ui.item.osmType + '</a>' : "Nothing selected");
+		$("#selected").html( ui.item ? '<a href="' + osmUrl + '" target="_blank">' + ui.item.id + '</a>' : "Nothing selected");
 		$("#latitude").text( ui.item ? ui.item.latitude : "");
-		$("#longitude").text( ui.item ? ui.item.longitude : "");
+		$("#longitude").text( ui.item ? ui.item.longitude : "")
 	}
 });
 

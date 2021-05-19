@@ -41,6 +41,10 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         return availableProfiles
     }
 
+    fun byId(id: String): List<DisplayPlace> {
+        return executeAndParse(QueryBuilders.idsQuery().addIds(id))
+    }
+
     @Throws(IOException::class)
     fun search(q: String?, tag: String?, lat: Double?, lon: Double?, radius: Double?, rank: Int?, country: String?, profileName: String?): List<DisplayPlace> {
         if (q.isNullOrEmpty()) {
