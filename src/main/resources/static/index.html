@@ -6,32 +6,38 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 </head>
 <body>
-	
 	<h2>Nominatim AC</h2>
-	<p>A placename autocomplete service based on OpenStreetMap Nominatim data (<a href="https://github.com/tonytw1/nominatim-ac">source code</a>).</p>
-	
+	<p>A place name autocomplete service based on OpenStreetMap Nominatim data (<a href="https://github.com/tonytw1/nominatim-ac">source code</a>).</p>
 	<hr/>
+
 	<p>Usage example (using jQuery autocomplete):
-	
-	<div>Location name: <input id="location" size="40" />
-	
-	Profile:
-    <select id="profile">
-        <option value="everything">Everything</option>
-        <option value="country">country</option>
-        <option value="countryStateCity">countryStateCity</option>
-        <option value="countryCityTownSuburb">countryCityTownSuburb</option>
-	</select>
-	
-	</div>
-	<script src="autoComplete.js"></script>
-	<p>
-		<span id="selected"></span><br/>
-		<span id="latitude"></span><br/>
-		<span id="longitude"></span><br/>
-	</p>
-	
+	<table border="0">
+		<tr>
+			<td colspan="2">
+				Location name: <input id="location" size="40" />
+				Profile:
+				<select id="profile">
+					<option value="everything">Everything</option>
+					<option value="country">country</option>
+					<option value="countryStateCity">countryStateCity</option>
+					<option value="countryCityTownSuburb">countryCityTownSuburb</option>
+				</select>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td>
+				<div id="selectedPlace">
+				<span id="selected"></span><br/>
+				<span id="latitude"></span><br/>
+				<span id="longitude"></span><br/>
+			</td>
+			<td>
+				<code id ="jsonPreview"></code>
+			</td>
+		</tr>
+	</table>
 	<hr/>
+
 	<h4>Endpoints</h4>
 	
 	<h5>Search</h5>
@@ -58,9 +64,7 @@
 		
 		</tr>
 	</table>
-	
-	<p>Results trail OpenStreetMap by approximately 10 minutes.</p>
-	
 	<hr/>
+	<script src="autoComplete.js"></script>
 </body>
 </html>
