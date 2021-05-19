@@ -10,48 +10,56 @@ class OsmDAO(val username: String, val password: String, val host: String) {
 
     private val log = Logger.getLogger(OsmDAO::class.java)
 
-    var conn: Connection = getConnection()
+    val conn: Connection by lazy {  // This lazy init is a hack to allow startup of a read only node with no Postgres
+        // TODO make this formal by making the indexing code aware that the Postgres source is optional
+        getConnection()
+    }
 
-    private var placesIndexedFrom: PreparedStatement = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
-            + "get_address_by_language(place_id, NULL ARRAY['name:en', 'name']) AS en_label,"
-            + "name,"
-            + "country_code AS country,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
-            + "rank_address AS rank, "
-            + "admin_level AS admin_level, "
-            + "indexed_date AS indexed_date, "
-            + "extratags "
-            + "FROM placex "
-            + "WHERE indexed_date > ? "
-            + "ORDER BY indexed_date "
-            + "LIMIT ?")
+    private val placesIndexedFrom: PreparedStatement by lazy {
+        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+                + "get_address_by_language(place_id, NULL ARRAY['name:en', 'name']) AS en_label,"
+                + "name,"
+                + "country_code AS country,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+                + "rank_address AS rank, "
+                + "admin_level AS admin_level, "
+                + "indexed_date AS indexed_date, "
+                + "extratags "
+                + "FROM placex "
+                + "WHERE indexed_date > ? "
+                + "ORDER BY indexed_date "
+                + "LIMIT ?")
+    }
 
-    private var places: PreparedStatement = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
-            //+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
-            + "get_address_by_language(place_id, NULL, ARRAY['name:en', 'name']) AS en_label,"
-            + "name,"
-            + "country_code AS country,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
-            + "rank_address AS rank, "
-            + "admin_level AS admin_level, "
-            + "extratags "
-            + "FROM placex "
-            + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type LIMIT ?")
+    private val places: PreparedStatement by lazy {
+        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+                //+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
+                + "get_address_by_language(place_id, NULL, ARRAY['name:en', 'name']) AS en_label,"
+                + "name,"
+                + "country_code AS country,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+                + "rank_address AS rank, "
+                + "admin_level AS admin_level, "
+                + "extratags "
+                + "FROM placex "
+                + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type LIMIT ?")
+    }
 
-
-    private var place = conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
-            + "get_address_by_language(place_id, NULL,  ARRAY['name:en', 'name']) AS en_label,"
-            + "name,"
-            + "country_code AS country,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
-            + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
-            + "rank_address AS rank, "
-            + "admin_level AS admin_level, "
-            + "extratags "
-            + "FROM placex "
-            + "WHERE osm_id = ? AND osm_type = ?")
+    private val place by lazy {
+        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+                + "get_address_by_language(place_id, NULL,  ARRAY['name:en', 'name']) AS en_label,"
+                + "name,"
+                + "country_code AS country,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_Y(geometry) else ST_Y(centroid) end as latitude,"
+                + "case when GeometryType(geometry) = 'POINT' then ST_X(geometry) else ST_X(centroid) end as longitude,"
+                + "rank_address AS rank, "
+                + "admin_level AS admin_level, "
+                + "extratags "
+                + "FROM placex "
+                + "WHERE osm_id = ? AND osm_type = ?")
+    }
 
 
     fun getMax(type: String): Long {
@@ -103,5 +111,4 @@ class OsmDAO(val username: String, val password: String, val host: String) {
 
         return DriverManager.getConnection(url, props)
     }
-
 }

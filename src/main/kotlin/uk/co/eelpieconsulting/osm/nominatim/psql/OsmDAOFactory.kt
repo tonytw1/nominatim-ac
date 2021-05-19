@@ -5,6 +5,7 @@ import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
+// Used by Spring as the factory for OsmDAO beans
 @Component
 class OSMDAOFactory(@param:Value("\${database.username}") private val username: String,
                     @param:Value("\${database.password}") private val password: String,
