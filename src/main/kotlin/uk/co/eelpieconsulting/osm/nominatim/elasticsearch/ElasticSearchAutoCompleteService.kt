@@ -41,6 +41,10 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         return availableProfiles
     }
 
+    fun byId(id: String): List<DisplayPlace> {
+        return executeAndParse(QueryBuilders.idsQuery().addIds(id))
+    }
+
     @Throws(IOException::class)
     fun search(q: String?, tag: String?, lat: Double?, lon: Double?, radius: Double?, rank: Int?, country: String?, profileName: String?): List<DisplayPlace> {
         if (q.isNullOrEmpty()) {
@@ -103,9 +107,12 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         for (i in response.hits.hits.indices) {
             val searchHit = response.hits.hits[i]
             val (osmId, osmType, _, address, classification, type, addressRank, latlong, _, country, adminLevel) = jsonDeserializer.deserializePlace(searchHit.sourceAsString)
-            places.add(DisplayPlace(osmId, osmType, address, classification,
+            places.add(
+                DisplayPlace(
+                    osmId.toString() + osmType, osmId, osmType, address, classification,
                     type, latlong, country!!, type,
-                    adminLevel, addressRank))
+                    adminLevel, addressRank
+                ))
         }
         return places
     }

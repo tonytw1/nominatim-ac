@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.model
 
 class DisplayPlace(
+        val id: String,
         val osmId: Long,
         val osmType: String,
         val address: String,

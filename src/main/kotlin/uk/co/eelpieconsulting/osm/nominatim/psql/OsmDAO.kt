@@ -97,6 +97,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         return placesIndexedFrom.executeQuery()
     }
 
+    // TODO make visible to tests only
     fun getPlace(id: Long, type: String): ResultSet {
         place.setLong(1, id)  // TODO not thread safe
         place.setString(2, type)
@@ -108,7 +109,6 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         val props = Properties()
         props.setProperty("user", username)
         props.setProperty("password", password)
-
         return DriverManager.getConnection(url, props)
     }
 }
