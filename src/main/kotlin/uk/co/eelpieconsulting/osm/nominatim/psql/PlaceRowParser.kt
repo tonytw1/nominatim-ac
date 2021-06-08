@@ -33,8 +33,8 @@ class PlaceRowParser {
                 placeRow.getDouble("latitude"),
                 placeRow.getDouble("longitude"))
 
-        val nameField = placeRow.getObject("name") as Map<String, String>
-        val name = nameField.get("name")
+        val nameField = placeRow.getObject("name") as Map<String, String>?
+        val name = nameField?.get("name")
 
         val placeAddressRank = placeRow.getInt("rank")
         val addressRank = if (placeAddressRank > 0) {

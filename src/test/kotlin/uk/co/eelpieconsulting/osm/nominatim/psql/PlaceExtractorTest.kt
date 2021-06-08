@@ -10,33 +10,26 @@ import java.sql.ResultSet
 
 class PlaceExtractorTest {
 
-    private val DATABASE_HOST = "localhost:6432"  // TODO inject
-    private val DATABASE_USER = "www-data"
-    private val DATABASE_PASSWORD = ""
+    // Default credentials for Nominatim 3.7 Docker image; nothing to see here
+    private val DATABASE_HOST = "localhost:5432"  // TODO inject
+    private val DATABASE_USER = "nominatim"
+    private val DATABASE_PASSWORD = "qaIACxO6wMR3"
 
     private var osmDAO: OsmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
     @Test
-    fun thisBehaviourIsRequiredBecauseWithMultipleRowsWithTypeAndCategoriesSpanMultipleRows() {
-        val r = osmDAO.getPlace(4599, "R")
-
-        val types = Lists.newArrayList<String>()
-        val categories = Lists.newArrayList<String>()
-        while (r.next()) {
-            val place = placeRowParser.buildPlaceFromCurrentRow(r)
-            types.add(place.type)
-            categories.add(place.classification)
-        }
-
-        assertEquals(2, types.size)
-        assertEquals(Lists.newArrayList("government", "attraction"), types)
-        assertEquals(Lists.newArrayList("office", "tourism"), categories)
-    }
-
-    @Test
-    fun canExtractMultiRowPlaceWithAllExpectedTags() {
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(4599, "R")
+    fun canExtractMultiRowPlace() {
+        // For reasons unknown around 0.3% of the placex row in the Great Britain extract contain places which
+        // span more than 1 row. This is probably true for the whole world and needs to be accounted for when reading places
+        /*
+            SELECT osm_id, osm_type, count(*)
+            FROM
+            placex
+            GROUP BY (osm_id, osm_type)
+            HAVING count(*) > 1
+        */
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(1618450, "R")    // The White Horse, Wessex
 
         val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -49,24 +42,44 @@ class PlaceExtractorTest {
 
         assertEquals(1, places.size)
         val first = places.first()
-        assertTrue(first.tags.contains("office|government"))
-        assertTrue(first.tags.contains("tourism|attraction"))
+        // The placex.type and placex.class fields from all duplicate rows should contribute to the this place's tags.
+        assertTrue(first.tags.contains("man_made|geoglyph"))
+        assertTrue(first.tags.contains("natural|bare_rock"))
+    }
+
+    @Test
+    fun placesWithMultipleRowsShouldCaptureMultipleTypesAndCategories() {
+        val r = osmDAO.getPlace(16431, "R") // Southsea castle
+
+        val types = Lists.newArrayList<String>()
+        val categories = Lists.newArrayList<String>()
+        while (r.next()) {
+            val place = placeRowParser.buildPlaceFromCurrentRow(r)
+            types.add(place.type)
+            categories.add(place.classification)
+        }
+
+        assertEquals(2, types.size)
+        assertEquals(Lists.newArrayList("museum", "castle"), types)
+        assertEquals(Lists.newArrayList("tourism", "historic"), categories)
     }
 
     @Test
     fun placeTagsShouldIncludeExtraTags() {
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W")   // Twickenham Rowing club
 
         val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
-        var places = emptyList<Place>()
+        val places = emptyList<Place>().toMutableList()
         fun collectPages(place: Place) {
             places += place
         }
 
         PlaceExtractor().extractPlaces(source, ::collectPages)
 
-        assertTrue(places.first().tags.contains("sport|rowing"))
+        assertEquals(1, places.size)
+        val place = places.first()
+        assertTrue(place.tags.contains("sport|rowing"))
     }
 
     @Test
@@ -75,7 +88,7 @@ class PlaceExtractorTest {
 
         val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
-        var places = emptyList<Place>()
+        val places = emptyList<Place>().toMutableList()
         fun collectPlaces(place: Place) {
             places += place
         }

@@ -109,6 +109,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         val props = Properties()
         props.setProperty("user", username)
         props.setProperty("password", password)
+        log.info("Connectiong to JDBC: $url")
         return DriverManager.getConnection(url, props)
     }
 }
