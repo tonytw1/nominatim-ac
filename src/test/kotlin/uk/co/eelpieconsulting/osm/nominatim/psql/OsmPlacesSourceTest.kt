@@ -8,9 +8,10 @@ import java.sql.ResultSet
 
 class OsmPlacesSourceTest {
 
-    private val DATABASE_HOST = "localhost:6432"  // TODO inject
-    private val DATABASE_USER = "www-data"
-    private val DATABASE_PASSWORD = ""
+    // Default credentials for Nominatim 3.7 Docker image; nothing to see here
+    private val DATABASE_HOST = "localhost:5432"  // TODO inject
+    private val DATABASE_USER = "nominatim"
+    private val DATABASE_PASSWORD = "qaIACxO6wMR3"
 
     private var osmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
@@ -41,9 +42,9 @@ class OsmPlacesSourceTest {
 
     @Test
     fun somePlacesHaveNoName() {
-        val coleCourtBuilding = 28431475L
+        val chargingStationWithNoName = 6919655077L
 
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(coleCourtBuilding, "W")
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(chargingStationWithNoName, "N")
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
@@ -54,13 +55,14 @@ class OsmPlacesSourceTest {
 
         assertEquals(1, found.size)
 
-        val firstRow = found.first()
-        assertNull(firstRow.name, "Some places have no name")
-        assertEquals("Twickenham, London Borough of Richmond upon Thames, London, Greater London, England, TW1 1HD, United Kingdom",
-                firstRow.address, "Places with no name still have an address; and this can end up been quite high ranking")
+        val place = found.first()
+        assertNull("Some places have no name", place.name)
+        assertEquals("Places with no name still have an address; and this can end up been quite high ranking which is why it's important to filter them out",
+            "St Marks Gate, Fish Island, Bow, London Borough of Tower Hamlets, London, Greater London, England, E9 5HP, United Kingdom",
+                place.address)
 
-        assertEquals(15, firstRow.adminLevel)
-        assertEquals(5, firstRow.addressRank)
+        assertEquals(15, place.adminLevel)
+        assertEquals(30, place.addressRank)
     }
 
     @Test
@@ -85,7 +87,7 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveRowsForMultiRowPlaces() {
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(4599, "R")
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(16431, "R")    // Southsea castle
 
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
