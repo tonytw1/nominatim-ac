@@ -106,7 +106,7 @@ class OsmPlacesSourceTest {
         val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
 
         var rowsIterated = 0
-        val recordCountKnownToExceedPaginationSize = 20
+        val recordCountKnownToExceedPaginationSize = 2000
         while (osmPlacesSource.hasNext() && rowsIterated < recordCountKnownToExceedPaginationSize) {
             osmPlacesSource.next()
             rowsIterated++
