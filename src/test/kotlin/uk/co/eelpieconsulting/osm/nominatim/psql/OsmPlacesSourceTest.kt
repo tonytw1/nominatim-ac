@@ -88,7 +88,9 @@ class OsmPlacesSourceTest {
     fun canRetrieveRowsForMultiRowPlaces() {
         fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(16431, "R")    // Southsea castle
 
-        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
+        // TODO the get place query is not paginated which makes it an invalid test
+        // for a place with falls across a pagination boundary.
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor, 1)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
@@ -102,10 +104,10 @@ class OsmPlacesSourceTest {
     fun canPaginateBeyondTheFirstPage() {
         fun cursor(start: Long, pageSize: Long) = osmDAO.getPlaces(start, pageSize, "R")
 
-        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor, 10)
 
         var rowsIterated = 0
-        val recordCountKnownToExceedPaginationSize = 2000
+        val recordCountKnownToExceedPaginationSize = 20
         while (osmPlacesSource.hasNext() && rowsIterated < recordCountKnownToExceedPaginationSize) {
             osmPlacesSource.next()
             rowsIterated++
