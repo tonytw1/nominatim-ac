@@ -1,6 +1,6 @@
 An experimental Open Street Map (OSM) / Nominatim place name auto-complete service.
 
-Indexes the contents of a Nominatim 3.4 database into Elasticsearch version 7.8.
+Indexes the contents of a Nominatim 3.7 database into Elasticsearch version 7.8.
 
 An example containing the whole planet data set is available at (https://nominatim-ac.eelpieconsulting.co.uk).
 
@@ -68,7 +68,7 @@ The calling application can now persist the OSM id of the selected result for fu
 ### Implementation
 Java / Spring Boot and Elasticsearch.
 
-Reads from a populated Nominatim 3.4 postgres database and indexes into an Elasticsearch 7.8 index.
+Reads from a populated Nominatim 3.7 postgres database and indexes into an Elasticsearch 7.8 index.
 
 
 ### Also see
@@ -86,8 +86,8 @@ This is a Spring Boot project with a Gradle build.
 
 Configuration is in the file named application.properties.
 
-The tests are expecting to see a Postgres Nominatim 3.4 schema containing a Sep 2019 Great Britain import
-on localhost port 6432 (which is where nominatim-docker would be).
+The tests are expecting to see a Postgres Nominatim 3.7 schema containing a June 2021 Great Britain import
+on localhost port 5432 (which is where nominatim-docker would be).
 
 Start Elasticsearch:
 ```
