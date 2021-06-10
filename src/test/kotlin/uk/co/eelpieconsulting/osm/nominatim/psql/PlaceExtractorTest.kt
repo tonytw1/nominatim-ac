@@ -31,7 +31,7 @@ class PlaceExtractorTest {
         */
         fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(1618450, "R")    // The White Horse, Wessex
 
-        val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor)
 
         var places = emptyList<Place>()
         fun collectPages(place: Place) {
@@ -68,7 +68,7 @@ class PlaceExtractorTest {
     fun placeTagsShouldIncludeExtraTags() {
         fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W")   // Twickenham Rowing club
 
-        val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor)
 
         val places = emptyList<Place>().toMutableList()
         fun collectPages(place: Place) {
@@ -86,7 +86,7 @@ class PlaceExtractorTest {
     fun correctExtractsSequenceOfPlaces() {
         fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlaces(start, pageSize, "R")
 
-        val source = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor)
 
         val places = emptyList<Place>().toMutableList()
         fun collectPlaces(place: Place) {

@@ -1,12 +1,11 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
-import org.apache.log4j.Logger
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 import java.sql.ResultSet
 
-class OsmPlacesSource(val osmDAO: OsmDAO, val placeRowParser: PlaceRowParser, val cursor: (Long, Long) -> ResultSet) {
-
-    private val log = Logger.getLogger(OsmPlacesSource::class.java)
+// Given a cursor of placex rows provide an iterator of places
+// Needs to account for some places been represented by multiple consecutive placex rows
+class OsmPlacesSource(val placeRowParser: PlaceRowParser, val cursor: (Long, Long) -> ResultSet) {
 
     private val PAGE_SIZE = 1000L
 

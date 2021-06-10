@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
-import java.sql.ResultSet
 
 class OsmPlacesSourceTest {
 
@@ -20,9 +19,9 @@ class OsmPlacesSourceTest {
     fun canRetrieveSingleRowPlace() {
         val twickenham = 21099166L
 
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(twickenham, "N")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(twickenham, "N")
 
-        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
@@ -44,9 +43,9 @@ class OsmPlacesSourceTest {
     fun somePlacesHaveNoName() {
         val chargingStationWithNoName = 6919655077L
 
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(chargingStationWithNoName, "N")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(chargingStationWithNoName, "N")
 
-        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
@@ -69,9 +68,9 @@ class OsmPlacesSourceTest {
     fun countriesHaveLowerAdminLevels() {
         val england = 58447L
 
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(england, "R")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(england, "R")
 
-        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
@@ -87,9 +86,9 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveRowsForMultiRowPlaces() {
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(16431, "R")    // Southsea castle
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(16431, "R")    // Southsea castle
 
-        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {
@@ -101,9 +100,9 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canPaginateBeyondTheFirstPage() {
-        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlaces(start, pageSize, "R")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlaces(start, pageSize, "R")
 
-        val osmPlacesSource = OsmPlacesSource(osmDAO, placeRowParser, ::cursor)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
         var rowsIterated = 0
         val recordCountKnownToExceedPaginationSize = 2000
