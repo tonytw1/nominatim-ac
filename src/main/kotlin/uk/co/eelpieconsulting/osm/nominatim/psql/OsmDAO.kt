@@ -44,7 +44,8 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "admin_level AS admin_level, "
                 + "extratags "
                 + "FROM placex "
-                + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type LIMIT ?")
+                + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type "
+                + "LIMIT ?")
     }
 
     private val place by lazy {
@@ -58,9 +59,9 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "admin_level AS admin_level, "
                 + "extratags "
                 + "FROM placex "
-                + "WHERE osm_id = ? AND osm_type = ?")
+                + "WHERE osm_id = ? AND osm_type = ? "
+                + "LIMIT ?")
     }
-
 
     fun getMax(type: String): Long {
         val prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=?")
@@ -98,9 +99,10 @@ class OsmDAO(val username: String, val password: String, val host: String) {
     }
 
     // TODO make visible to tests only
-    fun getPlace(id: Long, type: String): ResultSet {
+    fun getPlace(id: Long, type: String, limit: Int): ResultSet {
         place.setLong(1, id)  // TODO not thread safe
         place.setString(2, type)
+        place.setLong(3, limit.toLong())
         return place.executeQuery()
     }
 

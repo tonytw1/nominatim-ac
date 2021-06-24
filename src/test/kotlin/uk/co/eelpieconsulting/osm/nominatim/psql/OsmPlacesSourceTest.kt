@@ -15,11 +15,13 @@ class OsmPlacesSourceTest {
     private var osmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
+    val limitMuchLargeThanExpectedNumberOfRows= 1000
+
     @Test
     fun canRetrieveSingleRowPlace() {
         val twickenham = 21099166L
 
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(twickenham, "N")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(twickenham, "N", limitMuchLargeThanExpectedNumberOfRows)
 
         val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
@@ -43,7 +45,7 @@ class OsmPlacesSourceTest {
     fun somePlacesHaveNoName() {
         val chargingStationWithNoName = 6919655077L
 
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(chargingStationWithNoName, "N")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(chargingStationWithNoName, "N", limitMuchLargeThanExpectedNumberOfRows)
 
         val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
@@ -68,7 +70,7 @@ class OsmPlacesSourceTest {
     fun countriesHaveLowerAdminLevels() {
         val england = 58447L
 
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(england, "R")
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(england, "R", limitMuchLargeThanExpectedNumberOfRows)
 
         val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor)
 
@@ -86,7 +88,7 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveRowsForMultiRowPlaces() {
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(16431, "R")    // Southsea castle
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(16431, "R", 1)    // Southsea castle
 
         // TODO the get place query is not paginated which makes it an invalid test
         // for a place with falls across a pagination boundary.

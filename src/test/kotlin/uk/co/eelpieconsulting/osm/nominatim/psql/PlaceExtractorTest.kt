@@ -18,6 +18,8 @@ class PlaceExtractorTest {
     private var osmDAO: OsmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
+    private val limitMuchLargeThanExpectedNumberOfRows= 1000
+
     @Test
     fun canExtractMultiRowPlace() {
         // For reasons unknown around 0.3% of the placex row in the Great Britain extract contain places which
@@ -29,11 +31,13 @@ class PlaceExtractorTest {
             GROUP BY (osm_id, osm_type)
             HAVING count(*) > 1
         */
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(1618450, "R")    // The White Horse, Wessex
+        fun cursor(start: Long, pageSize: Long): ResultSet {
+            return osmDAO.getPlace(1618450, "R", limitMuchLargeThanExpectedNumberOfRows)
+        }    // The White Horse, Wessex
 
         val source = OsmPlacesSource(placeRowParser, ::cursor)
 
-        var places = emptyList<Place>()
+        val places = emptyList<Place>().toMutableList()
         fun collectPages(place: Place) {
             places += place
         }
@@ -49,7 +53,7 @@ class PlaceExtractorTest {
 
     @Test
     fun placesWithMultipleRowsShouldCaptureMultipleTypesAndCategories() {
-        val r = osmDAO.getPlace(16431, "R") // Southsea castle
+        val r = osmDAO.getPlace(16431, "R", limitMuchLargeThanExpectedNumberOfRows) // Southsea castle
 
         val types = Lists.newArrayList<String>()
         val categories = Lists.newArrayList<String>()
@@ -66,7 +70,7 @@ class PlaceExtractorTest {
 
     @Test
     fun placeTagsShouldIncludeExtraTags() {
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W")   // Twickenham Rowing club
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W", limitMuchLargeThanExpectedNumberOfRows)   // Twickenham Rowing club
 
         val source = OsmPlacesSource(placeRowParser, ::cursor)
 
