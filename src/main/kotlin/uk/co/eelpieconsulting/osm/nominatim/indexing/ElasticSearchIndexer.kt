@@ -58,7 +58,8 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
                 index(places)
 
                 val duration = Duration(countStart.millis, DateTime.now().millis)
-                log.info("Indexed " + ELASTIC_SEARCH_COMMIT_SIZE + " in " + duration.millis)
+                val rate = ELASTIC_SEARCH_COMMIT_SIZE / duration.standardSeconds
+                log.info("Indexed " + ELASTIC_SEARCH_COMMIT_SIZE + " in " + duration.millis + "ms at " + rate + " per second")
                 places = emptyList()
                 countStart = DateTime.now()
             }
