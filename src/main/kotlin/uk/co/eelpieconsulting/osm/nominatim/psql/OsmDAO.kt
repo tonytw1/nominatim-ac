@@ -16,7 +16,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
     }
 
     private val placesIndexedFrom: PreparedStatement by lazy {
-        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+        conn.prepareStatement("SELECT place_id, osm_id, osm_type, class, type, housenumber, "
                 + "get_address_by_language(place_id, NULL ARRAY['name:en', 'name']) AS en_label,"
                 + "name,"
                 + "country_code AS country,"
@@ -32,8 +32,10 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "LIMIT ?")
     }
 
+    // When construction this query we need to be mindful of the indexes available.
+    // This is why we can't sub order by place_id for pagination.
     private val places: PreparedStatement by lazy {
-        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+        conn.prepareStatement("SELECT place_id, osm_id, osm_type, class, type, housenumber, "
                 //+ "get_address_by_language(place_id,  ARRAY['']) AS label,"
                 + "get_address_by_language(place_id, NULL, ARRAY['name:en', 'name']) AS en_label,"
                 + "name,"
@@ -44,12 +46,13 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "admin_level AS admin_level, "
                 + "extratags "
                 + "FROM placex "
-                + "WHERE osm_id > ? AND osm_type=?  AND name IS NOT NULL ORDER by osm_id, osm_type "
+                + "WHERE osm_id >= ? AND osm_type=? AND name IS NOT NULL "
+                + "ORDER by osm_id, osm_type "
                 + "LIMIT ?")
     }
 
     private val place by lazy {
-        conn.prepareStatement("SELECT osm_id, osm_type, class, type, housenumber, "
+        conn.prepareStatement("SELECT place_id, osm_id, osm_type, class, type, housenumber, "
                 + "get_address_by_language(place_id, NULL,  ARRAY['name:en', 'name']) AS en_label,"
                 + "name,"
                 + "country_code AS country,"
@@ -84,25 +87,25 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         return DateTime(latest.time)
     }
 
-    fun getPlaces(start: Long, stepSize: Long, type: String): ResultSet {
-        log.info("Get places: $start, $stepSize, $type")
+    fun getPlaces(start: Long, limit: Long, type: String): ResultSet {
+        log.info("Get places: $start, $type, $limit")
         places.setLong(1, start)
         places.setString(2, type)
-        places.setLong(3, stepSize)
+        places.setLong(3, limit)
         return places.executeQuery()
     }
 
-    fun getPlacesIndexedAfter(start: DateTime, limit: Int): ResultSet {
+    fun getPlacesIndexedAfter(start: DateTime, limit: Long): ResultSet {
         placesIndexedFrom.setTimestamp(1, java.sql.Timestamp(start.millis))
         placesIndexedFrom.setLong(2, limit.toLong())
         return placesIndexedFrom.executeQuery()
     }
 
     // TODO make visible to tests only
-    fun getPlace(id: Long, type: String, limit: Int): ResultSet {
+    fun getPlace(id: Long, type: String, limit: Long): ResultSet {
         place.setLong(1, id)  // TODO not thread safe
         place.setString(2, type)
-        place.setLong(3, limit.toLong())
+        place.setLong(3, limit)
         return place.executeQuery()
     }
 
@@ -111,7 +114,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         val props = Properties()
         props.setProperty("user", username)
         props.setProperty("password", password)
-        log.info("Connectiong to JDBC: $url")
+        log.info("Connecting to JDBC: $url")
         return DriverManager.getConnection(url, props)
     }
 }

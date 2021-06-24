@@ -103,18 +103,18 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         searchSourceBuilder.sort(SortBuilders.fieldSort("adminLevel").order(SortOrder.ASC)).sort(SortBuilders.fieldSort("addressRank").order(SortOrder.ASC))
         searchRequest.source(searchSourceBuilder)
         val response = client.search(searchRequest, RequestOptions.DEFAULT)
-        val places: MutableList<DisplayPlace> = Lists.newArrayList()
+        val displayPlaces: MutableList<DisplayPlace> = Lists.newArrayList()
         for (i in response.hits.hits.indices) {
             val searchHit = response.hits.hits[i]
-            val (osmId, osmType, _, address, classification, type, addressRank, latlong, _, country, adminLevel) = jsonDeserializer.deserializePlace(searchHit.sourceAsString)
-            places.add(
+            val (_, osmId, osmType, _, address, classification, type, addressRank, latlong, _, country, adminLevel) = jsonDeserializer.deserializePlace(searchHit.sourceAsString)
+            displayPlaces.add(
                 DisplayPlace(
                     osmId.toString() + osmType, osmId, osmType, address, classification,
                     type, latlong, country!!, type,
                     adminLevel, addressRank
                 ))
         }
-        return places
+        return displayPlaces
     }
 
     private fun startsWith(q: String): PrefixQueryBuilder {

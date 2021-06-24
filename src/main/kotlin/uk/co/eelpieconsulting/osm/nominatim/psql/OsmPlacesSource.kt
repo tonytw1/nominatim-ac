@@ -5,7 +5,7 @@ import java.sql.ResultSet
 
 // Given a cursor of placex rows provide an iterator of places
 // Needs to account for some places been represented by multiple consecutive placex rows
-class OsmPlacesSource(val placeRowParser: PlaceRowParser, val cursor: (Long, Long) -> ResultSet, val pageSize: Long = 1000) {
+class OsmPlacesSource(val placeRowParser: PlaceRowParser, val cursor: (Long, Long) -> ResultSet, val pageSize: Long) {
 
     private var start = 0L
     private var currentPage = newPage()
@@ -29,7 +29,6 @@ class OsmPlacesSource(val placeRowParser: PlaceRowParser, val cursor: (Long, Lon
         start = place.osmId // TODO not a perfect watermark; will jam if a single place spans more than page size row.
 
         hasNext = currentPage.next()
-
         if (!hasNext) {
             val shouldPaginate = readFromCurrentPage == pageSize
             if (shouldPaginate) {

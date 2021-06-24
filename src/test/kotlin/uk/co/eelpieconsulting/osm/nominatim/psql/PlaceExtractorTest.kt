@@ -18,7 +18,7 @@ class PlaceExtractorTest {
     private var osmDAO: OsmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
     private var placeRowParser = PlaceRowParser()
 
-    private val limitMuchLargeThanExpectedNumberOfRows= 1000
+    private val limitMuchLargeThanExpectedNumberOfRows= 1000L
 
     @Test
     fun canExtractMultiRowPlace() {
@@ -31,11 +31,9 @@ class PlaceExtractorTest {
             GROUP BY (osm_id, osm_type)
             HAVING count(*) > 1
         */
-        fun cursor(start: Long, pageSize: Long): ResultSet {
-            return osmDAO.getPlace(1618450, "R", limitMuchLargeThanExpectedNumberOfRows)
-        }    // The White Horse, Wessex
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(1618450, "R", pageSize) // The White Horse, Wessex
 
-        val source = OsmPlacesSource(placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor, limitMuchLargeThanExpectedNumberOfRows)
 
         val places = emptyList<Place>().toMutableList()
         fun collectPages(place: Place) {
@@ -70,9 +68,9 @@ class PlaceExtractorTest {
 
     @Test
     fun placeTagsShouldIncludeExtraTags() {
-        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W", limitMuchLargeThanExpectedNumberOfRows)   // Twickenham Rowing club
+        fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(284926920, "W", pageSize)   // Twickenham Rowing club
 
-        val source = OsmPlacesSource(placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor, limitMuchLargeThanExpectedNumberOfRows)
 
         val places = emptyList<Place>().toMutableList()
         fun collectPages(place: Place) {
@@ -90,7 +88,7 @@ class PlaceExtractorTest {
     fun correctExtractsSequenceOfPlaces() {
         fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlaces(start, pageSize, "R")
 
-        val source = OsmPlacesSource(placeRowParser, ::cursor)
+        val source = OsmPlacesSource(placeRowParser, ::cursor, limitMuchLargeThanExpectedNumberOfRows)
 
         val places = emptyList<Place>().toMutableList()
         fun collectPlaces(place: Place) {

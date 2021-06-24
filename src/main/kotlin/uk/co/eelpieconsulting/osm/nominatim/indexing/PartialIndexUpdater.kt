@@ -19,7 +19,7 @@ class PartialIndexUpdater @Autowired constructor(private val osmDAO: OsmDAO, pri
                                                  private val partialIndexWatermarkService: PartialIndexWatermarkService, private val jsonSerializer: JsonSerializer) {
 
     private val log = Logger.getLogger(PartialIndexUpdater::class.java)
-    private val COMMIT_SIZE = 1000
+    private val COMMIT_SIZE = 1000L
 
     @Scheduled(fixedRate = 60000)
     @Throws(SQLException::class, IOException::class)
