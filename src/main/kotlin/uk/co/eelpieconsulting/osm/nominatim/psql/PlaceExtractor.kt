@@ -8,7 +8,7 @@ class PlaceExtractor {
 
     fun extractPlaces(osmPlacesSource: OsmPlacesSource, callback: (Place) -> Unit) {
         var currentPlace: Place? = null
-        var currentTags = emptySet<String>()
+        var currentTags = emptySet<String>().toMutableSet()
 
         fun send(place: Place) {
             place.tags = currentTags.toList()
@@ -22,16 +22,16 @@ class PlaceExtractor {
             } else {
                 val placeIsDifferentFromTheLast = place.osmId != currentPlace.osmId
                 if (placeIsDifferentFromTheLast) {
-                    send(currentPlace!!)
+                    send(currentPlace)
                     currentPlace = place
-                    currentTags = emptySet()
+                    currentTags = emptySet<String>().toMutableSet()
                 }
             }
-            currentTags += (place.tags)
+            currentTags.addAll(place.tags)
         }
 
         if (currentPlace != null) {
-            send(currentPlace!!)
+            send(currentPlace)
         }
     }
 
