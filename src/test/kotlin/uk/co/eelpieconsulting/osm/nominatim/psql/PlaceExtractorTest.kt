@@ -1,11 +1,11 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
 import com.google.common.collect.Lists
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
+import java.lang.RuntimeException
 import java.sql.ResultSet
 
 class PlaceExtractorTest {
@@ -47,6 +47,28 @@ class PlaceExtractorTest {
         // The placex.type and placex.class fields from all duplicate rows should contribute to the this place's tags.
         assertTrue(first.tags.contains("man_made|geoglyph"))
         assertTrue(first.tags.contains("natural|bare_rock"))
+    }
+
+    @Test
+    fun shouldErrorWhenPlaceSpansMoreRowsThanThePageSize() {
+        fun cursor(start: Long, pageSize: Long): ResultSet = osmDAO.getPlace(1618450, "R", pageSize) // The White Horse, Wessex
+
+        val source = OsmPlacesSource(placeRowParser, ::cursor, 1)
+
+
+        val places = emptyList<Place>().toMutableList()
+        fun collectPages(place: Place) {
+            places += place
+        }
+
+        try {
+            PlaceExtractor().extractPlaces(source, ::collectPages)
+        } catch (e: RuntimeException) {
+            assertEquals("OSM id 1618450 spans more placex rows than the pagination page size. Increase the pagination size to allow pagination past this record.", e.message)
+            return
+        }
+
+        fail("Expected an exception")
     }
 
     @Test

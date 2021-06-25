@@ -1,7 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.*
 import org.junit.Test
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
 
@@ -88,9 +87,8 @@ class OsmPlacesSourceTest {
 
     @Test
     fun canRetrieveRowsForMultiRowPlaces() {
-        // Deliberately small page size to force a place with falls across a pagination boundary.
         fun cursor(start: Long, pageSize: Long) = osmDAO.getPlace(16431, "R", pageSize)    // Southsea castle
-        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor, 1)
+        val osmPlacesSource = OsmPlacesSource(placeRowParser, ::cursor, limitMuchLargeThanExpectedNumberOfRows)
 
         var found = emptyList<Place>()
         while (osmPlacesSource.hasNext()) {

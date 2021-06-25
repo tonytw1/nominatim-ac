@@ -47,7 +47,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "extratags "
                 + "FROM placex "
                 + "WHERE osm_id >= ? AND osm_type=? AND name IS NOT NULL "
-                + "ORDER by osm_id, osm_type "
+                + "ORDER by osm_type, osm_id "
                 + "LIMIT ?")
     }
 

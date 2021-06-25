@@ -19,13 +19,14 @@ class PlaceExtractor {
             val place = osmPlacesSource.next()
             if (currentPlace == null) {
                 currentPlace = place
-            } else {
-                val placeIsDifferentFromTheLast = place.osmId != currentPlace.osmId
-                if (placeIsDifferentFromTheLast) {
-                    send(currentPlace)
-                    currentPlace = place
-                    currentTags = emptySet<String>().toMutableSet()
-                }
+                currentTags = emptySet<String>().toMutableSet()
+            }
+
+            val placeIsDifferentFromTheLast = place.osmId != currentPlace.osmId
+            if (placeIsDifferentFromTheLast) {
+                send(currentPlace)
+                currentPlace = place
+                currentTags = emptySet<String>().toMutableSet()
             }
             currentTags.addAll(place.tags)
         }
