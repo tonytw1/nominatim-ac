@@ -70,7 +70,7 @@ The calling application can now persist the OSM id of the selected result for fu
 
 Pages through the entire `placex` table and indexes the output of the `get_address_by_language` function by osm id.
 
-This is a vert naive approach which has some pros and cons.
+This is a very naive approach which has some pros and cons.
 
 #### Does well
 
