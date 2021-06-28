@@ -11,8 +11,8 @@ class OsmPlacesSourceTest {
     private val DATABASE_USER = "nominatim"
     private val DATABASE_PASSWORD = "qaIACxO6wMR3"
 
-    private var osmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
-    private var placeRowParser = PlaceRowParser()
+    private val osmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
+    private val placeRowParser = PlaceRowParser()
 
     val limitMuchLargeThanExpectedNumberOfRows= 1000L
 
