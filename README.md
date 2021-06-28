@@ -55,14 +55,42 @@ This is fair. Using Nominatim in this manner would result in a lot of expensive 
 
 ### Overview
 
-This code dumps out the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
-Ther is some useful intuition here around reliably paging through the entire places table.
+Indexes the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
+
+There is some useful intuition here around reliably paging through the entire places table.
 
 The service is able to quickly respond to key stokes as the Nominatim output has been pre-rendered and indexed and does not need to be calculated in real time.
 The Elasticsearch index can be distributed to smaller machines than those needed to run a whole planet Nominatim instance.
 
 The Nominatim place name and OSM id is made available in the JSON returned to clients.
 The calling application can now persist the OSM id of the selected result for future reference.
+
+
+### Method
+
+Pages through the entire `placex` table and indexes the output of the `get_address_by_language` function by osm id.
+
+This is a vert naive approach which has some pros and cons.
+
+#### Does well
+
+Very fast response time when running on a modest machine.
+
+#### Does not do well
+
+Does not deal with look aheads.
+
+These examples do not work well:
+
+`Boscanova` does not match for `Cafe Boscanova`.
+`Dublin Ireland` does not match for `Dublin, County Dublin, Leinster, Ireland`
+
+Does not offer short names:
+
+`Dublin, County Dublin, Leinster, Ireland` should also be offered as `Dublin, Ireland`
+
+An improvement would probably involve indexing the more structured output of the `get_addressdata` function.
+
 
 
 ### Implementation
