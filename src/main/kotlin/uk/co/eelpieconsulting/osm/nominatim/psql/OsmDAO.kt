@@ -67,7 +67,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
     }
 
     private val placeAddressData by lazy {
-        conn.prepareStatement("SELECT get_addressdata(place_id, NULL) as addressdata FROM placex WHERE osm_id = ? AND osm_type = ?")
+        conn.prepareStatement("SELECT to_json(get_addressdata(place_id, NULL)) as addressdata FROM placex WHERE osm_id = ? AND osm_type = ?")
     }
 
     fun getMax(type: String): Long {

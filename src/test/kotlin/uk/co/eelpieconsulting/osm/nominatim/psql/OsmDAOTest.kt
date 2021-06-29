@@ -29,12 +29,9 @@ class OsmDAOTest {
         val placesAddressDataResultSet = osmDAO.getPlaceAddressData(742231354L, "N")
         // get_addressdata returns a postgress setof addressline which will render as multiple rows
         while (placesAddressDataResultSet.next()) {
-            val addressdata = placesAddressDataResultSet.getObject("addressdata", AddressLine::class.java)
-            println(addressdata)
+            val addressdata = placesAddressDataResultSet.getObject("addressdata")
+            println(addressdata.toString())
         }
     }
 
 }
-
-class AddressLine (
-)
