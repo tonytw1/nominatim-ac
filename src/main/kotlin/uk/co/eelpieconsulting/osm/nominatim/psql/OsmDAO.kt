@@ -66,6 +66,10 @@ class OsmDAO(val username: String, val password: String, val host: String) {
                 + "LIMIT ?")
     }
 
+    private val placeAddressData by lazy {
+        conn.prepareStatement("SELECT get_addressdata(place_id, NULL) as addressdata FROM placex WHERE osm_id = ? AND osm_type = ?")
+    }
+
     fun getMax(type: String): Long {
         val prepareStatement = conn.prepareStatement("SELECT MAX(osm_id) AS end from placex WHERE osm_type=?")
         prepareStatement.setString(1, type)
@@ -107,6 +111,12 @@ class OsmDAO(val username: String, val password: String, val host: String) {
         place.setString(2, type)
         place.setLong(3, limit)
         return place.executeQuery()
+    }
+
+    fun getPlaceAddressData(id: Long, type: String): ResultSet {
+        placeAddressData.setLong(1, id)  // TODO not thread safe
+        placeAddressData.setString(2, type)
+        return placeAddressData.executeQuery()
     }
 
     private fun getConnection(): Connection {

@@ -24,4 +24,17 @@ class OsmDAOTest {
         assertEquals("Cafe Boscanova, 650, Christchurch Road, Boscombe, Bournemouth, Bournemouth, Christchurch and Poole, England, BH1 4BP, United Kingdom", address)
     }
 
+    @Test
+    fun canRetrieveAddressDataForPlace() {
+        val placesAddressDataResultSet = osmDAO.getPlaceAddressData(742231354L, "N")
+        // get_addressdata returns a postgress setof addressline which will render as multiple rows
+        while (placesAddressDataResultSet.next()) {
+            val addressdata = placesAddressDataResultSet.getObject("addressdata", AddressLine::class.java)
+            println(addressdata)
+        }
+    }
+
 }
+
+class AddressLine (
+)
