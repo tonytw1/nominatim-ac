@@ -34,7 +34,7 @@ dependencies {
     compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.8.1'
     compile 'org.elasticsearch:elasticsearch:7.8.1'
     compile "joda-time:joda-time:2.0"
-    compile "org.postgresql:postgresql:9.3-1102-jdbc4"
+    compile "org.postgresql:postgresql:42.2.22"
     compile "log4j:log4j:1.2.17"
     compile "com.google.guava:guava:19.0"
     compile "commons-codec:commons-codec:1.6"
