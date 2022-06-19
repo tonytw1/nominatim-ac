@@ -30,19 +30,19 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-web"
-    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.8.1'
-    compile 'org.elasticsearch:elasticsearch:7.8.1'
-    compile "joda-time:joda-time:2.0"
-    compile "org.postgresql:postgresql:9.3-1102-jdbc4"
-    compile "com.google.guava:guava:19.0"
-    compile "commons-codec:commons-codec:1.6"
-    compile "commons-io:commons-io:2.4"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
-    compile "com.fasterxml.jackson.core:jackson-core:2.11.0"
-    compile "com.fasterxml.jackson.core:jackson-databind:2.11.0"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.8.1'
+    implementation 'org.elasticsearch:elasticsearch:7.8.1'
+    implementation "joda-time:joda-time:2.0"
+    implementation "org.postgresql:postgresql:9.3-1102-jdbc4"
+    implementation "com.google.guava:guava:19.0"
+    implementation "commons-codec:commons-codec:1.6"
+    implementation "commons-io:commons-io:2.4"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.11.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
     implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
