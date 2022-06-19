@@ -3,7 +3,7 @@ package uk.co.eelpieconsulting.osm.nominatim.indexing
 import com.google.common.base.Splitter
 import com.google.common.collect.Sets
 import joptsimple.internal.Strings
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions
@@ -28,7 +28,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             val placeExtractor: PlaceExtractor, val jsonSerializer: JsonSerializer,
             @param:Value("\${elasticsearch.index.write}") val writeIndex: String) {
 
-    private val log = Logger.getLogger(ElasticSearchIndexer::class.java)
+    private val log = LogManager.getLogger(ElasticSearchIndexer::class.java)
 
     private val client = elasticSearchClientFactory.getClient()
 

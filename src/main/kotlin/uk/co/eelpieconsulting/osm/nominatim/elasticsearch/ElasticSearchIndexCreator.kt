@@ -1,6 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.common.xcontent.XContentType
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class ElasticSearchIndexCreator @Autowired constructor(private val elasticSearchClientFactory: ElasticSearchClientFactory) {
 
-    private val log = Logger.getLogger(ElasticSearchIndexCreator::class.java)
+    private val log = LogManager.getLogger(ElasticSearchIndexCreator::class.java)
 
     fun ensureIndexExists(index: String): Boolean {
         if (indexExists(index)) {

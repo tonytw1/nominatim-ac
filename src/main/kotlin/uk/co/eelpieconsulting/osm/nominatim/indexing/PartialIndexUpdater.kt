@@ -1,7 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.indexing
 
 import com.google.common.collect.Lists
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +18,7 @@ import java.sql.SQLException
 class PartialIndexUpdater @Autowired constructor(private val osmDAO: OsmDAO, private val placeRowParser: PlaceRowParser, private val elasticSearchIndexer: ElasticSearchIndexer,
                                                  private val partialIndexWatermarkService: PartialIndexWatermarkService, private val jsonSerializer: JsonSerializer) {
 
-    private val log = Logger.getLogger(PartialIndexUpdater::class.java)
+    private val log = LogManager.getLogger(PartialIndexUpdater::class.java)
     private val COMMIT_SIZE = 1000L
 
     @Scheduled(fixedRate = 60000)

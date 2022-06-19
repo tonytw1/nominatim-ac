@@ -1,14 +1,16 @@
 package uk.co.eelpieconsulting.osm.nominatim.psql
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import org.joda.time.DateTime
-
-import java.sql.*
-import java.util.Properties
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.util.*
 
 class OsmDAO(val username: String, val password: String, val host: String) {
 
-    private val log = Logger.getLogger(OsmDAO::class.java)
+    private val log = LogManager.getLogger(OsmDAO::class.java)
 
     val conn: Connection by lazy {  // This lazy init is a hack to allow startup of a read only node with no Postgres
         // TODO make this formal by making the indexing code aware that the Postgres source is optional

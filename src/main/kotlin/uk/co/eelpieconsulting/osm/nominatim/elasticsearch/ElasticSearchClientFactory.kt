@@ -1,7 +1,7 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch
 
 import org.apache.http.HttpHost
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.LogManager
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +13,7 @@ import java.net.UnknownHostException
 class ElasticSearchClientFactory @Autowired constructor(
         @param:Value("\${elasticsearch.url}") private val url: String) {
 
-    private val log = Logger.getLogger(ElasticSearchClientFactory::class.java)
+    private val log = LogManager.getLogger(ElasticSearchClientFactory::class.java)
 
     private var client: RestHighLevelClient? = null
 
