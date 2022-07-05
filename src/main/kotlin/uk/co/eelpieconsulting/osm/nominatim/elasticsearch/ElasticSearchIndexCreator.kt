@@ -2,7 +2,7 @@ package uk.co.eelpieconsulting.osm.nominatim.elasticsearch
 
 import org.apache.logging.log4j.LogManager
 import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.xcontent.XContentType
+import org.elasticsearch.common.xcontent.XContentType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

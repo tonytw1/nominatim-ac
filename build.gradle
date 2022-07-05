@@ -31,8 +31,8 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.2'
-    implementation 'org.elasticsearch:elasticsearch:7.17.2'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.8.1'
+    implementation 'org.elasticsearch:elasticsearch:7.8.1'
     implementation "joda-time:joda-time:2.0"
     implementation 'org.postgresql:postgresql:42.3.6'
     implementation 'com.google.guava:guava:31.1-jre'

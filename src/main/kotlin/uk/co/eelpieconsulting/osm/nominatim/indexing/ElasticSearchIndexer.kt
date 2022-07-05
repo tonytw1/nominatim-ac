@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.xcontent.XContentType
+import org.elasticsearch.common.xcontent.XContentType
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.springframework.beans.factory.annotation.Autowired
