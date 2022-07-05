@@ -167,3 +167,13 @@ Back in 2013 the Nominatim import of planet.osm took approximately 6 weeks to co
 In 2021 this import takes around 3 days (HP z620; dual CPU; 96Gb RAM; 1.5TB of NVME SSD).
 
 Mediagis have published a Nominatim Docker build which can be used for local development (https://github.com/mediagis/nominatim-docker).
+
+
+## Cloud build
+
+```
+gcloud components install cloud-build-local
+cloud-build-local --config=cloudbuild.yaml --dryrun=false --push=false .
+```
+
+
