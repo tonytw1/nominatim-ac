@@ -41,6 +41,7 @@ class ElasticSearchIndexCreator @Autowired constructor(private val elasticSearch
                         },
                         "addressRank" : {"type" : "integer" },
                         "adminLevel" : {"type" : "integer"},
+                        "osmType" : {"type" : "keyword" },
                         "tags" : {"type" : "keyword" },
                         "latlong" : {"type" : "geo_point"},
                         "country" : {"type" : "keyword" }

@@ -7,6 +7,8 @@ import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.index.query.PrefixQueryBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.aggregations.bucket.terms.Terms
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.SortBuilders
 import org.elasticsearch.search.sort.SortOrder
@@ -85,13 +87,14 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         val all = QueryBuilders.boolQuery()
         val searchRequest = SearchRequest(readIndex)
         val searchSourceBuilder = SearchSourceBuilder()
-        searchSourceBuilder.query(all)
-        searchSourceBuilder.size(0)
+        searchSourceBuilder.query(all).aggregation(TermsAggregationBuilder("osmType").field("osmType")).size(0)
         searchRequest.source(searchSourceBuilder)
 
         val client = elasticSearchClientFactory.getClient()
         val response = client.search(searchRequest, RequestOptions.DEFAULT)
-        return response.hits.totalHits.value
+
+        val osmTypes: Terms = response.aggregations.get("osmType")
+        return osmTypes.buckets.map { b -> b.docCount }.sum()
     }
 
     @Throws(IOException::class)
