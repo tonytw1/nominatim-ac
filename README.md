@@ -93,7 +93,7 @@ and need to retrieve it's details later in a flow but do not have access to a No
 
 ### Also see
 
-photon (http://photon.komoot.de/) takes a similar approach and is production ready.
+photon (https://photon.komoot.io/) takes a similar approach and is production ready.
 
 Nominatim AC will be maintained to further investigate the use of search 'profiles' to improve the user experience.
 ie. selectively excluding things like post boxes and bus stops.
