@@ -9,11 +9,7 @@ import uk.co.eelpieconsulting.osm.nominatim.model.Place
 @Component
 class JsonDeserializer {
 
-    private val mapper: ObjectMapper
-
-    init {
-        this.mapper = ObjectMapper().registerKotlinModule()
-    }
+    private val mapper = ObjectMapper().registerKotlinModule()
 
     fun deserializePlace(sourceAsString: String): Place {
         return mapper.readValue<Place>(sourceAsString)

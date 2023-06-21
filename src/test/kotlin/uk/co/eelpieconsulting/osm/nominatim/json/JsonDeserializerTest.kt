@@ -6,10 +6,10 @@ import org.junit.Test
 
 class JsonDeserializerTest {
 
-    val jsonDeserializer = JsonDeserializer()
+    private val jsonDeserializer = JsonDeserializer()
 
     @Test
-    fun canSerializeKotlinModelClass() {
+    fun canDeserializeKotlinModelClass() {
         val placeJson = IOUtils.toString(this.javaClass.classLoader.getResource("place.json"))
 
         val place = jsonDeserializer.deserializePlace(placeJson)
