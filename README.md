@@ -9,14 +9,13 @@ An example containing the whole planet data set is available at (https://nominat
 
 #### /search
 
-Parameter | Description
----------|--------------
-q	|	The user query. ie. London
-tag	| Restrict results to a given OSM tag.
-lat / lon / radius | Restrict results to a given geocircle
-country | Restrict results to a given country code
-callback | The name of an optional JSONP callback to wrap the results in
-
+| Parameter          | Description                                                   |
+|--------------------|---------------------------------------------------------------|
+| q	                 | 	The user query. ie. London                                   |
+| tag	               | Restrict results to a given OSM tag.                          |
+| lat / lon / radius | Restrict results to a given geocircle                         |
+| country            | Restrict results to a given country code                      |
+| callback           | The name of an optional JSONP callback to wrap the results in |
 
 #### /places/{id}
 
@@ -92,13 +91,6 @@ Does not offer short names:
 An improvement would probably involve indexing the more structured output of the `get_addressdata` function.
 
 
-
-### Implementation
-Java / Spring Boot and Elasticsearch.
-
-Reads from a populated Nominatim 3.7 postgres database and indexes into an Elasticsearch 7.8 index.
-
-
 ### Also see
 
 photon (http://photon.komoot.de/) takes a similar approach and is production ready.
@@ -110,12 +102,12 @@ ie. selectively excluding things like post boxes and bus stops.
 
 ### Local development
 
-This is a Spring Boot project with a Gradle build.
+This is a Spring Boot / Kotlin project with a Gradle build.
 
-Configuration is in the file named application.properties.
+Configuration is in the file named `application.properties`.
 
 The tests are expecting to see a Postgres Nominatim 3.7 schema containing a June 2021 Great Britain import
-on localhost port 5432 (which is where nominatim-docker would be).
+on localhost port 5432.
 
 Start Elasticsearch:
 ```
