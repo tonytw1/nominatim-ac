@@ -104,23 +104,13 @@ ie. selectively excluding things like post boxes and bus stops.
 
 This is a Spring Boot / Kotlin project with a Gradle build.
 
-Configuration is in the file named `application.properties`.
 
-The tests are expecting to see a Postgres Nominatim 3.7 schema containing a June 2021 Great Britain import
-on localhost port 5432.
+Review the configuration
+Configuration is in the file named `application.properties`.
 
 Start Elasticsearch:
 ```
 docker-compose -f docker-compose/docker-compose.yml up
-```
-
-Create Elasticsearch index:
-```
-bash elasticsearch/index.bash 
-{"acknowledged":true,"shards_acknowledged":true,"index":"nominatimac"}
-
-bash elasticsearch/mappings.bash 
-{"acknowledged":true}
 ```
 
 Build locally with:
@@ -134,6 +124,8 @@ Start locally
 mv build/libs/nominatim-ac-0.1.0.jar .
 java -jar nominatim-ac-0.1.0.jar 
 ```
+The Elastic index will be created if it does not already exist.
+
 
 Build index
 
@@ -143,6 +135,11 @@ curl http://localhost:8080/import
 
 A full index is around 16Gb in size.
 It takes 18 hours to index; this could probably be improved with threading.
+
+
+The tests are expecting to see a Postgres Nominatim 3.7 schema containing a June 2021 Great Britain import
+on localhost port 5432.
+
 
 
 ### Installation
