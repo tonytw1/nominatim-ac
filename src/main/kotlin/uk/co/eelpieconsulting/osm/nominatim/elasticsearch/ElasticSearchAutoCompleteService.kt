@@ -121,7 +121,7 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
     }
 
     private fun startsWith(q: String): PrefixQueryBuilder {
-        return QueryBuilders.prefixQuery(ADDRESS, q.toLowerCase())
+        return QueryBuilders.prefixQuery(ADDRESS, q.lowercase())
     }
 
 }
