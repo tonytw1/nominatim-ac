@@ -5,15 +5,15 @@ import org.elasticsearch.index.query.QueryBuilders
 
 class Everything : Profile {
 
-    private val TAGS = "tags"
+    private val tags = "tags"
 
     override fun getName(): String {
         return "everything"
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isBoundaryHistoric = QueryBuilders.termQuery(TAGS, "boundary|historic")
-        val isRailwayStop = QueryBuilders.termQuery(TAGS, "railway|stop")
+        val isBoundaryHistoric = QueryBuilders.termQuery(tags, "boundary|historic")
+        val isRailwayStop = QueryBuilders.termQuery(tags, "railway|stop")
 
         return QueryBuilders.boolQuery().mustNot(isBoundaryHistoric).mustNot(isRailwayStop)
     }

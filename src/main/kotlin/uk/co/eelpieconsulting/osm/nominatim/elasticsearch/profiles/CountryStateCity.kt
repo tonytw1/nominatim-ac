@@ -6,16 +6,16 @@ import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class CountryStateCity : Profile {
 
-    private val TAGS = "tags"
+    private val tags = "tags"
 
     override fun getName(): String {
         return "countryStateCity"
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isCountry = termQuery(TAGS, "place|country")
-        val isCity = termQuery(TAGS, "place|city")
-        val isBoundary = termQuery(TAGS, "boundary|administrative")
+        val isCountry = termQuery(tags, "place|country")
+        val isCity = termQuery(tags, "place|city")
+        val isBoundary = termQuery(tags, "boundary|administrative")
         val isAdminLevelSix = termQuery("adminLevel", "6")
         val isAdminLevelFour = termQuery("adminLevel", "4")
         val isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix)

@@ -7,14 +7,14 @@ import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class Country : Profile {
 
-    private val TAGS = "tags"
+    private val tags = "tags"
 
     override fun getName(): String {
         return "country"
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isCountry = termQuery(TAGS, "place|country")
+        val isCountry = termQuery(tags, "place|country")
         return boolQuery().minimumShouldMatch(1).should(isCountry)
     }
 }

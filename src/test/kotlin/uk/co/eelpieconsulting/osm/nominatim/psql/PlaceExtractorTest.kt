@@ -11,11 +11,11 @@ import java.sql.ResultSet
 class PlaceExtractorTest {
 
     // Default credentials for Nominatim 3.7 Docker image; nothing to see here
-    private val DATABASE_HOST = "localhost:5432"  // TODO inject
-    private val DATABASE_USER = "nominatim"
-    private val DATABASE_PASSWORD = "qaIACxO6wMR3"
+    private val databaseHost = "localhost:5432"  // TODO inject
+    private val databaseUser = "nominatim"
+    private val databasePassword = "qaIACxO6wMR3"
 
-    private var osmDAO: OsmDAO = OsmDAO(DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST)
+    private var osmDAO: OsmDAO = OsmDAO(databaseUser, databasePassword, databaseHost)
     private var placeRowParser = PlaceRowParser()
 
     private val limitMuchLargeThanExpectedNumberOfRows= 1000L

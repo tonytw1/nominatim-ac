@@ -20,11 +20,11 @@ class PartialIndexWatermarkService @Autowired constructor(private val elasticSea
 
     private val objectMapper = ObjectMapper()
 
-    private val WATERMARK = "watermark"
+    private val watermark = "watermark"
 
     fun getWatermark(): DateTime? {
         val searchRequest = SearchRequest(writeIndex)
-        searchRequest.types(WATERMARK)
+        searchRequest.types(watermark)
         val searchSourceBuilder = SearchSourceBuilder()
         searchSourceBuilder.query(QueryBuilders.boolQuery())
         searchSourceBuilder.size(1)
@@ -36,7 +36,7 @@ class PartialIndexWatermarkService @Autowired constructor(private val elasticSea
         } else {
             try {
                 val asJson = objectMapper.readTree(searchResponse.hits.getAt(0).sourceAsString)
-                return DateTime(asJson[WATERMARK].asLong())
+                return DateTime(asJson[watermark].asLong())
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -49,7 +49,7 @@ class PartialIndexWatermarkService @Autowired constructor(private val elasticSea
         map["watermark"] = java.lang.Long.toString(watermark.millis)
         val json = objectMapper.writeValueAsString(map)
         try {
-            val indexRequest = IndexRequest().index(writeIndex).type(WATERMARK).id("1").source(json)
+            val indexRequest = IndexRequest().index(writeIndex).type(this.watermark).id("1").source(json)
             client.index(indexRequest, RequestOptions.DEFAULT)
         } catch (e: Exception) {
             throw RuntimeException(e)

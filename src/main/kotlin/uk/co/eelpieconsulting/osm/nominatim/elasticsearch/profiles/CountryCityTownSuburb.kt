@@ -6,25 +6,25 @@ import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class CountryCityTownSuburb : Profile {
 
-    private val TAGS = "tags"
+    private val tags = "tags"
 
     override fun getName(): String {
         return "countryCityTownSuburb"
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isCountry = termQuery(TAGS, "place|country")
-        val isCity = termQuery(TAGS, "place|city")
-        val isCounty = termQuery(TAGS, "place|county")
-        val isTown = termQuery(TAGS, "place|town")
-        val isSuburb = termQuery(TAGS, "place|suburb")
-        val isNationalPark = termQuery(TAGS, "boundary|national_park")
-        val isLeisurePark = termQuery(TAGS, "leisure|park")
-        val isLeisureCommon = termQuery(TAGS, "leisure|common")
-        val isPeak = termQuery(TAGS, "natural|peak")
-        val isIsland = termQuery(TAGS, "place|island")
-        val isVillage = termQuery(TAGS, "place|village")
-        val isBoundary = termQuery(TAGS, "boundary|administrative")
+        val isCountry = termQuery(tags, "place|country")
+        val isCity = termQuery(tags, "place|city")
+        val isCounty = termQuery(tags, "place|county")
+        val isTown = termQuery(tags, "place|town")
+        val isSuburb = termQuery(tags, "place|suburb")
+        val isNationalPark = termQuery(tags, "boundary|national_park")
+        val isLeisurePark = termQuery(tags, "leisure|park")
+        val isLeisureCommon = termQuery(tags, "leisure|common")
+        val isPeak = termQuery(tags, "natural|peak")
+        val isIsland = termQuery(tags, "place|island")
+        val isVillage = termQuery(tags, "place|village")
+        val isBoundary = termQuery(tags, "boundary|administrative")
         val isAdminLevelFour = termQuery("adminLevel", "4")
         val isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour)
         val isAdminLevelSix = termQuery("adminLevel", "6")

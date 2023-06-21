@@ -14,14 +14,14 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
                              val partialIndexWatermarkService: PartialIndexWatermarkService,
                              val osmDAO: OsmDAO) {
 
-    private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
+    private val basicISODateTimeFormat = ISODateTimeFormat.basicDateTime()
 
     @CrossOrigin(origins = ["*"])
     @GetMapping("/status")
     fun status(): Map<String, String> {
         return mapOf(
-                "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
-                "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.getWatermark()),
+                "lastImportDate" to basicISODateTimeFormat.print(osmDAO.getLastImportDate()),
+                "indexedTo" to basicISODateTimeFormat.print(partialIndexWatermarkService.getWatermark()),
                 "indexedItems" to autoCompleteService.indexedItemsCount().toString())
     }
 

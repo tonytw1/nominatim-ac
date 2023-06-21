@@ -32,8 +32,8 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
 
     private val client = elasticSearchClientFactory.getClient()
 
-    private val ELASTIC_SEARCH_COMMIT_SIZE = 10000
-    private val TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED = Sets.newHashSet("population", "wikipedia", "wikidata", "website")
+    private val elasticSearchCommitSize = 10000
+    private val tagPrefixesWhichDoNotNeedToBeIndexed = Sets.newHashSet("population", "wikipedia", "wikidata", "website")
     private val pipeSplitter = Splitter.on("|")
 
     @Throws(IOException::class)
@@ -47,7 +47,7 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
                 val split = pipeSplitter.split(t).iterator()
                 if (split.hasNext()) {
                     val prefix = split.next()
-                    !TAG_PREFIXES_WHICH_DO_NOT_NEED_TO_BE_INDEXED.contains(prefix)
+                    !tagPrefixesWhichDoNotNeedToBeIndexed.contains(prefix)
                 } else {
                     false
                 }
@@ -59,12 +59,12 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
 
         fun indexPlace(newPlace: Place) {
             places.add(newPlace.copy(tags = filterTags(newPlace.tags.toSet())))
-            if (places.size == ELASTIC_SEARCH_COMMIT_SIZE) {
+            if (places.size == elasticSearchCommitSize) {
                 index(places)
 
                 val duration = Duration(countStart.millis, DateTime.now().millis)
-                val rate = ELASTIC_SEARCH_COMMIT_SIZE / duration.standardSeconds
-                log.info("Indexed " + ELASTIC_SEARCH_COMMIT_SIZE + " in " + duration.millis + "ms at " + rate + " per second")
+                val rate = elasticSearchCommitSize / duration.standardSeconds
+                log.info("Indexed " + elasticSearchCommitSize + " in " + duration.millis + "ms at " + rate + " per second")
                 places = mutableListOf()
                 countStart = DateTime.now()
             }
