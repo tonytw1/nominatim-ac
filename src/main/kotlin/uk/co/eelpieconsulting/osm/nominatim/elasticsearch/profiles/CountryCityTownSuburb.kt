@@ -2,32 +2,29 @@ package uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles
 
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders.boolQuery
-import org.elasticsearch.index.query.QueryBuilders.termQuery
 
 class CountryCityTownSuburb : Profile {
-
-    private val tags = "tags"
 
     override fun getName(): String {
         return "countryCityTownSuburb"
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isCountry = termQuery(tags, "place|country")
-        val isCity = termQuery(tags, "place|city")
-        val isCounty = termQuery(tags, "place|county")
-        val isTown = termQuery(tags, "place|town")
-        val isSuburb = termQuery(tags, "place|suburb")
-        val isNationalPark = termQuery(tags, "boundary|national_park")
-        val isLeisurePark = termQuery(tags, "leisure|park")
-        val isLeisureCommon = termQuery(tags, "leisure|common")
-        val isPeak = termQuery(tags, "natural|peak")
-        val isIsland = termQuery(tags, "place|island")
-        val isVillage = termQuery(tags, "place|village")
-        val isBoundary = termQuery(tags, "boundary|administrative")
-        val isAdminLevelFour = termQuery("adminLevel", "4")
+        val isCountry = requiringTag("place|country")
+        val isCity = requiringTag("place|city")
+        val isCounty = requiringTag("place|county")
+        val isTown = requiringTag("place|town")
+        val isSuburb = requiringTag("place|suburb")
+        val isNationalPark = requiringTag("boundary|national_park")
+        val isLeisurePark = requiringTag("leisure|park")
+        val isLeisureCommon = requiringTag("leisure|common")
+        val isPeak = requiringTag("natural|peak")
+        val isIsland = requiringTag("place|island")
+        val isVillage = requiringTag("place|village")
+        val isBoundary = requiringTag("boundary|administrative")
+        val isAdminLevelFour = requiringAdminLevel("4")
         val isAdminLevelFourBoundary = boolQuery().must(isBoundary).must(isAdminLevelFour)
-        val isAdminLevelSix = termQuery("adminLevel", "6")
+        val isAdminLevelSix = requiringAdminLevel("6")
         val isAdminLevelSixBoundary = boolQuery().must(isBoundary).must(isAdminLevelSix)
 
         return boolQuery().minimumShouldMatch(1).should(isCountry).boost(10f).should(isCity).boost(8f)
