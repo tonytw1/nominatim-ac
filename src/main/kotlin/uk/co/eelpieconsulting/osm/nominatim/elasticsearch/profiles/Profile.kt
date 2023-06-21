@@ -1,6 +1,6 @@
-package uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles;
+package uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder
 
 interface Profile {
     fun getName(): String

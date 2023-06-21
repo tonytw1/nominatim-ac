@@ -99,7 +99,7 @@ class OsmDAO(val username: String, val password: String, val host: String) {
 
     fun getPlacesIndexedAfter(start: DateTime, limit: Long): ResultSet {
         placesIndexedFrom.setTimestamp(1, java.sql.Timestamp(start.millis))
-        placesIndexedFrom.setLong(2, limit.toLong())
+        placesIndexedFrom.setLong(2, limit)
         return placesIndexedFrom.executeQuery()
     }
 

@@ -12,8 +12,8 @@ class Everything : Profile {
     }
 
     override fun getQuery(): BoolQueryBuilder {
-        val isBoundaryHistoric = QueryBuilders.termQuery(TAGS, "boundary|historic");
-        val isRailwayStop = QueryBuilders.termQuery(TAGS, "railway|stop");
+        val isBoundaryHistoric = QueryBuilders.termQuery(TAGS, "boundary|historic")
+        val isRailwayStop = QueryBuilders.termQuery(TAGS, "railway|stop")
 
         return QueryBuilders.boolQuery().mustNot(isBoundaryHistoric).mustNot(isRailwayStop)
     }

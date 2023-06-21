@@ -1,8 +1,6 @@
 package uk.co.eelpieconsulting.osm.nominatim.elasticsearch.profiles
 
 import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-
 import org.elasticsearch.index.query.QueryBuilders.boolQuery
 import org.elasticsearch.index.query.QueryBuilders.termQuery
 
