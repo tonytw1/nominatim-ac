@@ -1,10 +1,10 @@
 package uk.co.eelpieconsulting.osm.nominatim.json
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.osm.nominatim.model.Place
-import com.fasterxml.jackson.module.kotlin.*
 
 @Component
 class JsonDeserializer {

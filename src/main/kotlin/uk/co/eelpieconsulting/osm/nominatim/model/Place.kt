@@ -13,6 +13,5 @@ data class Place(
         var tags: List<String>,
         val country: String?,
         val adminLevel: Int,
-        val name: String?) {
-}
+        val name: String?)
 

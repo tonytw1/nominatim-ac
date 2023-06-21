@@ -24,10 +24,10 @@ import java.io.IOException
 class ElasticSearchAutoCompleteService @Autowired constructor(private val elasticSearchClientFactory: ElasticSearchClientFactory, private val jsonDeserializer: JsonDeserializer,
                                                               @param:Value("\${elasticsearch.index.read}") private val readIndex: String) {
 
-    private val ADDRESS = "address"
-    private val DEFAULT_RADIUS = "100km"
-    private val LATLONG = "latlong"
-    private val TAGS = "tags"
+    private val address = "address"
+    private val defaultRadius = "100km"
+    private val latLong = "latlong"
+    private val tags = "tags"
 
     private val availableProfiles: MutableList<Profile>
 
@@ -66,7 +66,7 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
         var query = profile.getQuery()
         query = query.must(startsWith(q))
         if (!Strings.isNullOrEmpty(tag)) {
-            query = query.must(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(TAGS, tag)))
+            query = query.must(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(tags, tag)))
         }
         if (rank != null) {
             query = query.must(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("rank", rank)))
@@ -75,8 +75,8 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
             query = query.must(QueryBuilders.termQuery("country", country))
         }
         if (lat != null && lon != null) {
-            val distance = if (radius != null) java.lang.Double.toString(radius) + "km" else DEFAULT_RADIUS
-            val geoCircle = QueryBuilders.geoDistanceQuery(LATLONG).point(lat, lon).distance(distance)
+            val distance = if (radius != null) java.lang.Double.toString(radius) + "km" else defaultRadius
+            val geoCircle = QueryBuilders.geoDistanceQuery(latLong).point(lat, lon).distance(distance)
             query = query.must(QueryBuilders.boolQuery().must(geoCircle))
         }
         return executeAndParse(query)
@@ -121,7 +121,7 @@ class ElasticSearchAutoCompleteService @Autowired constructor(private val elasti
     }
 
     private fun startsWith(q: String): PrefixQueryBuilder {
-        return QueryBuilders.prefixQuery(ADDRESS, q.toLowerCase())
+        return QueryBuilders.prefixQuery(address, q.lowercase())
     }
 
 }

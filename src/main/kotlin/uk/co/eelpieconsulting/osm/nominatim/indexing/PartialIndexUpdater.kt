@@ -19,7 +19,7 @@ class PartialIndexUpdater @Autowired constructor(private val osmDAO: OsmDAO, pri
                                                  private val partialIndexWatermarkService: PartialIndexWatermarkService, private val jsonSerializer: JsonSerializer) {
 
     private val log = LogManager.getLogger(PartialIndexUpdater::class.java)
-    private val COMMIT_SIZE = 1000L
+    private val commitSize = 1000L
 
     @Scheduled(fixedRate = 60000)
     @Throws(SQLException::class, IOException::class)
@@ -28,7 +28,7 @@ class PartialIndexUpdater @Autowired constructor(private val osmDAO: OsmDAO, pri
         while (watermark.isBefore(DateTime.now().minusHours(1))) {
             log.info("Updating indexed after: $watermark")
             val countStart = DateTime.now()
-            val places = osmDAO.getPlacesIndexedAfter(watermark, COMMIT_SIZE)
+            val places = osmDAO.getPlacesIndexedAfter(watermark, commitSize)
             var highWater = watermark
             val updates: MutableList<Place> = Lists.newArrayList()
             while (!places.isAfterLast) {

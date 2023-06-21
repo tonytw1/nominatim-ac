@@ -8,18 +8,10 @@ import uk.co.eelpieconsulting.osm.nominatim.model.Place
 @Component
 class JsonSerializer {
 
-    private val mapper: ObjectMapper
+    private val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
-    init {
-        this.mapper = ObjectMapper().registerKotlinModule()
-    }
-
-    fun serializePlace(place: Place): String {  // TODO duplication with below
+    fun serializePlace(place: Place): String {
         return mapper.writeValueAsString(place)
-    }
-
-    fun serialize(o: Object): String {
-        return mapper.writeValueAsString(o)
     }
 
 }

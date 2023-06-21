@@ -14,18 +14,18 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
                              val partialIndexWatermarkService: PartialIndexWatermarkService,
                              val osmDAO: OsmDAO) {
 
-    private val BASIC_DATE_TIME = ISODateTimeFormat.basicDateTime()
+    private val basicISODateTimeFormat = ISODateTimeFormat.basicDateTime()
 
-    @CrossOrigin(origins = arrayOf("*"))
+    @CrossOrigin(origins = ["*"])
     @GetMapping("/status")
     fun status(): Map<String, String> {
         return mapOf(
-                "lastImportDate" to BASIC_DATE_TIME.print(osmDAO.getLastImportDate()),
-                "indexedTo" to BASIC_DATE_TIME.print(partialIndexWatermarkService.getWatermark()),
+                "lastImportDate" to basicISODateTimeFormat.print(osmDAO.getLastImportDate()),
+                "indexedTo" to basicISODateTimeFormat.print(partialIndexWatermarkService.getWatermark()),
                 "indexedItems" to autoCompleteService.indexedItemsCount().toString())
     }
 
-    @CrossOrigin(origins = arrayOf("*"))
+    @CrossOrigin(origins = ["*"])
     @GetMapping("/search")
     fun search(
             q: String?,
@@ -39,11 +39,10 @@ class AutoCompleteController(val autoCompleteService: ElasticSearchAutoCompleteS
         return autoCompleteService.search(q, tag, lat, lon, radius, rank, country, profile)
     }
 
-    @CrossOrigin(origins = arrayOf("*"))
+    @CrossOrigin(origins = ["*"])
     @GetMapping("/profiles")
     fun profiles(): Map<String, String> {
-        val profiles = autoCompleteService.getAvailableProfiles().associate { p -> p.getName() to p.getName() }
-        return profiles
+        return autoCompleteService.getAvailableProfiles().associate { p -> p.getName() to p.getName() }
     }
 
 }

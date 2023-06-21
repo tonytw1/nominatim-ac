@@ -1,4 +1,4 @@
-package uk.co.eelpieconsulting.osm.nominatim;
+package uk.co.eelpieconsulting.osm.nominatim
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

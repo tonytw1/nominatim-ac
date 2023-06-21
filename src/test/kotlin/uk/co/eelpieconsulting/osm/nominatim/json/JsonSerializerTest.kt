@@ -6,8 +6,8 @@ import org.junit.Test
 
 class JsonSerializerTest {
 
-    val jsonDeserializer = uk.co.eelpieconsulting.osm.nominatim.json.JsonDeserializer()
-    val jsonSerializer = uk.co.eelpieconsulting.osm.nominatim.json.JsonSerializer()
+    private val jsonDeserializer = JsonDeserializer()
+    private val jsonSerializer = JsonSerializer()
 
     @Test
     fun canSerializeKotlinModelClass() {
