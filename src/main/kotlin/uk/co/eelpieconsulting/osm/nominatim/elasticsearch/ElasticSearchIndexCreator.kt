@@ -13,7 +13,7 @@ class ElasticSearchIndexCreator @Autowired constructor(private val elasticSearch
 
     fun ensureIndexExists(index: String): Boolean {
         if (indexExists(index)) {
-            log.info("Found existing index $index; not recreating: " + index)
+            log.info("Found existing index $index; not recreating: $index")
             return true
         }
 
