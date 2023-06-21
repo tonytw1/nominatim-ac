@@ -54,23 +54,23 @@ constructor(elasticSearchClientFactory: ElasticSearchClientFactory,
             }
         }
 
-        var places = emptyList<Place>()
+        var places = mutableListOf<Place>()
         var countStart = DateTime.now()
 
-        fun indexPlaces(newPlace: Place) {
-            places += newPlace.copy(tags = filterTags(newPlace.tags.toSet()))
+        fun indexPlace(newPlace: Place) {
+            places.add(newPlace.copy(tags = filterTags(newPlace.tags.toSet())))
             if (places.size == ELASTIC_SEARCH_COMMIT_SIZE) {
                 index(places)
 
                 val duration = Duration(countStart.millis, DateTime.now().millis)
                 val rate = ELASTIC_SEARCH_COMMIT_SIZE / duration.standardSeconds
                 log.info("Indexed " + ELASTIC_SEARCH_COMMIT_SIZE + " in " + duration.millis + "ms at " + rate + " per second")
-                places = emptyList()
+                places = mutableListOf()
                 countStart = DateTime.now()
             }
         }
 
-        placeExtractor.extractPlaces(osmPlacesSource, ::indexPlaces)
+        placeExtractor.extractPlaces(osmPlacesSource, ::indexPlace)
 
         if (places.isNotEmpty()) {
             index(places)
