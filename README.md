@@ -5,26 +5,6 @@ Indexes the contents of a Nominatim 3.7 database into Elasticsearch version 7.8.
 An example containing the whole planet data set is available at (https://nominatim-ac.eelpieconsulting.co.uk).
 
 
-### End points
-
-#### /search
-
-| Parameter          | Description                                                   |
-|--------------------|---------------------------------------------------------------|
-| q	                 | 	The user query. ie. London                                   |
-| tag	               | Restrict results to a given OSM tag.                          |
-| lat / lon / radius | Restrict results to a given geocircle                         |
-| country            | Restrict results to a given country code                      |
-| callback           | The name of an optional JSONP callback to wrap the results in |
-
-#### /places/{id}
-
-Retrieve a single place by the `id` provided in search results.a
-
-Potentially useful for applications which have identified an OSM id using autocomplete
-and need to retrieve it's details later in a flow but do not have access to a Nominatim API.
-
-
 ### Motivation
 
 Allowing users to tag content with just a latitude/longitude point loses a lot of the context.
@@ -52,10 +32,14 @@ The Nominatim terms and conditions state that it shouldn't be used as an auto co
 This is fair. Using Nominatim in this manner would result in a lot of expensive database queries.
 
 
-### Overview
+
+### Implementation
 
 Indexes the contents of a populated Nominatim postgres instance into Elasticsearch and exposes it as a JSON web service.
 
+Pages through the entire `placex` table and indexes the output of the `get_address_by_language` function by osm id.
+
+This is a very naive approach which has some pros and cons (see below).
 There is some useful intuition here around reliably paging through the entire places table.
 
 The service is able to quickly respond to key stokes as the Nominatim output has been pre-rendered and indexed and does not need to be calculated in real time.
@@ -64,12 +48,6 @@ The Elasticsearch index can be distributed to smaller machines than those needed
 The Nominatim place name and OSM id is made available in the JSON returned to clients.
 The calling application can now persist the OSM id of the selected result for future reference.
 
-
-### Method
-
-Pages through the entire `placex` table and indexes the output of the `get_address_by_language` function by osm id.
-
-This is a very naive approach which has some pros and cons.
 
 #### Does well
 
@@ -91,6 +69,28 @@ Does not offer short names:
 An improvement would probably involve indexing the more structured output of the `get_addressdata` function.
 
 
+### End points
+
+The application exposes these JSON end points which client applications can call:
+
+#### /search
+
+| Parameter          | Description                                                   |
+|--------------------|---------------------------------------------------------------|
+| q	                 | 	The user query. ie. London                                   |
+| tag	               | Restrict results to a given OSM tag.                          |
+| lat / lon / radius | Restrict results to a given geocircle                         |
+| country            | Restrict results to a given country code                      |
+| callback           | The name of an optional JSONP callback to wrap the results in |
+
+#### /places/{id}
+
+Retrieve a single place by the `id` provided in search results.
+
+Potentially useful for applications which have identified an OSM id using autocomplete
+and need to retrieve it's details later in a flow but do not have access to a Nominatim API.
+
+
 ### Also see
 
 photon (http://photon.komoot.de/) takes a similar approach and is production ready.
@@ -103,7 +103,6 @@ ie. selectively excluding things like post boxes and bus stops.
 ### Local development
 
 This is a Spring Boot / Kotlin project with a Gradle build.
-
 
 Review the configuration
 Configuration is in the file named `application.properties`.
@@ -124,10 +123,10 @@ Start locally
 mv build/libs/nominatim-ac-0.1.0.jar .
 java -jar nominatim-ac-0.1.0.jar 
 ```
-The Elastic index will be created if it does not already exist.
+The Elastic index will be created automatically if it does not already exist.
 
 
-Build index
+Populate index
 
 ```
 curl http://localhost:8080/import
@@ -140,9 +139,20 @@ It takes 18 hours to index; this could probably be improved with threading.
 The tests are expecting to see a Postgres Nominatim 3.7 schema containing a June 2021 Great Britain import
 on localhost port 5432.
 
+Mediagis have published a Nominatim Docker build which can be used for local development (https://github.com/mediagis/nominatim-docker).
 
 
-### Installation
+### Cloud build
+
+We use Google Cloud Build to produce a container image.
+
+```
+gcloud components install cloud-build-local
+cloud-build-local --config=cloudbuild.yaml --dryrun=false --push=false .
+```
+
+
+### Production installation
 
 The Elasticsearch index is populated by reading from the Postgres database of a locally running Nominatim instance.
 
@@ -155,14 +165,6 @@ Back in 2013 the Nominatim import of planet.osm took approximately 6 weeks to co
 
 In 2021 this import takes around 3 days (HP z620; dual CPU; 96Gb RAM; 1.5TB of NVME SSD).
 
-Mediagis have published a Nominatim Docker build which can be used for local development (https://github.com/mediagis/nominatim-docker).
 
-
-## Cloud build
-
-```
-gcloud components install cloud-build-local
-cloud-build-local --config=cloudbuild.yaml --dryrun=false --push=false .
-```
 
 
