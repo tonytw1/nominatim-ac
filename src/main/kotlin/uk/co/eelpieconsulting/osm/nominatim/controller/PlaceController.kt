@@ -10,12 +10,12 @@ import uk.co.eelpieconsulting.osm.nominatim.model.DisplayPlace
 @RestController
 class PlaceController(val autoCompleteService: ElasticSearchAutoCompleteService) {
 
-    @CrossOrigin(origins = arrayOf("*"))
+    @CrossOrigin(origins = ["*"])
     @RequestMapping("/places/{id}")
     fun place(@PathVariable id: String): DisplayPlace? {
         val matches = autoCompleteService.byId(id)
         if (matches.isNotEmpty()) {
-            return matches.get(0);
+            return matches[0]
         }
         return null // TODO 404
     }
