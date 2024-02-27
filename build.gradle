@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.1'
     implementation 'org.elasticsearch:elasticsearch:7.17.1'
     implementation "joda-time:joda-time:2.0"
-    implementation 'org.postgresql:postgresql:42.3.8'
+    implementation 'org.postgresql:postgresql:42.3.9'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'commons-codec:commons-codec:1.15'
     implementation 'commons-io:commons-io:2.11.0'
